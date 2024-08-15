@@ -1,0 +1,163 @@
+@import "../../index.scss";
+
+.profileOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.profileContainer {
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+  //   width: 600px;
+  min-width: 60%;
+  max-width: 90%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  position: relative;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgb(230, 228, 228);
+    // border-width: calc(100% + 48px);
+
+    .left_side {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 0.5rem;
+
+      h2 {
+        font-size: 24px;
+        font-weight: 600;
+        color: #333;
+      }
+      img {
+        width: 26px;
+        height: 26px;
+      }
+    }
+
+    .closeIcon {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #888;
+    }
+  }
+
+  .profileContent {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .top_container {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 1.5rem;
+      align-items: stretch;
+
+      .userInfo,
+      .subscribedPlanInfo {
+        display: flex;
+        align-items: center;
+        border: 1px solid $base-pink;
+        border-radius: 10px;
+        padding: 1rem;
+        height: 100%;
+        text-transform: capitalize;
+      }
+
+      .userInfo {
+        img {
+          width: 80px;
+          height: 80px;
+          border-radius: 50%;
+          margin-right: 16px;
+        }
+
+        .name {
+          font-weight: 600;
+          font-size: 18px;
+          color: #333;
+        }
+
+        .joinDate {
+          font-size: 14px;
+          color: #888;
+        }
+      }
+
+      .subscribedPlanInfo {
+        flex: 1;
+        justify-content: space-between;
+
+        .left_side {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+
+          .left_side_wrapper {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 1rem;
+          }
+        }
+
+        .right_side {
+          .upgrade_plan {
+            font-weight: 600;
+            color: white;
+            background-color: $base-pink;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            border: 1px solid black;
+            outline: none;
+            -webkit-box-shadow: 5px 5px 3px 0px rgba(0, 0, 0, 0.73);
+            -moz-box-shadow: 5px 5px 3px 0px rgba(0, 0, 0, 0.73);
+            box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.9);
+          }
+        }
+      }
+    }
+
+    .personalInfo {
+      h3 {
+        font-size: 16px;
+        color: $base-pink;
+        margin-bottom: 16px;
+      }
+
+      .infoGrid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+
+        .label {
+          font-size: 14px;
+          color: #888;
+          margin-bottom: 4px;
+          display: block;
+        }
+
+        span {
+          font-size: 14px;
+          color: #333;
+        }
+      }
+    }
+  }
+}

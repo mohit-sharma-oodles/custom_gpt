@@ -5,7 +5,7 @@ import Home from "../pages/Home";
 import Projects from "../pages/Projects";
 import Subscription from "../pages/Subscription";
 import ContactUs from "../pages/ContactUs";
-import Profile from "../pages/Profile";
+import Profile from "../components/Profile";
 
 import ProtectedRoute from "../Axios/ProtectedRoute";
 

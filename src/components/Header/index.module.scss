@@ -97,12 +97,18 @@
     }
 
     .plan {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       font-size: 14px;
-      color: #f8a1d1; // Pink color for the premium label
+      color: $base-pink; // Pink color for the premium label
       margin: 0;
     }
 
     .closeIcon {
+      position: absolute;
+      right: 20px;
+      top: 20px;
       margin-left: auto;
       cursor: pointer;
       font-size: 18px;
@@ -125,6 +131,7 @@
       font-weight: 500;
       color: #333;
       border: none;
+      border-radius: 5px;
       background-color: transparent;
       cursor: pointer;
       text-align: left;
@@ -132,10 +139,19 @@
       &:hover {
         background-color: #f8f8f8;
       }
+    }
 
-      &.signOut {
-        color: #f15b5b; // Red color for sign out
-      }
+    .signOut {
+      color: #e03333;
     }
   }
+}
+
+.profile_img_wrapper {
+  height: 40px;
+  width: 40px;
+  position: relative;
+  border: 1px solid $base_pink;
+  border-radius: 40px;
+  cursor: pointer;
 }

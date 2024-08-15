@@ -60,14 +60,14 @@ export const getUserDetails = createAsyncThunk(
 
 // Initial state
 const initialState = {
-  user: null,
-  token: null,
-  isAuthenticated: false,
+  user: null, // this will be the user object
+  token: null, // access token
+  isAuthenticated: false, //
   status: "idle",
   error: null,
   signupMessage: null,
-  time: 600,
-  timeRemaining: null,
+  time: 600, // default time to enable the email after signup
+  timeRemaining: null, // to show timer even after page changes
 };
 
 // Create the auth slice

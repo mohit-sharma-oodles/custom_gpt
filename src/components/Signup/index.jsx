@@ -17,6 +17,7 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
   const { status, signupMessage, timeRemaining, error } = useSelector(
     (state) => state.rootReducer.auth
   );
+  console.log(error);
 
   const handleClose = () => {
     document.body.style.overflow = "auto";
@@ -29,7 +30,20 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
       alert("Passwords do not match");
       return;
     }
-    dispatch(signupUser({ email, password }));
+    dispatch(signupUser({ email, password }))
+      .then((signupAction) => {
+        if (signupAction.meta.requestStatus === "fulfilled") {
+          // Handle successful signup
+          console.log("Signup successful", signupAction.payload);
+        } else {
+          // Handle signup failure
+          console.error("Signup failed:", signupAction.payload);
+        }
+      })
+      .catch((error) => {
+        // This is where you handle the rejection from rejectWithValue
+        console.error("An error occurred:", error.message);
+      });
   };
 
   const formatTime = (seconds) => {

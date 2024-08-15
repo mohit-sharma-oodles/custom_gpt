@@ -39,7 +39,7 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
           } else {
             // Handle login failure
             console.error("Login failed:", loginAction.error.message);
-            throw new Error("Login failed");
+            throw new Error("Login failed Please try again later");
           }
         })
         .then((userDetailsAction) => {
@@ -54,6 +54,7 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
           }
         })
         .catch((error) => {
+          setMessage(error.message);
           console.error("An error occurred:", error.message);
         });
     },
@@ -126,7 +127,7 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
               {status === "failed" && (
                 <p className={styles.error_message}>{error}</p>
               )}
-
+              {message && <h4>{message}</h4>}
               <div className={styles.button_container}>
                 <button
                   type="submit"
