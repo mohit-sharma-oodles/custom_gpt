@@ -1,0 +1,137 @@
+@import "../../index.scss";
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-top: 1.5rem;
+
+  .top_container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    .heading {
+    }
+    .subHeading {
+      color: $base-pink;
+    }
+  }
+
+  .bottom_container {
+    width: 100%;
+    display: grid;
+    place-items: center;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    column-gap: 2rem;
+    row-gap: 2rem;
+    padding: 2rem;
+    margin-left: 3rem;
+    margin-right: 3rem;
+  }
+}
+
+// Subscription tile SCSS
+
+.tile_container {
+  padding: 1.5rem 1rem;
+  border: 1px solid $base-pink;
+  border-radius: 8px;
+  width: calc(100% - 2rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .tile_top_container {
+    .tile_heading_container {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+
+      .tile_heading {
+        font-weight: 500;
+        font-size: 24px;
+      }
+    }
+
+    .tile_subheading {
+      font-weight: 400;
+      font-size: 14px;
+    }
+
+    .tile_price {
+      font-size: 20px;
+      font-weight: 500;
+      margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .tile_permonth_text {
+        font-weight: 300;
+        color: grey;
+        font-size: 12px;
+      }
+    }
+    .exclusive_text {
+      font-size: 12px;
+      color: rgb(179, 179, 179);
+    }
+  }
+
+  .tile_middle_container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 5px;
+    // margin-top: 1.5rem;
+
+    .features {
+      font-weight: 500;
+    }
+    .left_gradient {
+      flex: 1;
+      height: 4px;
+      background-image: linear-gradient(to right, #fff, $base-pink);
+    }
+    .right_gradient {
+      flex: 1;
+      height: 4px;
+      background-image: linear-gradient(to left, #fff, $base-pink);
+    }
+  }
+
+  .tile_bottom_container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+
+    .feature_container {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+
+      .feature {
+        font-size: 14px;
+        line-height: 2;
+      }
+    }
+  }
+
+  .buynow_btn {
+    background-color: $base-pink;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 10px;
+    color: white;
+    -webkit-box-shadow: 0px 4px 5px -1px rgba(0, 0, 0, 0.253);
+    -moz-box-shadow: 0px 4px 5px -1px rgba(0, 0, 0, 0.161);
+    box-shadow: 4px 3px 0px 1px rgb(0, 0, 0);
+    font-size: 18px;
+    font-weight: 500;
+  }
+}

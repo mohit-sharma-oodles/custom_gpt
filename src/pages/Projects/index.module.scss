@@ -1,0 +1,20 @@
+@import "../../index.scss";
+
+.container {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+
+  .left_side {
+    background-color: lightblue;
+    flex: 1;
+  }
+  .middle {
+    background-color: coral;
+    flex: 2;
+  }
+  .right_side {
+    background-color: blanchedalmond;
+    flex: 2;
+  }
+}

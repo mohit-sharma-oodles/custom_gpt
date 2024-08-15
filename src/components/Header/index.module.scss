@@ -1,0 +1,141 @@
+@import "../../index.scss";
+
+.container {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  min-height: 70px;
+  z-index: 1000;
+  background-color: white;
+  -webkit-box-shadow: 0px 4px 5px -1px rgba(0, 0, 0, 0.253);
+  -moz-box-shadow: 0px 4px 5px -1px rgba(0, 0, 0, 0.161);
+  box-shadow: 0px 4px 5px -1px rgba(0, 0, 0, 0.144);
+
+  .wrapper {
+    width: 90%;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .left_side_wrapper {
+    .company_logo {
+      width: 120px;
+      height: auto;
+    }
+  }
+
+  .right_side_Wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+
+    .subscription_container {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .auth_btn_contnainer {
+      display: flex;
+      gap: 1rem;
+
+      .login_btn {
+        border-radius: 4px;
+        border: 1px solid black;
+        padding: 8px 16px 8px 16px;
+        -webkit-box-shadow: 5px 5px 3px 0px rgba(0, 0, 0, 0.73);
+        -moz-box-shadow: 5px 5px 3px 0px rgba(0, 0, 0, 0.73);
+        box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.9);
+      }
+      .signup_btn {
+        border-radius: 4px;
+        border: 1px solid black;
+        background-color: $base-pink;
+        padding: 8px 16px 8px 16px;
+        color: white;
+        -webkit-box-shadow: 5px 5px 3px 0px rgba(0, 0, 0, 0.73);
+        -moz-box-shadow: 5px 5px 3px 0px rgba(0, 0, 0, 0.73);
+        box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.73);
+      }
+    }
+  }
+}
+
+.profileModal {
+  position: absolute;
+  top: 40px; // Adjust to position below the user icon
+  right: 0;
+  background-color: white;
+  border: 2px solid #f8a1d1; // Assuming $base-pink is this color
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  border-radius: 12px; // Softer corners
+  padding: 16px;
+  z-index: 1000;
+  width: 250px; // Set a fixed width
+  font-family: "Arial, sans-serif";
+
+  .top_section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 16px;
+
+    img {
+      width: 50px; // Assuming the profile picture
+      height: 50px;
+      border-radius: 50%;
+    }
+
+    .name {
+      font-weight: 600;
+      font-size: 16px;
+      margin: 0;
+    }
+
+    .plan {
+      font-size: 14px;
+      color: #f8a1d1; // Pink color for the premium label
+      margin: 0;
+    }
+
+    .closeIcon {
+      margin-left: auto;
+      cursor: pointer;
+      font-size: 18px;
+      color: #666;
+    }
+  }
+
+  .button_container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    button {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 8px;
+      padding: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #333;
+      border: none;
+      background-color: transparent;
+      cursor: pointer;
+      text-align: left;
+
+      &:hover {
+        background-color: #f8f8f8;
+      }
+
+      &.signOut {
+        color: #f15b5b; // Red color for sign out
+      }
+    }
+  }
+}

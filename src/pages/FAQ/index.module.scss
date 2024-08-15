@@ -1,0 +1,13 @@
+@import "../../index.scss";
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .faq_heading {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    color: $base-pink;
+  }
+}

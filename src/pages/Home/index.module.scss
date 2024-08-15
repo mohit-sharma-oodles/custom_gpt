@@ -1,0 +1,142 @@
+@import "../../index.scss";
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+
+  .hero_banner {
+    position: relative;
+    width: 100%;
+    background-image: url("../../assets/banner_image.svg");
+    height: 100%;
+    min-height: 400px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: right center;
+
+    .text_area {
+      //   background-color: antiquewhite;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: space-around;
+      text-align: left;
+      padding: 20px;
+      width: 55%;
+      height: 100%;
+      min-height: 400px;
+      margin-left: 1rem;
+
+      .banner_data {
+        text-decoration: underline;
+        text-decoration-color: $base-green;
+        text-decoration-thickness: 10px;
+      }
+
+      .naturalWay {
+        white-space: nowrap;
+        color: white;
+        padding: 0 15px;
+        background-color: $base-pink;
+        -webkit-box-shadow: 0px 4px 5px -1px rgba(0, 0, 0, 0.253);
+        -moz-box-shadow: 0px 4px 5px -1px rgba(0, 0, 0, 0.161);
+        box-shadow: 5px 7px 0px 0px rgb(0, 0, 0);
+      }
+
+      h1 {
+        margin-top: 2rem;
+        font-size: 2.5rem;
+        color: rgb(0, 0, 0);
+      }
+
+      p {
+        margin: 20px 0;
+        font-size: 1.25rem;
+        color: rgb(0, 0, 0);
+      }
+
+      .button_container {
+        display: flex;
+
+        .cta_button {
+          margin: 10px;
+          padding: 10px 20px;
+          font-size: 1rem;
+          color: white;
+          border-radius: 5px;
+          border: 1px solid black;
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          font-weight: 600;
+          -webkit-box-shadow: 0px 4px 5px -1px rgba(0, 0, 0, 0.253);
+          -moz-box-shadow: 0px 4px 5px -1px rgba(0, 0, 0, 0.161);
+          box-shadow: 3px 5px 0px 0px rgb(0, 0, 0);
+        }
+        .getStarted {
+          background-color: $base-pink;
+        }
+        .watchDemo {
+          background-color: $base-green;
+        }
+      }
+    }
+  }
+
+  .company_images_wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .feature_section_container {
+    // background-color: antiquewhite;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    align-items: center;
+
+    .headingContainer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .headingContainer_heading {
+      font-weight: 600;
+      font-size: 25px;
+    }
+    .headingContainer_subheading {
+      color: $base-pink;
+      font-weight: 400;
+      font-size: 26px;
+    }
+
+    .feature_boxes {
+      display: grid;
+      grid-template-rows: 1fr;
+      grid-template-columns: repeat(
+        3,
+        1fr
+      ); /* Ensures all grid items take the same height */
+      border-radius: 6px;
+      gap: 1rem;
+      padding: 2rem;
+
+      .featurebox_contaniner {
+        // background-color: pink;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        border-radius: 6px;
+        gap: 1rem;
+      }
+    }
+
+    //feature box
+  }
+}

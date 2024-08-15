@@ -1,0 +1,79 @@
+@import "../../index.scss";
+
+.accordionItem {
+  padding-left: 2rem;
+  padding-right: 2rem;
+  border-bottom: 2px solid #ebeaea;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 1rem;
+  justify-content: center;
+
+  // &:last-child {
+  //   border-bottom: none;
+  // }
+
+  .arrow {
+    display: grid;
+    place-items: center;
+    // width: 10px;
+    height: 25px;
+    aspect-ratio: 1;
+    border-radius: 50px;
+
+    // .iconStyle {
+    //   background-color: $base-pink;
+    //   border: none;
+    //   border-radius: 60px;
+    //   color: white;
+    //   border-color: white;
+    // }
+  }
+}
+
+.accordionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1em;
+  cursor: pointer;
+
+  .leftSide {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+
+    .number {
+      min-width: 60px;
+      color: grey;
+    }
+  }
+
+  .accordion_title {
+    margin: 0;
+  }
+}
+
+.accordionContent {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+
+  p {
+    padding: 0 1em;
+    margin: 0;
+  }
+
+  &.open {
+    max-height: 500px; /* Adjust this value according to your content */
+    padding: 1em 0;
+  }
+
+  .links {
+    margin-top: 1rem;
+    .link {
+      color: blue;
+    }
+  }
+}
