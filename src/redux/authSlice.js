@@ -20,10 +20,14 @@ export const logoutUser = createAsyncThunk(
   "auth/logoutUser",
   async (_, { rejectWithValue }) => {
     try {
+      // Remove user and token from localStorage
       localStorage.removeItem("user");
       localStorage.removeItem("accessToken");
+
       // const response = await axios_instance.post("/api/logout");
-      return true; //response.data;
+      // return response.data;
+
+      return {};
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
@@ -58,11 +62,28 @@ export const getUserDetails = createAsyncThunk(
   }
 );
 
+// Async thunk for updating user details
+export const updateUserDetails = createAsyncThunk(
+  "auth/updateUserDetails",
+  async (updatedDetails, { rejectWithValue }) => {
+    try {
+      const response = await axios_instance.put(
+        "/api/profile/",
+        updatedDetails
+      );
+      localStorage.setItem("user", JSON.stringify(response.data)); // Update user in localStorage
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 // Initial state
 const initialState = {
   user: null, // this will be the user object
   token: null, // access token
-  isAuthenticated: false, //
+  isAuthenticated: false, // authenticated or not
   status: "idle",
   error: null,
   signupMessage: null,
@@ -151,6 +172,19 @@ const authSlice = createSlice({
         state.status = "failed";
         state.error = action.payload;
         state.timeRemaining = null;
+      })
+      .addCase(updateUserDetails.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(updateUserDetails.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.user = action.payload;
+        state.isAuthenticated = true;
+      })
+      .addCase(updateUserDetails.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
       });
   },
 });

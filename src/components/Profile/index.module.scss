@@ -161,3 +161,75 @@
     }
   }
 }
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.closeIcon {
+  cursor: pointer;
+}
+
+.imageContainer {
+  position: relative;
+  img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  input[type="file"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+}
+
+.editable {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.editableInput {
+  border: none;
+  outline: none;
+  background: none;
+  font-size: 14px;
+  color: #333;
+  padding: 0 2px;
+  transition: border-bottom 0.3s ease;
+  &.underline {
+    border-bottom: 1px solid #000;
+  }
+}
+
+.pencilIcon {
+  cursor: pointer;
+  color: #888;
+  &:hover {
+    color: #000;
+  }
+}
+
+.updateButton {
+  background-color: $base-green;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  font-weight: 500;
+  -webkit-box-shadow: 5px 5px 3px 0px rgba(0, 0, 0, 0.73);
+  -moz-box-shadow: 5px 5px 3px 0px rgba(0, 0, 0, 0.73);
+  box-shadow: 3px 4px 0px 0px rgba(0, 0, 0, 0.9);
+}

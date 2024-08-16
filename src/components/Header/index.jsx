@@ -6,26 +6,28 @@ import { PiSignOutBold } from "react-icons/pi";
 import logo from "../../assets/company_logo.svg";
 import { Link, useNavigate } from "react-router-dom";
 import crown from "../../assets/crown_icon.svg";
-import default_icon from "../../assets/vecteezy_user-profile-icon-profile-avatar-user-icon-male-icon_20911750.png";
+import default_icon from "../../assets/person_default.png";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../redux/authSlice";
 import Profile from "../Profile";
 
 const ProfileModal = ({ onClose, setShowProfile, setShowProfileModal }) => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.rootReducer.auth);
 
   const handleLogout = () => {
     dispatch(logoutUser());
+    navigate("/");
     onClose();
   };
 
   return (
     <div className={styles.profileModal}>
       <div className={styles.top_section}>
-        <img src={user.profile_picture || default_icon} alt="User" />
+        <img src={user?.profile_picture || default_icon} alt="User" />
         <div>
-          <p className={styles.name}>{user.first_name}</p>
+          <p className={styles.name}>{user?.first_name}</p>
           <p className={styles.plan}>
             {" "}
             <img
@@ -56,11 +58,17 @@ const ProfileModal = ({ onClose, setShowProfile, setShowProfileModal }) => {
   );
 };
 
-const Header = ({ onLoginClick, onSignupClick, isAuthenticated }) => {
+const Header = ({ onLoginClick, onSignupClick }) => {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
 
-  const { user } = useSelector((state) => state.rootReducer.auth);
+  const { user, isAuthenticated } = useSelector(
+    (state) => state.rootReducer.auth
+  );
+
+  const handleProfileImageClick = () => {
+    setShowProfileModal((prev) => !prev);
+  };
 
   return (
     <div className={styles.container}>
@@ -130,10 +138,10 @@ const Header = ({ onLoginClick, onSignupClick, isAuthenticated }) => {
                 </Link>
                 <div
                   className={styles.profile_img_wrapper}
-                  onClick={() => setShowProfileModal((prev) => !prev)}
+                  onClick={handleProfileImageClick}
                 >
                   <img
-                    src={user.profile_picture || default_icon}
+                    src={user?.profile_picture || default_icon}
                     alt="User"
                     style={{
                       width: "100%",

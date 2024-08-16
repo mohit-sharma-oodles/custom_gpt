@@ -1,18 +1,49 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 import styles from "./index.module.scss";
 import { IoCloseSharp } from "react-icons/io5";
-import { useSelector } from "react-redux";
-import defaultUser from "../../assets/vecteezy_user-profile-icon-profile-avatar-user-icon-male-icon_20911750.png";
+import { useDispatch, useSelector } from "react-redux";
+import defaultUser from "../../assets/person_default.png";
 import crown from "../../assets/crown_icon.svg";
-import { useNavigate } from "react-router-dom";
+import { FaPencilAlt } from "react-icons/fa";
+import { updateUserDetails } from "../../redux/authSlice";
 
 const Profile = ({ setShowProfile }) => {
-  const navigate = useNavigate();
   const { user } = useSelector((state) => state.rootReducer.auth);
+  const dispatch = useDispatch();
 
-  const handleUpgradeClick = () => {
-    navigate("/app/subscription");
-    setShowProfile(false); // Close the profile after navigating
+  const [firstName, setFirstName] = useState(user.first_name);
+  const [lastName, setLastName] = useState(user.last_name);
+  const [mobileNumber, setMobileNumber] = useState(user.mobile_number);
+  const [focusedInput, setFocusedInput] = useState(null);
+  const [hasChanges, setHasChanges] = useState(false);
+
+  const firstNameRef = useRef(null);
+  const lastNameRef = useRef(null);
+  const mobileNumberRef = useRef(null);
+
+  const handleEditClick = (ref, field) => {
+    setFocusedInput(field);
+    ref.current.focus();
+  };
+
+  const handleChange = (setter, originalValue, newValue) => {
+    setter(newValue);
+    if (newValue !== originalValue) {
+      setHasChanges(true);
+    } else {
+      setHasChanges(false);
+    }
+  };
+
+  const handleUpdateDetails = () => {
+    const updatedDetails = {
+      first_name: firstName,
+      last_name: lastName,
+      mobile_number: mobileNumber,
+    };
+    dispatch(updateUserDetails(updatedDetails));
+    setHasChanges(false);
+    setFocusedInput(null);
   };
 
   return (
@@ -36,9 +67,7 @@ const Profile = ({ setShowProfile }) => {
                 <p className={styles.name}>
                   {user.first_name} {user.last_name}
                 </p>
-                <p className={styles.joinDate}>
-                  Joined on {user.joined_date} {/* Adjust as needed */}
-                </p>
+                <p className={styles.joinDate}>Joined on {user.joined_date}</p>
               </div>
             </div>
             <div className={styles.subscribedPlanInfo}>
@@ -51,15 +80,10 @@ const Profile = ({ setShowProfile }) => {
                   />
                   {user?.current_plan} Premium
                 </div>
-                days left {/* Add the correct days left logic here */}
+                days left
               </div>
               <div className={styles.right_side}>
-                <span
-                  className={styles.upgrade_plan}
-                  onClick={handleUpgradeClick}
-                >
-                  Upgrade Plan
-                </span>
+                <span className={styles.upgrade_plan}>Upgrade Plan</span>
               </div>
             </div>
           </div>
@@ -67,20 +91,84 @@ const Profile = ({ setShowProfile }) => {
             <h3>Personal Information</h3>
             <div className={styles.infoGrid}>
               <div>
-                <span className={styles.label}>First Name</span>
-                <span>{user.first_name}</span>
+                <span className={styles.label}>
+                  First Name{" "}
+                  <FaPencilAlt
+                    className={styles.pencilIcon}
+                    onClick={() => handleEditClick(firstNameRef, "firstName")}
+                  />
+                </span>
+                <span className={styles.editable}>
+                  <input
+                    type="text"
+                    value={firstName}
+                    onChange={(e) =>
+                      handleChange(
+                        setFirstName,
+                        user.first_name,
+                        e.target.value
+                      )
+                    }
+                    ref={firstNameRef}
+                    className={`${styles.editableInput} ${
+                      focusedInput === "firstName" ? styles.underline : ""
+                    }`}
+                  />
+                </span>
               </div>
               <div>
-                <span className={styles.label}>Last Name</span>
-                <span>{user.last_name}</span>
+                <span className={styles.label}>
+                  Last Name{" "}
+                  <FaPencilAlt
+                    className={styles.pencilIcon}
+                    onClick={() => handleEditClick(lastNameRef, "lastName")}
+                  />
+                </span>
+                <span className={styles.editable}>
+                  <input
+                    type="text"
+                    value={lastName}
+                    onChange={(e) =>
+                      handleChange(setLastName, user.last_name, e.target.value)
+                    }
+                    ref={lastNameRef}
+                    className={`${styles.editableInput} ${
+                      focusedInput === "lastName" ? styles.underline : ""
+                    }`}
+                  />
+                </span>
               </div>
               <div>
                 <span className={styles.label}>Email Address</span>
                 <span>{user.email}</span>
               </div>
               <div>
-                <span className={styles.label}>Phone Number</span>
-                <span>{user.mobile_number}</span>
+                <span className={styles.label}>
+                  Phone Number{" "}
+                  <FaPencilAlt
+                    className={styles.pencilIcon}
+                    onClick={() =>
+                      handleEditClick(mobileNumberRef, "mobileNumber")
+                    }
+                  />
+                </span>
+                <span className={styles.editable}>
+                  <input
+                    type="text"
+                    value={mobileNumber}
+                    onChange={(e) =>
+                      handleChange(
+                        setMobileNumber,
+                        user.mobile_number,
+                        e.target.value
+                      )
+                    }
+                    ref={mobileNumberRef}
+                    className={`${styles.editableInput} ${
+                      focusedInput === "mobileNumber" ? styles.underline : ""
+                    }`}
+                  />
+                </span>
               </div>
               <div>
                 <span className={styles.label}>Password</span>
@@ -88,6 +176,11 @@ const Profile = ({ setShowProfile }) => {
               </div>
             </div>
           </div>
+          {hasChanges && (
+            <span className={styles.updateButton} onClick={handleUpdateDetails}>
+              Update Details
+            </span>
+          )}
         </div>
       </div>
     </div>

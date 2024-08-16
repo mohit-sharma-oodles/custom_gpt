@@ -17,9 +17,10 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
-  const { status, error, isAuthenticated, user } = useSelector(
+  const { status, error, isAuthenticated } = useSelector(
     (state) => state.rootReducer.auth
   );
+
   // Handle closing the modal
   const handleClose = useCallback(() => {
     document.body.style.overflow = "auto";
@@ -34,19 +35,20 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
       dispatch(loginUser({ email, password }))
         .then((loginAction) => {
           if (loginAction.meta.requestStatus === "fulfilled") {
-            // If login was successful, dispatch getUserDetails
             return dispatch(getUserDetails());
           } else {
             // Handle login failure
-            console.error("Login failed:", loginAction.error.message);
-            throw new Error("Login failed Please try again later");
+            const errorMessage =
+              loginAction.payload?.message ||
+              "Login failed. Please try again later.";
+            setMessage(errorMessage);
+            return Promise.reject(new Error(errorMessage));
           }
         })
         .then((userDetailsAction) => {
           if (userDetailsAction.meta.requestStatus === "fulfilled") {
             console.log(userDetailsAction.payload);
           } else {
-            // Handle failure in fetching user details
             console.error(
               "Failed to fetch user details:",
               userDetailsAction.error.message
@@ -54,7 +56,8 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
           }
         })
         .catch((error) => {
-          setMessage(error.message);
+          // This will handle both login and user details fetch errors
+          setMessage(error.message || "An error occurred. Please try again.");
           console.error("An error occurred:", error.message);
         });
     },
@@ -67,7 +70,7 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
       navigate("/app/projects");
       onClose();
     }
-  }, [status, isAuthenticated, navigate]);
+  }, [status, isAuthenticated, navigate, onClose]);
 
   // render
   if (!isOpen) return null;
@@ -124,10 +127,8 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
               </div>
 
               {/* Display error message */}
-              {status === "failed" && (
-                <p className={styles.error_message}>{error}</p>
-              )}
-              {message && <h4>{message}</h4>}
+              {message && <p className={styles.error_message}>{message}</p>}
+
               <div className={styles.button_container}>
                 <button
                   type="submit"
