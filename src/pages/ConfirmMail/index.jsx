@@ -8,6 +8,7 @@ const ConfirmEmail = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [errorMessage, setErrorMessage] = useState(null);
+  const [showResendButton, setShowResendButton] = useState(false);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -20,14 +21,19 @@ const ConfirmEmail = () => {
             dispatch(initializeAuth());
             navigate("/");
           } else {
+            const errorMsg = response.error.message;
             setErrorMessage(
               "Failed to confirm your email. The token might be invalid or expired."
             );
-            console.error("Error confirming email:", response.error.message);
+            console.error("Error confirming email:", errorMsg);
+
+            // Check if the error message indicates an expired token
+            if (errorMsg.includes("Token is invalid or expired")) {
+              setShowResendButton(true);
+            }
           }
         })
         .catch((error) => {
-          // Catch any error in the promise chain
           console.error("Error in the confirm email process:", error.message);
           setErrorMessage("An unexpected error occurred.");
         });
@@ -35,12 +41,21 @@ const ConfirmEmail = () => {
       console.error("No token found in the URL");
       setErrorMessage("No token found in the URL.");
     }
-  }, [dispatch, navigate]);
+  }, [dispatch, navigate, location]);
+
+  const handleResendEmail = () => {
+    // Implement the logic to resend the confirmation email
+    console.log("Resend email logic goes here");
+    // Example: dispatch(resendConfirmationEmail());
+  };
 
   return (
     <div>
       <h2>Confirming your email...</h2>
       {errorMessage && <p>{errorMessage}</p>}
+      {showResendButton && (
+        <button onClick={handleResendEmail}>Resend Confirmation Email</button>
+      )}
     </div>
   );
 };
