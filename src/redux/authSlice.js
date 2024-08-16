@@ -79,6 +79,39 @@ export const updateUserDetails = createAsyncThunk(
   }
 );
 
+export const confirmEmailWithToken = createAsyncThunk(
+  "auth/confirmEmailWithToken",
+  async (token, { rejectWithValue }) => {
+    try {
+      const response = await axios_instance.post("/api/confirm-email/", {
+        token,
+      });
+
+      // Log the full response to inspect its structure
+      console.log("Confirm Email Response:", response.data);
+
+      // Assuming the access token is stored under response.data.tokens.access_token
+      const accessToken = response?.data?.tokens?.access_token;
+
+      if (accessToken) {
+        // Save the token to localStorage
+        localStorage.setItem("accessToken", accessToken);
+      } else {
+        // Handle the case where accessToken is undefined
+        throw new Error("Access token is missing from the response.");
+      }
+
+      // Fetch user details after confirming the token
+      const userDetailsResponse = await axios_instance.get("/api/profile/");
+      localStorage.setItem("user", JSON.stringify(userDetailsResponse.data));
+
+      return userDetailsResponse.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 // Initial state
 const initialState = {
   user: null, // this will be the user object

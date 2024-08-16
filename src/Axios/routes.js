@@ -8,6 +8,7 @@ import ContactUs from "../pages/ContactUs";
 import Profile from "../components/Profile";
 
 import ProtectedRoute from "../Axios/ProtectedRoute";
+import ConfirmEmail from "../pages/ConfirmMail";
 
 const RouterConfig = (isAuthenticated) => {
   return createBrowserRouter([
@@ -26,6 +27,10 @@ const RouterConfig = (isAuthenticated) => {
         {
           path: "subscription",
           element: <Subscription />,
+        },
+        {
+          path: "confirm-email",
+          element: <ConfirmEmail />,
         },
         {
           path: "app/subscription",

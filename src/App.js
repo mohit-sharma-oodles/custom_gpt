@@ -7,15 +7,14 @@ import { initializeAuth, loginUser } from "./redux/authSlice";
 
 function App() {
   const dispatch = useDispatch();
+  const isAuthenticated = useSelector(
+    (state) => state.rootReducer.auth.isAuthenticated
+  );
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     dispatch(initializeAuth(token));
   }, [dispatch]);
-
-  const isAuthenticated = useSelector(
-    (state) => state.rootReducer.auth.isAuthenticated
-  );
 
   return <RouterProvider router={RouterConfig(isAuthenticated)} />;
 }
