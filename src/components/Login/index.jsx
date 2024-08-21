@@ -6,6 +6,7 @@ import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
 import { getUserDetails, loginUser } from "../../redux/authSlice";
 import { useNavigate } from "react-router-dom";
+import { axios_instance } from "../../Axios/axiosInstance";
 
 const Login = ({ isOpen, onClose, onSignupClick }) => {
   const dispatch = useDispatch();
@@ -31,6 +32,11 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
   const handleLoginClick = useCallback(
     (e) => {
       e.preventDefault();
+
+      if (!email || !password) {
+        setMessage("Please fill in both email and password.");
+        return;
+      }
 
       dispatch(loginUser({ email, password }))
         .then((loginAction) => {
@@ -64,10 +70,23 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
     [dispatch, email, password]
   );
 
+  // Handle forgot password click
+  const handleForgotPasswordClick = () => {
+    if (!email) {
+      setMessage("Please enter your email to reset your password.");
+      return;
+    }
+
+    axios_instance.post("/api/password-reset/", { email });
+
+    // Implement forgot password logic here
+    console.log("Forgot password clicked for email:", email);
+  };
+
   // Redirect on successful login
   useEffect(() => {
     if (status === "succeeded" && isAuthenticated) {
-      navigate("/app/projects");
+      navigate("/app/home");
       onClose();
     }
   }, [status, isAuthenticated, navigate, onClose]);
@@ -123,6 +142,21 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
                       <FaRegEye style={{ marginBottom: "-4px" }} />
                     )}
                   </div>
+                </div>
+                <div style={{ textAlign: "right", marginTop: "5px" }}>
+                  <button
+                    type="button"
+                    onClick={handleForgotPasswordClick}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      color: "#007bff",
+                      textDecoration: "underline",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Forgot Password?
+                  </button>
                 </div>
               </div>
 

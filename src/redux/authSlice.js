@@ -15,15 +15,15 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-// Async thunk for logging out (if needed)
+// Async thunk for logging out
 export const logoutUser = createAsyncThunk(
   "auth/logoutUser",
   async (_, { rejectWithValue }) => {
     try {
-      // Remove user and token from localStorage
       localStorage.removeItem("user");
       localStorage.removeItem("accessToken");
 
+      // Optionally, you might want to call an API endpoint for logging out
       // const response = await axios_instance.post("/api/logout");
       // return response.data;
 
@@ -53,7 +53,6 @@ export const getUserDetails = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios_instance.get("/api/profile/");
-      console.log("currentUSer", response.data);
       localStorage.setItem("user", JSON.stringify(response.data));
       return response.data;
     } catch (error) {
@@ -71,7 +70,7 @@ export const updateUserDetails = createAsyncThunk(
         "/api/profile/",
         updatedDetails
       );
-      localStorage.setItem("user", JSON.stringify(response.data)); // Update user in localStorage
+      localStorage.setItem("user", JSON.stringify(response.data));
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -79,6 +78,7 @@ export const updateUserDetails = createAsyncThunk(
   }
 );
 
+// Async thunk for confirming email with a token
 export const confirmEmailWithToken = createAsyncThunk(
   "auth/confirmEmailWithToken",
   async (token, { rejectWithValue }) => {
@@ -87,21 +87,14 @@ export const confirmEmailWithToken = createAsyncThunk(
         token,
       });
 
-      // Log the full response to inspect its structure
-      console.log("Confirm Email Response:", response.data);
-
-      // Assuming the access token is stored under response.data.tokens.access_token
       const accessToken = response?.data?.tokens?.access_token;
 
       if (accessToken) {
-        // Save the token to localStorage
         localStorage.setItem("accessToken", accessToken);
       } else {
-        // Handle the case where accessToken is undefined
         throw new Error("Access token is missing from the response.");
       }
 
-      // Fetch user details after confirming the token
       const userDetailsResponse = await axios_instance.get("/api/profile/");
       localStorage.setItem("user", JSON.stringify(userDetailsResponse.data));
 
@@ -112,16 +105,32 @@ export const confirmEmailWithToken = createAsyncThunk(
   }
 );
 
+// Async thunk for resending the confirmation email
+export const resendConfirmationEmail = createAsyncThunk(
+  "auth/resendConfirmationEmail",
+  async ({ email }, { rejectWithValue }) => {
+    try {
+      const response = await axios_instance.post(
+        "api/resend-verification-link/",
+        { email }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 // Initial state
 const initialState = {
-  user: null, // this will be the user object
-  token: null, // access token
-  isAuthenticated: false, // authenticated or not
+  user: null,
+  token: null,
+  isAuthenticated: false,
   status: "idle",
   error: null,
   signupMessage: null,
   time: 600, // default time to enable the email after signup
-  timeRemaining: null, // to show timer even after page changes
+  timeRemaining: null,
 };
 
 // Create the auth slice
@@ -218,6 +227,29 @@ const authSlice = createSlice({
       .addCase(updateUserDetails.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
+      })
+      .addCase(confirmEmailWithToken.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(confirmEmailWithToken.fulfilled, (state, action) => {
+        state.user = action.payload;
+        state.token = localStorage.getItem("accessToken");
+        state.isAuthenticated = true;
+        state.status = "succeeded";
+      })
+      .addCase(confirmEmailWithToken.rejected, (state, action) => {
+        state.error = action.payload;
+        state.status = "failed";
+      })
+      .addCase(resendConfirmationEmail.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(resendConfirmationEmail.fulfilled, (state) => {
+        state.status = "succeeded";
+      })
+      .addCase(resendConfirmationEmail.rejected, (state, action) => {
+        state.error = action.payload;
+        state.status = "failed";
       });
   },
 });

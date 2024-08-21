@@ -5,6 +5,7 @@
   flex-direction: column;
   align-items: center;
   gap: 3rem;
+  margin-bottom: 40px;
 
   .hero_banner {
     position: relative;
@@ -99,6 +100,7 @@
     flex-direction: column;
     gap: 2rem;
     align-items: center;
+    text-align: center;
 
     .headingContainer {
       display: flex;
@@ -134,9 +136,41 @@
         flex-direction: column;
         border-radius: 6px;
         gap: 1rem;
+        text-align: left;
+      }
+    }
+    .offer2 {
+      font-weight: 600;
+
+      .factor_box {
+        background-color: $base-pink;
+        color: white;
+        padding: 5px 16px;
+        -webkit-box-shadow: 0px 4px 5px -1px rgba(0, 0, 0, 0.253);
+        -moz-box-shadow: 0px 4px 5px -1px rgba(0, 0, 0, 0.161);
+        box-shadow: 5px 5px 0px 0px rgb(0, 0, 0);
       }
     }
 
-    //feature box
+    .ratings_container {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 1rem;
+
+      .rating_text_container {
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+        gap: 1rem;
+
+        .rating {
+          display: flex;
+          align-items: center;
+          gap: 0.6rem;
+          color: $base-pink;
+        }
+      }
+    }
   }
 }

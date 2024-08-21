@@ -7,14 +7,26 @@
 
 // export default ProtectedRoute;
 
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 
-const ProtectedRoute = ({ isAuthenticated, children, unAuthRoute = null }) => {
-  if (isAuthenticated === false) {
-    if (unAuthRoute) return <Navigate to={unAuthRoute} replace />;
-    else return <Navigate to="/" replace />;
+const ProtectedRoute = ({ children, unAuthRoute = null }) => {
+  // const { isAuthenticated } = useSelector((state) => state.rootReducer.auth);
+  const isAuthenticated = localStorage.getItem("accessToken");
+  if (isAuthenticated) {
+    return <>{children}</>;
   }
-  return children;
+
+  // return unAuthRoute ? (
+  //   <Navigate to={unAuthRoute} replace />
+  // ) : (
+  // );
+  return <Navigate to="/" replace />;
+
+  // useEffect(() => {
+  // }, [isAuthenticated]);
+  // return <>{children}</>;
 };
 
 export default ProtectedRoute;

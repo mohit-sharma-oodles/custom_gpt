@@ -1,60 +1,106 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
-import { confirmEmailWithToken, initializeAuth } from "../../redux/authSlice";
+import {
+  confirmEmailWithToken,
+  initializeAuth,
+  resendConfirmationEmail,
+} from "../../redux/authSlice";
 
 const ConfirmEmail = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [email, setEmail] = useState("");
+  const [feedback, setFeedback] = useState("");
   const [showResendButton, setShowResendButton] = useState(false);
-
+  const isAuthenticated = useSelector(
+    (state) => state.rootReducer.auth.isAuthenticated
+  );
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const token = searchParams.get("token");
+    const emailFromUrl = searchParams.get("email");
+    setEmail(emailFromUrl);
 
     if (token) {
       dispatch(confirmEmailWithToken(token))
         .then((response) => {
-          if (response.meta.requestStatus === "fulfilled") {
+          if (response.payload && !response.error) {
             dispatch(initializeAuth());
-            navigate("/");
+            // navigate("/");
           } else {
-            const errorMsg = response.error.message;
-            setErrorMessage(
-              "Failed to confirm your email. The token might be invalid or expired."
+            setFeedback("Failed to confirm your email. Please try again.");
+            setShowResendButton(
+              response.payload?.message === "Invalid or expired token."
             );
-            console.error("Error confirming email:", errorMsg);
-
-            // Check if the error message indicates an expired token
-            if (errorMsg.includes("Token is invalid or expired")) {
-              setShowResendButton(true);
-            }
           }
         })
-        .catch((error) => {
-          console.error("Error in the confirm email process:", error.message);
-          setErrorMessage("An unexpected error occurred.");
+        .catch(() => {
+          setFeedback("An unexpected error occurred.");
+          setShowResendButton(false);
         });
     } else {
-      console.error("No token found in the URL");
-      setErrorMessage("No token found in the URL.");
+      setFeedback("No token provided, please try again.");
+      setShowResendButton(false);
     }
-  }, [dispatch, navigate, location]);
+  }, [dispatch, location.search]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    console.log("isAuth", isAuthenticated);
+    if (isAuthenticated && token) {
+      navigate("/app/home");
+    }
+  }, [isAuthenticated]);
 
   const handleResendEmail = () => {
-    // Implement the logic to resend the confirmation email
-    console.log("Resend email logic goes here");
-    // Example: dispatch(resendConfirmationEmail());
+    if (email) {
+      dispatch(resendConfirmationEmail({ email }))
+        .then((response) => {
+          if (response.payload && !response.error) {
+            setFeedback("Confirmation email resent. Please check your inbox.");
+            setShowResendButton(false);
+          } else {
+            setFeedback("Failed to resend confirmation email.");
+            setShowResendButton(true);
+          }
+        })
+        .catch(() => {
+          setFeedback("Failed to resend confirmation email.");
+          setShowResendButton(true);
+        });
+    }
   };
 
   return (
-    <div>
-      <h2>Confirming your email...</h2>
-      {errorMessage && <p>{errorMessage}</p>}
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexDirection: "column",
+        height: "100vh",
+        overflow: "hidden",
+        gap: "1rem",
+      }}
+    >
       {showResendButton && (
-        <button onClick={handleResendEmail}>Resend Confirmation Email</button>
+        <>
+          <p style={{ color: "red" }}>{feedback}</p>
+          <span
+            style={{
+              borderRadius: "4px",
+              border: "1px solid black",
+              padding: "8px 16px",
+              cursor: "pointer",
+              boxShadow: "3px 3px 0px 0px rgba(0, 0, 0, 0.9)",
+            }}
+            onClick={handleResendEmail}
+          >
+            Resend Confirmation Email
+          </span>
+        </>
       )}
     </div>
   );

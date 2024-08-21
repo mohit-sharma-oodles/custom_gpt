@@ -1,12 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styles from "./index.module.scss";
-import { IoPlayOutline } from "react-icons/io5";
 import wallmart from "../../assets/walmart.svg";
 import okta from "../../assets/okta.svg";
+import rating_kid from "../../assets/rating_kid.svg";
 import deloitte from "../../assets/deloitte.svg";
+import help_me from "../../assets/help_me.svg";
 import volvo from "../../assets/volvo.svg";
 import cisco from "../../assets/cisco.svg";
+import { IoPlayOutline } from "react-icons/io5";
 import { RiBardFill } from "react-icons/ri";
+import { SiOpenai } from "react-icons/si";
 
 const FeatureBox = ({ color, heading, text }) => {
   return (
@@ -22,6 +25,10 @@ const FeatureBox = ({ color, heading, text }) => {
 };
 
 const Home = ({ isAuthenticated }) => {
+  useEffect(() => {
+    console.log("after mount");
+  }, []);
+
   return (
     <div className={styles.container}>
       {/* {isAuthenticated ? <h1>Authenticated</h1> : <h1>Not</h1>} */}
@@ -92,6 +99,24 @@ const Home = ({ isAuthenticated }) => {
               "Streaming reactions based on your content without making up facts. See even the sources of the comments."
             }
           />
+        </div>
+        <img src={help_me} />
+        <h1 className={styles.offer2}>
+          Increase your customer engagement and knowledge <br /> management by a{" "}
+          <span className={styles.factor_box}>factor of 10</span>
+        </h1>
+        <div className={styles.ratings_container}>
+          <img src={rating_kid} alt="" />
+          <div className={styles.rating_text_container}>
+            <h3 className={styles.rating}>
+              Powered by ChatGPT {/* <span> */}
+              <SiOpenai color="#32b4a2" />
+            </h3>
+            <p>
+              Build your own Primadeta Automation <br /> chatbot based on your
+              own content in <br /> minutes.
+            </p>
+          </div>
         </div>
       </div>
     </div>

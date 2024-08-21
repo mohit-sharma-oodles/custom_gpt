@@ -11,6 +11,12 @@ $base-golden: #ffb743;
   font-family: "Poppins";
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
 button {
   cursor: pointer;
 }

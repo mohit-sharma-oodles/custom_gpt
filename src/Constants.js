@@ -143,3 +143,34 @@ export const accordionItems = [
     link: [],
   },
 ];
+
+export const offerings1 = [
+  {
+    icon: "",
+    heading: "Upload documents in 1400 formats and support for 92 languages",
+    subheading:
+      "Latest ChatGPT models powered by the world's most porwerful ChatGPT-4 AI. We stay on top of Open Ai's advancements, so you don't have to.",
+    image: "",
+  },
+  {
+    icon: "",
+    heading: "Easily setup your business content, index in minutes",
+    subheading:
+      "Add multiple sources such as website, help desks, documents, videos, podcasts and more.",
+    image: "",
+  },
+  {
+    icon: "",
+    heading: "Public or private access",
+    subheading:
+      "By default, your chatbot is private. Use it for private document research or company-specific use cases. Or make it public and share it with customers.",
+    image: "",
+  },
+  {
+    icon: "",
+    heading: "Transform your customer service",
+    subheading:
+      "With ChatGPT-driven virtual assistance and personalization, Automate and streamline the customer service process.",
+    image: "",
+  },
+];
