@@ -25,7 +25,15 @@ const ProfileModal = ({ onClose, setShowProfile, setShowProfileModal }) => {
   return (
     <div className={styles.profileModal}>
       <div className={styles.top_section}>
-        <img src={user?.profile_picture || default_icon} alt="User" />
+        <img
+          style={{
+            // width: "100%",
+            // height: "100%",
+            borderRadius: "50%",
+          }}
+          src={user?.profile_picture || default_icon}
+          alt="User"
+        />
         <div>
           <p className={styles.name}>{user?.first_name}</p>
           <p className={styles.plan}>
@@ -147,6 +155,7 @@ const Header = ({ onLoginClick, onSignupClick }) => {
                       width: "100%",
                       height: "100%",
                       objectFit: "cover",
+                      borderRadius: "50%",
                     }}
                   />
                   {showProfileModal && (

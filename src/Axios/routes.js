@@ -10,6 +10,8 @@ import Profile from "../components/Profile";
 import ProtectedRoute from "../Axios/ProtectedRoute";
 import ConfirmEmail from "../pages/ConfirmMail";
 import ForgotPassword from "../pages/ForgotPassword";
+import CreateProject from "../pages/CreateProject/CreateProject";
+import PaymentSuccess from "../pages/PaymentSuccess";
 
 const RouterConfig = (isAuthenticated) => {
   return createBrowserRouter([
@@ -67,10 +69,26 @@ const RouterConfig = (isAuthenticated) => {
           ),
         },
         {
+          path: "app/create-project",
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <CreateProject isAuthenticated={isAuthenticated} />
+            </ProtectedRoute>
+          ),
+        },
+        {
           path: "app/profile",
           element: (
             <ProtectedRoute isAuthenticated={isAuthenticated}>
               <Profile isAuthenticated={isAuthenticated} />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "success",
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <PaymentSuccess isAuthenticated={isAuthenticated} />
             </ProtectedRoute>
           ),
         },

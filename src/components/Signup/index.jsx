@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styles from "./index.module.scss";
 import left_banner from "../../assets/signup_banner.svg";
-import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
+import { FaRegEye, FaRegEyeSlash, FaArrowLeft } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
 import { useDispatch, useSelector } from "react-redux";
-import { signupUser, updateCountdown } from "../../redux/authSlice";
+import { signupUser } from "../../redux/authSlice";
 
 const Signup = ({ isOpen, onClose, onLoginClick }) => {
   const dispatch = useDispatch();
@@ -13,22 +13,32 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
   const [step, setStep] = useState(1);
   const [viewPassword, setViewPassword] = useState(false);
 
-  // Step 1: Personal information
+  // Form fields state
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
   const [profileImage, setProfileImage] = useState(null);
-
-  // Step 2: Account details
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  // Error handling state
   const [errorMessage, setErrorMessage] = useState("");
 
-  const { status, signupMessage, timeRemaining, error } = useSelector(
+  const { signupMessage, error } = useSelector(
     (state) => state.rootReducer.auth
   );
+
+  // Clear error message on input change
+  const handleInputChange = (setter) => (e) => {
+    setter(e.target.value);
+    setErrorMessage("");
+  };
+
+  const handleFileChange = (e) => {
+    setProfileImage(e.target.files[0]);
+    setErrorMessage("");
+  };
 
   const handleClose = () => {
     document.body.style.overflow = "auto";
@@ -37,64 +47,68 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
 
   const handleNext = () => {
     if (!firstName || !lastName || !mobileNumber) {
-      alert("Please fill in all required fields.");
+      setErrorMessage("Please fill in all required fields.");
       return;
     }
     setStep(2);
   };
 
-  const formData = new FormData();
-  formData.append("first_name", firstName);
-  formData.append("last_name", lastName);
-  formData.append("email", email);
-  formData.append("password", password);
-  formData.append("mobile_number", mobileNumber);
-
-  if (profileImage) {
-    formData.append("profile_picture", profileImage);
-  }
+  const handleBack = () => {
+    setStep(1);
+  };
 
   const handleSignUp = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      alert("Passwords do not match");
+      setErrorMessage("Passwords do not match");
       return;
     }
-    dispatch(signupUser(formData))
-      .then((signupAction) => {
-        if (signupAction.meta.requestStatus === "fulfilled") {
-          // Handle successful signup
-          console.log("Signup successful", signupAction.payload);
-        } else {
-          // Handle signup failure
-          console.error("Signup failed:", signupAction.payload);
-          setErrorMessage(signupAction.payload?.email?.[0]);
-        }
-      })
-      .catch((error) => {
-        // This is where you handle the rejection from rejectWithValue
-        console.error("An error occurred:", error.message);
-      });
-  };
 
-  const formatTime = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
-  };
+    const formData = new FormData();
+    formData.append("first_name", firstName);
+    formData.append("last_name", lastName);
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append("mobile_number", mobileNumber);
 
-  useEffect(() => {
-    let timer;
-    if (timeRemaining > 0) {
-      timer = setInterval(() => {
-        dispatch(updateCountdown(timeRemaining - 1));
-      }, 1000);
+    if (profileImage) {
+      formData.append("profile_picture", profileImage);
     }
 
-    return () => {
-      clearInterval(timer);
-    };
-  }, [timeRemaining, dispatch]);
+    try {
+      const signupAction = await dispatch(signupUser(formData)).unwrap();
+
+      if (signupAction) {
+        // Handle successful signup
+        console.log("Signup successful", signupAction);
+      }
+    } catch (signupError) {
+      // Handle signup failure
+      const errors = signupError?.response?.data;
+      if (errors) {
+        // Check for specific error keys and display the corresponding message
+        if (errors.password?.includes("This password is too common.")) {
+          setErrorMessage("This password is too common.");
+        } else if (
+          errors.mobile_number?.includes(
+            "A user with this mobile number already exists."
+          )
+        ) {
+          setErrorMessage("A user with this mobile number already exists.");
+        } else if (errors.mobile_number) {
+          setErrorMessage(errors.mobile_number[0]); // Display the first error message related to mobile number
+        } else {
+          // Extract and display the first error message for other cases
+          const firstErrorMessage = Object.values(errors).flat()[0];
+          setErrorMessage(firstErrorMessage);
+        }
+      } else if (signupError?.response?.status === 404) {
+        setErrorMessage("The requested resource was not found (404).");
+      } else {
+        setErrorMessage("An unexpected error occurred. Please try again.");
+      }
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -108,6 +122,11 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
           <img src={left_banner} alt="Pimadeta" />
         </div>
         <div className={styles.right_side}>
+          {step !== 1 && (
+            <div className={styles.back_button} onClick={handleBack}>
+              <FaArrowLeft size={20} />
+            </div>
+          )}
           <span className={styles.close} onClick={handleClose}>
             &times;
           </span>
@@ -115,7 +134,7 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
             <h2 className={`poppins-semibold`}>
               {step === 1 ? "Personal Information" : "Sign Up"}
             </h2>
-            <form className={styles.form}>
+            <form className={styles.form} onSubmit={handleSignUp}>
               {step === 1 ? (
                 <>
                   <div className={styles.input_container}>
@@ -127,7 +146,7 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
                         id="firstName"
                         placeholder="Enter your first name"
                         value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
+                        onChange={handleInputChange(setFirstName)}
                         required
                       />
                     </div>
@@ -141,7 +160,7 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
                         id="lastName"
                         placeholder="Enter your last name"
                         value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
+                        onChange={handleInputChange(setLastName)}
                         required
                       />
                     </div>
@@ -155,7 +174,7 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
                         id="mobileNumber"
                         placeholder="Enter your mobile number"
                         value={mobileNumber}
-                        onChange={(e) => setMobileNumber(e.target.value)}
+                        onChange={handleInputChange(setMobileNumber)}
                         required
                       />
                     </div>
@@ -168,7 +187,7 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
                         name="profileImage"
                         id="profileImage"
                         accept="image/*"
-                        onChange={(e) => setProfileImage(e.target.files[0])}
+                        onChange={handleFileChange}
                       />
                     </div>
                   </div>
@@ -193,7 +212,7 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
                         id="email"
                         placeholder="Please enter your Email"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={handleInputChange(setEmail)}
                         required
                       />
                     </div>
@@ -207,7 +226,7 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
                         id="password"
                         placeholder="Please enter your password"
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={handleInputChange(setPassword)}
                         required
                       />
                       <div onClick={() => setViewPassword(!viewPassword)}>
@@ -228,7 +247,7 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
                         id="confirmPassword"
                         placeholder="Please confirm your password"
                         value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        onChange={handleInputChange(setConfirmPassword)}
                         required
                       />
                       <div onClick={() => setViewPassword(!viewPassword)}>
@@ -241,34 +260,23 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
                     </div>
                   </div>
                   {signupMessage && (
-                    <h4 style={{ width: "100%", backgroundColor: "pink" }}>
+                    <h4
+                      className={styles.error_message}
+                      style={{ color: "black" }}
+                    >
                       {signupMessage}
                     </h4>
                   )}
                   {errorMessage && (
                     <p className={styles.error_message}>{errorMessage}</p>
                   )}
+
                   <div className={styles.button_container}>
-                    <button
-                      type="submit"
-                      className={styles.login_btn}
-                      onClick={handleSignUp}
-                    >
-                      {timeRemaining !== null && timeRemaining > 0
-                        ? `Sign Up (${formatTime(timeRemaining)})`
-                        : "Sign Up"}
+                    <button type="submit" className={styles.login_btn}>
+                      Sign Up
                     </button>
-                    {timeRemaining === 0 && (
-                      <button
-                        type="button"
-                        className={styles.login_btn}
-                        onClick={handleSignUp}
-                      >
-                        Resend Verification Email
-                      </button>
-                    )}
                     <p>or</p>
-                    <button type="submit" className={`${styles.google_btn}`}>
+                    <button type="button" className={`${styles.google_btn}`}>
                       <FcGoogle size={24} />
                       <p>Continue with Google</p>
                     </button>

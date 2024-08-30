@@ -1,0 +1,75 @@
+.testimonialsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.testimonial {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.card {
+  width: 300px;
+  padding: 1rem;
+  border: 2px solid black;
+  border-radius: 8px;
+  text-align: center;
+  transition: border-color 0.3s ease-in-out;
+}
+
+.card.active {
+  border-color: #ae407a; /* Pink color for active testimonial */
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.image {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1rem;
+}
+
+.name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.title {
+  font-size: 1rem;
+  color: #888;
+  margin-bottom: 1rem;
+}
+
+.message {
+  font-size: 0.9rem;
+  color: #444;
+}
+
+.bullets {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.bullet {
+  width: 10px;
+  height: 10px;
+  margin: 0 5px;
+  background-color: #000;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.bullet.active {
+  background-color: #ae407a;
+}

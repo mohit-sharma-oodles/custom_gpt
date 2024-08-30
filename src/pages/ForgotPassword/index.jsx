@@ -43,6 +43,21 @@ const ForgotPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Regular expression to match:
+    // - at least one special character
+    // - at least one uppercase letter
+    // - at least one digit
+    // - minimum length of 8 characters
+    const passwordRegex =
+      /^(?=.*[!@#$%^&*(),.?":{}|<>])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+    if (!passwordRegex.test(password)) {
+      setMessage(
+        "Password must be at least 8 characters long, contain one uppercase letter, one number, and one special character."
+      );
+      return;
+    }
+
     if (password !== confirmPassword) {
       setMessage("Passwords do not match.");
       return;
@@ -69,12 +84,30 @@ const ForgotPassword = () => {
       setMessage("Password reset successful. You can now log in.");
     } catch (error) {
       if (error.response && error.response.data) {
-        // Check for non_field_errors and display the first error message
-        const errors = error.response.data.non_field_errors;
-        if (errors && errors.length > 0) {
-          setMessage(errors[0]);
+        // Handle non-field errors like an expired reset link
+        const nonFieldErrors = error.response.data.non_field_errors;
+        if (
+          nonFieldErrors &&
+          nonFieldErrors.includes("The password reset link has expired.")
+        ) {
+          setMessage(
+            "The password reset link has expired. Please request a new one."
+          );
+        } else if (nonFieldErrors && nonFieldErrors.length > 0) {
+          setMessage(nonFieldErrors[0]);
         } else {
-          setMessage("An error occurred. Please try again.");
+          // Handle specific password errors
+          const passwordErrors = error.response.data.new_password;
+          if (
+            passwordErrors &&
+            passwordErrors.includes("This password is too common.")
+          ) {
+            setMessage(
+              "This password is too common. Please choose a different one."
+            );
+          } else {
+            setMessage("An error occurred. Please try again.");
+          }
         }
       } else {
         setMessage(error.message || "An error occurred. Please try again.");
@@ -84,7 +117,11 @@ const ForgotPassword = () => {
 
   return (
     <div className={styles.forgotPasswordContainer}>
-      <h2>Reset Your Password</h2>
+      <h2
+        style={{ textAlign: "center", marginBottom: "20px", fontWeight: "600" }}
+      >
+        Reset Your Password
+      </h2>
       <form onSubmit={handleSubmit} className={styles.forgotPasswordForm}>
         <div className={styles.inputContainer}>
           <label htmlFor="password">New Password</label>

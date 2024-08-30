@@ -1,0 +1,91 @@
+@import "../../index.scss";
+
+.left_side {
+  box-sizing: border-box;
+  background-color: #f6f7f9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  gap: 1rem;
+  width: 20vw;
+  height: 100%;
+  // position: fixed;
+  // top: 0;
+  // left: 0;
+  justify-content: stretch;
+
+  .top {
+    img {
+      scale: 0.7;
+    }
+  }
+  .left_middle {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    width: 100%;
+    padding: 1rem;
+
+    .left_menu {
+      display: flex;
+      flex-direction: row;
+      gap: 1rem;
+      background-color: rgb(222, 222, 222);
+      border-radius: 10px;
+      padding: 0.5rem;
+      align-items: center;
+      cursor: pointer;
+
+      &:hover {
+        background-color: rgb(203, 203, 203);
+      }
+      &:link,
+      &:visited,
+      &:hover,
+      &:active {
+        text-decoration: none;
+        color: inherit;
+      }
+    }
+  }
+  .bottom {
+    padding: 1rem 1rem 0 1rem;
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+    flex-direction: column;
+    text-align: left;
+    width: 100%;
+
+    .bottom_options {
+      color: grey;
+      text-align: left;
+      display: flex;
+      cursor: pointer;
+      gap: 10px;
+      font-size: 14px;
+      align-items: center;
+
+      &:hover {
+        color: $base-pink;
+      }
+      &:link,
+      &:visited,
+      &:hover,
+      &:active {
+        text-decoration: none;
+      }
+    }
+  }
+  .footer {
+    padding: 1rem;
+    color: grey;
+    border-top: 1px solid lightgray;
+    width: 100%;
+    // height: 40px;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+}

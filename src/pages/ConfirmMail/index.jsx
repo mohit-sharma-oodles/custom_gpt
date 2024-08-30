@@ -48,7 +48,7 @@ const ConfirmEmail = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-    console.log("isAuth", isAuthenticated);
+    // console.log("isAuth", isAuthenticated);
     if (isAuthenticated && token) {
       navigate("/app/home");
     }

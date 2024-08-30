@@ -172,7 +172,16 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
                   {status === "loading" ? "Logging In..." : "Log In"}
                 </button>
                 <p>or</p>
-                <button type="button" className={`${styles.google_btn}  `}>
+                <button
+                  type="button"
+                  className={`${styles.google_btn}`}
+                  onClick={() => {
+                    // TODO: Change the link below
+                    window.open(
+                      "https://14b6-125-63-73-50.ngrok-free.app/api/auth/google/"
+                    );
+                  }}
+                >
                   <FcGoogle size={24} />
                   <p>Continue with google</p>
                 </button>

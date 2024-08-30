@@ -11,10 +11,14 @@ function App() {
     (state) => state.rootReducer.auth.isAuthenticated
   );
 
-  // useEffect(() => {
-  //   const token = localStorage.getItem("accessToken");
-  //   console.log("isAuth", isAuthenticated);
-  // }, [isAuthenticated]);
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    const refreshToken = localStorage.getItem("refreshToken");
+    const user = localStorage.getItem("user");
+    if (token && user && refreshToken) {
+      dispatch(initializeAuth());
+    }
+  }, [isAuthenticated]);
 
   return <RouterProvider router={RouterConfig(isAuthenticated)} />;
 }

@@ -1,5 +1,3 @@
-@import "../../index.scss";
-
 .accordionItem {
   padding-left: 2rem;
   padding-right: 2rem;
@@ -10,25 +8,12 @@
   gap: 1rem;
   justify-content: center;
 
-  // &:last-child {
-  //   border-bottom: none;
-  // }
-
   .arrow {
     display: grid;
     place-items: center;
-    // width: 10px;
     height: 25px;
     aspect-ratio: 1;
     border-radius: 50px;
-
-    // .iconStyle {
-    //   background-color: $base-pink;
-    //   border: none;
-    //   border-radius: 60px;
-    //   color: white;
-    //   border-color: white;
-    // }
   }
 }
 
@@ -42,11 +27,15 @@
   .leftSide {
     display: flex;
     align-items: center;
-    gap: 2rem;
+    gap: 1rem; /* Reduced the gap to align the text closer to the number */
 
     .number {
       min-width: 60px;
       color: grey;
+    }
+
+    .textContent {
+      flex-grow: 1;
     }
   }
 
@@ -72,6 +61,8 @@
 
   .links {
     margin-top: 1rem;
+    padding-left: 1em; /* Align links with the content */
+
     .link {
       color: blue;
     }

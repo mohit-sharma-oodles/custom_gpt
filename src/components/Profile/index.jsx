@@ -62,7 +62,11 @@ const Profile = ({ setShowProfile }) => {
         <div className={styles.profileContent}>
           <div className={styles.top_container}>
             <div className={styles.userInfo}>
-              <img src={user.profile_picture || defaultUser} alt="User" />
+              <img
+                // style={{ width: "100%", height: "100%", borderRadius: "50%" }}
+                src={user.profile_picture || defaultUser}
+                alt="User"
+              />
               <div>
                 <p className={styles.name}>
                   {user.first_name} {user.last_name}

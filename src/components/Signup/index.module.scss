@@ -141,6 +141,23 @@
     cursor: pointer;
     color: #000;
   }
+  .back_button {
+    top: 20px;
+    left: 15px;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+    span {
+      margin-left: 0.5rem;
+      font-size: 16px;
+    }
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
 }
 
 .error_message {

@@ -8,6 +8,7 @@ export const loginUser = createAsyncThunk(
     try {
       const response = await axios_instance.post("/api/login/", credentials);
       localStorage.setItem("accessToken", response?.data?.access);
+      localStorage.setItem("refreshToken", response?.data?.refresh);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -22,8 +23,8 @@ export const logoutUser = createAsyncThunk(
     try {
       localStorage.removeItem("user");
       localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
 
-      // Optionally, you might want to call an API endpoint for logging out
       // const response = await axios_instance.post("/api/logout");
       // return response.data;
 
@@ -88,9 +89,12 @@ export const confirmEmailWithToken = createAsyncThunk(
       });
 
       const accessToken = response?.data?.tokens?.access_token;
+      const refreshToken = response?.data?.tokens?.refresh_token;
+      console.log("refresh token not found");
 
-      if (accessToken) {
+      if (accessToken && refreshToken) {
         localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("refreshToken", refreshToken);
       } else {
         throw new Error("Access token is missing from the response.");
       }
@@ -125,6 +129,7 @@ export const resendConfirmationEmail = createAsyncThunk(
 const initialState = {
   user: null,
   token: null,
+  rtoken: null,
   isAuthenticated: false,
   status: "idle",
   error: null,
@@ -140,15 +145,18 @@ const authSlice = createSlice({
   reducers: {
     initializeAuth(state) {
       const token = localStorage.getItem("accessToken");
+      const rtoken = localStorage.getItem("refreshToken");
       const user = localStorage.getItem("user");
 
       if (token && user) {
         state.token = token;
+        state.rtoken = rtoken;
         state.user = JSON.parse(user);
         state.isAuthenticated = true;
         state.status = "succeeded";
       } else {
         state.token = null;
+        state.rtoken = null;
         state.user = null;
         state.isAuthenticated = false;
       }
@@ -156,6 +164,7 @@ const authSlice = createSlice({
     logout(state) {
       state.user = null;
       state.token = null;
+      state.rtoken = null;
       state.isAuthenticated = false;
     },
     updateCountdown(state, action) {
@@ -172,6 +181,7 @@ const authSlice = createSlice({
         state.status = "succeeded";
         state.user = action.payload.user;
         state.token = action.payload.access;
+        state.rtoken = action.payload.refresh;
         state.isAuthenticated = true;
       })
       .addCase(loginUser.rejected, (state, action) => {
@@ -192,6 +202,7 @@ const authSlice = createSlice({
       .addCase(logoutUser.fulfilled, (state) => {
         state.user = null;
         state.token = null;
+        state.rtoken = null;
         state.isAuthenticated = false;
         state.status = "idle";
       })
@@ -234,6 +245,7 @@ const authSlice = createSlice({
       .addCase(confirmEmailWithToken.fulfilled, (state, action) => {
         state.user = action.payload;
         state.token = localStorage.getItem("accessToken");
+        state.rtoken = localStorage.getItem("refreshToken");
         state.isAuthenticated = true;
         state.status = "succeeded";
       })

@@ -1,14 +1,17 @@
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 export const axios_instance = axios.create({
-  baseURL: "https://c819-125-63-73-50.ngrok-free.app", // replace with your API's base URL
+  baseURL: "https://567d-103-95-83-0.ngrok-free.app", // replace with your API's base URL
+  // headers: {
+  //   "ngrok-skip-browser-warning": "true",
+  // },
 });
 
+// Request interceptor to add the access token to headers
 axios_instance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("accessToken");
-    // const token =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzIzNjE4NDQ0LCJpYXQiOjE3MjM2MTc1NDQsImp0aSI6IjY2MzZlNmQ3NGVkZTQyMDE5NWUxNmIwOGQxNjRiNTdhIiwidXNlcl9pZCI6Mzh9.So0f7coRluO5q4XbBp59WE49zDGklyBrkudBFyxlKfo";
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -18,3 +21,83 @@ axios_instance.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
+axios_instance.interceptors.response.use(
+  (response) => {
+    // If the response is successful, just return it
+    return response;
+  },
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Check if the error is due to an invalid/expired token
+    if (
+      error.response &&
+      error.response.status === 401 &&
+      error.response.data.code === "token_not_valid" &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
+
+      try {
+        const refreshToken = localStorage.getItem("refreshToken");
+
+        const response = await axios_instance.post("/api/token/refresh/", {
+          refresh: refreshToken,
+        });
+
+        // Store the new tokens in localStorage
+        localStorage.setItem("accessToken", response.data.access);
+        localStorage.setItem("refreshToken", response.data.refresh);
+
+        // Update the Authorization header and retry the original request
+        originalRequest.headers.Authorization = `Bearer ${response.data.access}`;
+
+        return axios_instance(originalRequest);
+      } catch (err) {
+        // Handle token refresh errors (e.g., refresh token is invalid/expired)
+        return Promise.reject(err);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
+// axios_instance.interceptors.request.use(
+//   async (config) => {
+//     const accessToken = localStorage.getItem("accessToken");
+
+//     if (accessToken) {
+//       const decodedToken = jwtDecode(accessToken);
+//       const currentTime = Date.now() / 1000;
+
+//       if (decodedToken.exp < currentTime) {
+//         // Token is expired, try to refresh it
+//         try {
+//           const refreshToken = localStorage.getItem("refreshToken");
+//           const response = await axios_instance.post("/api/token/refresh/", {
+//             refresh: refreshToken,
+//           });
+
+//           // Store the new tokens in localStorage
+//           localStorage.setItem("accessToken", response.data.access);
+//           localStorage.setItem("refreshToken", response.data.refresh);
+
+//           // Update the Authorization header in the config with the new token
+//           config.headers.Authorization = `Bearer ${response.data.access}`;
+//         } catch (err) {
+//           // Handle token refresh errors (e.g., refresh token is invalid/expired)
+//           return Promise.reject(err);
+//         }
+//       } else {
+//         // Token is still valid, continue with the original request
+//         config.headers.Authorization = `Bearer ${accessToken}`;
+//       }
+//     }
+
+//     return config;
+//   },
+//   (error) => {
+//     return Promise.reject(error);
+//   }
+// );

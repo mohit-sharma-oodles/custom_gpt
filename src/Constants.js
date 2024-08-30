@@ -174,3 +174,46 @@ export const offerings1 = [
     image: "",
   },
 ];
+
+export const testimonials = [
+  {
+    id: 1,
+    name: "Agnes Remi",
+    title: "Back-end developer at MyDodow",
+    message:
+      "Primautomation is finally addressing a long time problem we had when building UIs. It's ease of use and workflow seems really intuitive. Promising!",
+    image: "path-to-image", // Add image path here
+  },
+  {
+    id: 2,
+    name: "John Doe",
+    title: "Front-end developer at ExampleCorp",
+    message:
+      "The tool has streamlined our UI development process, saving us countless hours. The integration with existing workflows is seamless.",
+    image: "path-to-image", // Add image path here
+  },
+  {
+    id: 3,
+    name: "Jane Smith",
+    title: "UI/UX Designer at DesignHub",
+    message:
+      "I was skeptical at first, but this tool has made our design process much smoother. The learning curve is almost non-existent.",
+    image: "path-to-image", // Add image path here
+  },
+  {
+    id: 3,
+    name: "Jane Smith",
+    title: "UI/UX Designer at DesignHub",
+    message:
+      "I was skeptical at first, but this tool has made our design process much smoother. The learning curve is almost non-existent.",
+    image: "path-to-image", // Add image path here
+  },
+  {
+    id: 3,
+    name: "Jane Smith",
+    title: "UI/UX Designer at DesignHub",
+    message:
+      "I was skeptical at first, but this tool has made our design process much smoother. The learning curve is almost non-existent.",
+    image: "path-to-image", // Add image path here
+  },
+];
