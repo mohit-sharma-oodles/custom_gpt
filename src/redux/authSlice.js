@@ -90,7 +90,6 @@ export const confirmEmailWithToken = createAsyncThunk(
 
       const accessToken = response?.data?.tokens?.access_token;
       const refreshToken = response?.data?.tokens?.refresh_token;
-      console.log("refresh token not found");
 
       if (accessToken && refreshToken) {
         localStorage.setItem("accessToken", accessToken);
