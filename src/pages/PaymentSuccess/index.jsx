@@ -1,24 +1,34 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { getUserDetails } from "../../redux/authSlice";
 
 const PaymentSuccess = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [time, setTime] = useState(5);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    let intervalId;
+
+    const timer = () => {
       setTime((prevTime) => {
         if (prevTime > 0) {
           return prevTime - 1;
         } else {
-          clearInterval(interval);
+          clearInterval(intervalId);
           navigate("/app/home");
+          dispatch(getUserDetails());
           return 0;
         }
       });
-    }, 1000);
+    };
 
-    return () => clearInterval(interval);
+    intervalId = setInterval(timer, 1000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
   }, [navigate]);
 
   return (

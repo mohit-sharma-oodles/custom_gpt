@@ -34,15 +34,16 @@ const Profile = ({ setShowProfile }) => {
   const [paymentData, setPaymentData] = useState([]);
 
   useEffect(() => {
-    // const fetchData = async () => {
-    //   try {
-    //     const response = await axios_instance.get("/api/payment-data");
-    //     setPaymentData(response.data);
-    //   } catch (error) {
-    //     console.error("Error fetching payment data:", error);
-    //   }
-    // };
-    // fetchData();
+    const fetchData = async () => {
+      try {
+        const response = await axios_instance.get("/subscriptions/history/");
+        setPaymentData(response.data);
+        console.log(paymentData);
+      } catch (error) {
+        console.error("Error fetching payment data:", error);
+      }
+    };
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -141,15 +142,20 @@ const Profile = ({ setShowProfile }) => {
                     style={{ height: "20px", width: "20px" }}
                     alt="Crown"
                   />
-                  {user?.current_plan} Premium
+                  {user?.current_plan}
                 </div>
-                <ProgressBar
-                  completed={user.days_left}
-                  maxCompleted={30}
-                  labelColor={"transparent"}
-                  bgColor={"#ae407a"}
-                />
-                {user.days_left}
+                <div style={{ width: "100%", color: "gray", fontSize: "12px" }}>
+                  <ProgressBar
+                    completed={user.days_left}
+                    maxCompleted={30}
+                    labelColor={"transparent"}
+                    bgColor={"#ae407a"}
+                    height="14px"
+                  />
+                  <div style={{ marginTop: "12px" }}>
+                    {user.days_left} /30 Days
+                  </div>
+                </div>
               </div>
               <div className={styles.right_side}>
                 <span className={styles.upgrade_plan}>Upgrade Plan</span>
@@ -263,38 +269,38 @@ const Profile = ({ setShowProfile }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {/* {paymentData.length > 0 ? (
-            paymentData.map((payment, index) => (
-              <tr key={payment.transaction_id}>
-                <td>{index + 1}</td>
-                <td>{payment.transaction_id}</td>
-                <td>{new Date(payment.payment_date).toLocaleString()}</td>
-                <td>{payment.payment_mode}</td>
-                <td>
-                  <a href={payment.receipt_url} download>
-                    Download
-                  </a>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="5" style={{ textAlign: 'center' }}>
-                No data available
-              </td>
-            </tr>
-          )} */}
-                  <tr key={20}>
-                    <td>{1}</td>
-                    <td>123456</td>
-                    <td>Date</td>
-                    <td>Card</td>
-                    <td>
-                      <a href={"somelink"} download>
-                        <FiDownloadCloud /> Download Receipt
-                      </a>
-                    </td>
-                  </tr>
+                  {paymentData.length > 0 ? (
+                    paymentData.map((payment, index) => (
+                      <tr
+                        key={
+                          payment.transaction_id === null
+                            ? "transaction id null"
+                            : payment.transaction_id
+                        }
+                      >
+                        <td>{index + 1}</td>
+                        <td>
+                          #
+                          {payment.transaction_id === null
+                            ? "transaction id null"
+                            : payment.transaction_id}
+                        </td>
+                        <td>{payment.payment_date}</td>
+                        <td>{payment.payment_method}</td>
+                        <td>
+                          <a href={payment.invoice_url} download>
+                            <FiDownloadCloud /> Download
+                          </a>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="5" style={{ textAlign: "center" }}>
+                        No prior transaction data available.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>

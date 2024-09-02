@@ -166,21 +166,18 @@
             display: flex;
             flex-direction: column;
             gap: 1rem;
+            flex: 1;
+            margin-right: 2rem;
 
             .left_side_wrapper {
               display: flex;
               align-items: center;
               gap: 1rem;
-
               img {
                 height: 20px;
                 width: 20px;
               }
-
-              /* Additional text or elements can be styled here */
             }
-
-            /* Additional styling if needed */
           }
 
           .right_side {
@@ -332,4 +329,7 @@
       }
     }
   }
+}
+.progressbar {
+  margin-bottom: 1rem;
 }

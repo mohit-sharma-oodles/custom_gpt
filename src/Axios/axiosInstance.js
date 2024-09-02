@@ -3,6 +3,7 @@ import { jwtDecode } from "jwt-decode";
 
 export const axios_instance = axios.create({
   baseURL: "http://103.206.101.254:8000", // replace with your API's base URL
+  // baseURL: "https://c5be-14-102-190-50.ngrok-free.app",
   // headers: {
   //   "ngrok-skip-browser-warning": "true",
   // },
@@ -12,7 +13,10 @@ export const axios_instance = axios.create({
 axios_instance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("accessToken");
-    // console.log(token, "from headers axiosInstance");
+    console.log(
+      token,
+      "++++++++++++++++from headers axiosInstance+++++++++++++++++"
+    );
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

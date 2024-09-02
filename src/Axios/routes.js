@@ -12,6 +12,7 @@ import ConfirmEmail from "../pages/ConfirmMail";
 import ForgotPassword from "../pages/ForgotPassword";
 import CreateProject from "../pages/CreateProject/CreateProject";
 import PaymentSuccess from "../pages/PaymentSuccess";
+import CancelPayment from "../pages/Cancel";
 
 const RouterConfig = (isAuthenticated) => {
   return createBrowserRouter([
@@ -89,6 +90,14 @@ const RouterConfig = (isAuthenticated) => {
           element: (
             <ProtectedRoute isAuthenticated={isAuthenticated}>
               <PaymentSuccess isAuthenticated={isAuthenticated} />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "cancel",
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <CancelPayment isAuthenticated={isAuthenticated} />
             </ProtectedRoute>
           ),
         },

@@ -39,17 +39,6 @@ const SubscriptionTile = ({
       if (error) {
         console.error("Stripe Checkout Error:", error);
       }
-      // else {
-      //   if (!localStorage.getItem("accessToken")) {
-      //     localStorage.setItem("accessToken", atoken);
-      //   }
-      //   if (!localStorage.getItem("refreshToken")) {
-      //     localStorage.setItem("refreshToken", rtoken);
-      //   }
-      //   if (!localStorage.getItem("user")) {
-      //     localStorage.setItem("user", user);
-      //   }
-      // }
     } catch (error) {
       console.error("Error during checkout process:", error);
     }
