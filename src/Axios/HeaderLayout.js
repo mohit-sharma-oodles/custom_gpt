@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Header from "../components/Header";
 import Login from "../components/Login";
@@ -9,6 +9,19 @@ const HeaderLayout = ({ isAuthenticated }) => {
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
 
   const location = useLocation();
+
+  useEffect(() => {
+    // Extracting the query parameter 'openLogin'
+    const queryParams = new URLSearchParams(location.search);
+    const shouldOpenLogin = queryParams.get("openLogin");
+
+    // Conditionally opening the Login modal based on the 'openLogin' query parameter
+    if (shouldOpenLogin === "true") {
+      openLoginModal();
+    } else {
+      closeLoginModal();
+    }
+  }, [location.search]); // Re-run the effect if the search string changes
 
   const openLoginModal = () => {
     setIsLoginModalOpen(true);

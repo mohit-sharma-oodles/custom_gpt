@@ -110,7 +110,7 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
             <h2 className={`poppins-semibold`}>Log In</h2>
             <form action="" className={styles.form} onSubmit={handleLoginClick}>
               <div className={styles.input_container}>
-                <label htmlFor="email">Email</label>
+                <label htmlFor="email">Email*</label>
                 <div className={styles.input}>
                   <input
                     type="email"
@@ -118,13 +118,15 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
                     id="email"
                     placeholder="Please enter your Email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
                     required
+                    onChange={(e) => {
+                      setEmail(e.target.value.trim());
+                    }}
                   />
                 </div>
               </div>
               <div className={styles.input_container}>
-                <label htmlFor="password">Password</label>
+                <label htmlFor="password">Password*</label>
                 <div className={`${styles.input} ${styles.password_input}`}>
                   <input
                     type={!viewPassword ? "password" : "text"}
@@ -132,7 +134,7 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
                     id="password"
                     placeholder="Please enter your password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => setPassword(e.target.value.trim())}
                     required
                   />
                   <div onClick={() => setViewPassword(!viewPassword)}>
@@ -150,7 +152,7 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
                     style={{
                       background: "none",
                       border: "none",
-                      color: "#007bff",
+                      color: "#32B4A2",
                       textDecoration: "underline",
                       cursor: "pointer",
                     }}
@@ -177,9 +179,7 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
                   className={`${styles.google_btn}`}
                   onClick={() => {
                     // TODO: Change the link below
-                    window.open(
-                      "https://14b6-125-63-73-50.ngrok-free.app/api/auth/google/"
-                    );
+                    window.open("http://103.206.101.254:8000/api/auth/google/");
                   }}
                 >
                   <FcGoogle size={24} />

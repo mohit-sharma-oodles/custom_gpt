@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./index.module.scss"; // Assuming you have a CSS/SCSS module
 import { axios_instance } from "../../Axios/axiosInstance";
 
@@ -9,8 +9,10 @@ const ForgotPassword = () => {
   const [message, setMessage] = useState("");
   const [uid, setUid] = useState("");
   const [token, setToken] = useState("");
+  const [countdown, setCountdown] = useState(null);
 
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -23,7 +25,7 @@ const ForgotPassword = () => {
     } else {
       setMessage("Invalid password reset link.");
     }
-  }, [location.search]); // Added location.search as a dependency
+  }, [location.search]);
 
   useEffect(() => {
     if (uid && token) {
@@ -42,6 +44,16 @@ const ForgotPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setCountdown(3);
+    const intervalId = setInterval(() => {
+      setCountdown((prevCount) => {
+        if (prevCount === 1) {
+          clearInterval(intervalId);
+          navigate("/?openLogin=true");
+        }
+        return prevCount - 1;
+      });
+    }, 1000);
 
     // Regular expression to match:
     // - at least one special character
@@ -82,6 +94,16 @@ const ForgotPassword = () => {
       }
 
       setMessage("Password reset successful. You can now log in.");
+      // setCountdown(3);
+      // const intervalId = setInterval(() => {
+      //   setCountdown((prevCount) => {
+      //     if (prevCount === 1) {
+      //       clearInterval(intervalId);
+      //       navigate("/");
+      //     }
+      //     return prevCount - 1;
+      //   });
+      // }, 1000);
     } catch (error) {
       if (error.response && error.response.data) {
         // Handle non-field errors like an expired reset link
@@ -150,6 +172,11 @@ const ForgotPassword = () => {
           Reset Password
         </button>
       </form>
+      {countdown && (
+        <p style={{ marginTop: "1rem" }}>
+          Navigating to Home in {countdown} seconds
+        </p>
+      )}
     </div>
   );
 };

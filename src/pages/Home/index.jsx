@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "../../../node_modules/swiper/swiper-bundle.min.css";
 import styles from "./index.module.scss";
 import wallmart from "../../assets/walmart.svg";
@@ -18,7 +18,11 @@ import offering1_2_img from "../../assets/offering1_2_img.svg";
 import offering1_3_img from "../../assets/offering1_3_img.svg";
 import offering1_4_img from "../../assets/offering1_4_img.svg";
 import person1 from "../../assets/person1.svg";
+import person2 from "../../assets/person2.png";
 import person3 from "../../assets/person3.svg";
+import rating from "../../assets/Rating.svg";
+import gpt_green from "../../assets/gpt_green.svg";
+import gpt_pink from "../../assets/gpt_pink.svg";
 
 import securityAndPrivacy from "../../assets/securityAndPrivacy.svg";
 import { IoPlayOutline, IoShieldCheckmarkOutline } from "react-icons/io5";
@@ -31,6 +35,12 @@ import { offerings1, testimonials } from "../../Constants";
 import { ArcherContainer, ArcherElement } from "react-archer";
 import Testimonials from "../../components/Testimonials";
 
+import { ReactFlow, Controls, Background } from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
+import ReactFlowArea from "../../components/ReactFlowArea";
+import { useLocation } from "react-router-dom";
+
+const sizes = [20, 30, 40, 50, 60];
 const FeatureBox = ({ color, heading, text }) => {
   return (
     <div
@@ -43,12 +53,29 @@ const FeatureBox = ({ color, heading, text }) => {
     </div>
   );
 };
+// const ComplexContentNode = ({ data }) => {
+//   return (
+//     <div className={`archer-element ${data.label.className}`}>
+//       <div className="left">
+//         <img src={data.label.image.src} alt="" />
+//         <h4>{data.label.heading}</h4>
+//         <p>{data.label.subheading}</p>
+//       </div>
+//       <div className="right">
+//         <img src={data.label.image.imgSrc} alt="" />
+//       </div>
+//     </div>
+//   );
+// };
+const CustomNode = ({ data }) => {
+  return (
+    <div className="node">
+      <div className="node-content">{data.label}</div>
+    </div>
+  );
+};
 
 const Home = ({ isAuthenticated }) => {
-  // useEffect(() => {
-  //    console.log("after mount");
-  // }, []);
-
   return (
     <div className={styles.container}>
       {/* {isAuthenticated ? <h1>Authenticated</h1> : <h1>Not</h1>} */}
@@ -120,16 +147,93 @@ const Home = ({ isAuthenticated }) => {
             }
           />
         </div>
-        <img src={help_me} />
-        <h1 className={styles.offer2}>
-          Increase your customer engagement and knowledge <br /> management by a{" "}
-          <span className={styles.factor_box}>factor of 10</span>
-        </h1>
+        <div className={styles.helpmeSection}>
+          <div
+            style={{
+              position: "absolute",
+              // width: "120px",
+              aspectRatio: "1",
+              height: "50%",
+              left: "15%",
+              borderRadius: "50%",
+              backgroundColor: "#FFEDED",
+              zIndex: -1,
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              aspectRatio: "1",
+              height: "81%",
+              left: "53%",
+              borderRadius: "50%",
+              backgroundColor: "#FFFCEB",
+              zIndex: -1,
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              aspectRatio: "1",
+              height: "69%",
+              left: "5%",
+              top: "60%",
+              borderRadius: "50%",
+              backgroundColor: "#EBFFED",
+              zIndex: -1,
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              aspectRatio: "1",
+              height: "31%",
+              left: "45%",
+              top: "74%",
+              borderRadius: "50%",
+              backgroundColor: "#E8FFFC",
+              zIndex: -1,
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              aspectRatio: "1",
+              height: "59%",
+              left: "77%",
+              top: "105%",
+              borderRadius: "50%",
+              backgroundColor: "#F3EDFF",
+              zIndex: -1,
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              aspectRatio: "1",
+              height: "89%",
+              left: "90%",
+              top: "30%",
+              borderRadius: "50%",
+              backgroundColor: "#FFFCEB",
+              zIndex: -1,
+            }}
+          />
+
+          <img src={help_me} />
+          <h1 className={styles.offer2}>
+            Increase your customer engagement and knowledge <br /> management by
+            a <span className={styles.factor_box}>factor of 10</span>
+          </h1>
+        </div>
         <div className={styles.ratings_container}>
+          <img className={styles.rating_img} src={rating} />
+          <img className={styles.gpt_green} src={gpt_green} />
+          <img className={styles.gpt_pink} src={gpt_pink} />
           <img src={rating_kid} alt="" />
           <div className={styles.rating_text_container}>
             <h3 className={styles.rating}>
-              Powered by ChatGPT {/* <span> */}
+              Powered by ChatGPT
               <SiOpenai color="#32b4a2" />
             </h3>
             <p>
@@ -148,6 +252,29 @@ const Home = ({ isAuthenticated }) => {
             // style={{}}
           >
             <div className={styles.archer_container}>
+              <div
+                style={{
+                  // backgroundColor: "red",
+                  gridColumnStart: 1,
+                  gridColumnEnd: 7,
+                  height: "60px",
+                  borderRight: "3px dashed #ae407a",
+                  position: "relative",
+                }}
+              >
+                <div
+                  style={{
+                    position: "absolute",
+                    width: "10px",
+                    height: "10px",
+                    borderRadius: "50%",
+                    backgroundColor: "#ae407a",
+                    top: "-6px",
+                    right: "-6px",
+                    // transform: "translate(-50%,-50%)",
+                  }}
+                />
+              </div>
               <ArcherElement
                 id="root"
                 relations={[
@@ -205,7 +332,12 @@ const Home = ({ isAuthenticated }) => {
                   },
                 ]}
               >
-                <div className={`${styles.archer_element3} ${styles.offering}`}>
+                <div
+                  className={`${styles.archer_element3} ${styles.offering}`}
+                  style={{
+                    position: "relative",
+                  }}
+                >
                   <div className={styles.left}>
                     <img src={offering1_3} alt="" />
                     <h4>{offerings1[2].heading}</h4>
@@ -213,6 +345,43 @@ const Home = ({ isAuthenticated }) => {
                   </div>
                   <div className={styles.right}>
                     <img src={offering1_3_img} alt="" />
+                  </div>
+                  <div
+                    style={{
+                      // backgroundColor: "red",
+                      width: "110%",
+                      height: "70px",
+                      bottom: "-60px",
+                      position: "absolute",
+                      borderRight: "3px dashed #ae407a",
+                      borderBottom: "3px dashed #ae407a",
+                      borderBottomRightRadius: "10px",
+                      zIndex: "0",
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <div
+                      style={{
+                        // backgroundColor: "lightblue",
+                        position: "relative",
+                        height: "100%",
+                        width: "20%",
+                      }}
+                    >
+                      <div
+                        style={{
+                          // backgroundColor: "lightcoral",
+                          position: "absolute",
+                          height: "300%",
+                          width: "10%",
+                          bottom: "-300%",
+                          left: "-9px",
+                          borderLeft: "3px dashed #ae407a",
+                          borderTopLeftRadius: "10px",
+                        }}
+                      ></div>
+                    </div>
                   </div>
                 </div>
               </ArcherElement>
@@ -228,7 +397,10 @@ const Home = ({ isAuthenticated }) => {
                   },
                 ]}
               >
-                <div className={`${styles.archer_element4} ${styles.offering}`}>
+                <div
+                  className={`${styles.archer_element4} ${styles.offering}`}
+                  style={{ zIndex: 2, backgroundColor: "white" }}
+                >
                   <div className={styles.left}>
                     <img src={offering1_4} alt="" />
                     <h4>{offerings1[3].heading}</h4>
@@ -239,7 +411,7 @@ const Home = ({ isAuthenticated }) => {
                   </div>
                 </div>
               </ArcherElement>
-              {/*  */}
+
               <div
                 style={{
                   gridColumnStart: 1,
@@ -260,6 +432,7 @@ const Home = ({ isAuthenticated }) => {
                 >
                   <div
                     className={`${styles.archer_element} ${styles.offering2}`}
+                    style={{ position: "relative" }}
                   >
                     <div className={styles.larger_div}>
                       <img
@@ -282,6 +455,17 @@ const Home = ({ isAuthenticated }) => {
                         </p>
                       </div>
                     </div>
+                    <div
+                      style={{
+                        // backgroundColor: "red",
+                        position: "absolute",
+                        height: "100%",
+                        top: "70%",
+                        width: "70%",
+                        borderRight: "3px dashed #ae407a",
+                        zIndex: -1,
+                      }}
+                    />
                   </div>
                 </ArcherElement>
                 <ArcherElement
@@ -297,10 +481,11 @@ const Home = ({ isAuthenticated }) => {
                 >
                   <div
                     className={`${styles.archer_element} ${styles.offering2}`}
+                    style={{ position: "relative" }}
                   >
                     <div className={styles.larger_div}>
                       <img
-                        src={person1}
+                        src={person2}
                         alt=""
                         className={styles.imagePositionRight}
                       />
@@ -317,6 +502,18 @@ const Home = ({ isAuthenticated }) => {
                         </p>
                       </div>
                     </div>
+                    <div
+                      style={{
+                        // backgroundColor: "red",
+                        position: "absolute",
+                        height: "100%",
+                        top: "70%",
+                        left: "2%",
+                        width: "10%",
+                        borderLeft: "3px dashed #ae407a",
+                        zIndex: -1,
+                      }}
+                    />
                   </div>
                 </ArcherElement>
                 <ArcherElement
@@ -358,6 +555,8 @@ const Home = ({ isAuthenticated }) => {
               </div>
             </div>
           </ArcherContainer>
+
+          {/* <ReactFlowArea /> */}
         </div>
         {/* react archer code */}
 

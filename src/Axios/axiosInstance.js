@@ -1,9 +1,9 @@
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
+// import { jwtDecode } from "jwt-decode";
 
 export const axios_instance = axios.create({
   baseURL: "http://103.206.101.254:8000", // replace with your API's base URL
-  // baseURL: "https://c5be-14-102-190-50.ngrok-free.app",
+  // baseURL: "https://02eb-2402-8100-2169-47b0-356d-396c-cf31-1d7.ngrok-free.app",
   // headers: {
   //   "ngrok-skip-browser-warning": "true",
   // },
@@ -15,7 +15,7 @@ axios_instance.interceptors.request.use(
     const token = localStorage.getItem("accessToken");
     console.log(
       token,
-      "++++++++++++++++from headers axiosInstance+++++++++++++++++"
+      "++++++++++++++++from headers axiosInstance++++++++++++++++"
     );
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -29,13 +29,11 @@ axios_instance.interceptors.request.use(
 
 axios_instance.interceptors.response.use(
   (response) => {
-    // If the response is successful, just return it
     return response;
   },
   async (error) => {
     const originalRequest = error.config;
 
-    // Check if the error is due to an invalid/expired token
     if (
       error.response &&
       error.response.status === 401 &&
@@ -55,7 +53,6 @@ axios_instance.interceptors.response.use(
         localStorage.setItem("accessToken", response.data.access);
         localStorage.setItem("refreshToken", response.data.refresh);
 
-        // Update the Authorization header and retry the original request
         originalRequest.headers.Authorization = `Bearer ${response.data.access}`;
 
         return axios_instance(originalRequest);

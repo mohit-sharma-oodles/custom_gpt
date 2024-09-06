@@ -12,6 +12,7 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
   // State for form steps
   const [step, setStep] = useState(1);
   const [viewPassword, setViewPassword] = useState(false);
+  const [viewConfirmPassword, setViewConfirmPassword] = useState(false);
 
   // Form fields state
   const [firstName, setFirstName] = useState("");
@@ -242,7 +243,7 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
                     <label htmlFor="confirmPassword">Confirm Password</label>
                     <div className={`${styles.input} ${styles.password_input}`}>
                       <input
-                        type={!viewPassword ? "password" : "text"}
+                        type={!viewConfirmPassword ? "password" : "text"}
                         name="confirmPassword"
                         id="confirmPassword"
                         placeholder="Please confirm your password"
@@ -250,8 +251,12 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
                         onChange={handleInputChange(setConfirmPassword)}
                         required
                       />
-                      <div onClick={() => setViewPassword(!viewPassword)}>
-                        {viewPassword ? (
+                      <div
+                        onClick={() =>
+                          setViewConfirmPassword(!viewConfirmPassword)
+                        }
+                      >
+                        {viewConfirmPassword ? (
                           <FaRegEyeSlash style={{ marginBottom: "-4px" }} />
                         ) : (
                           <FaRegEye style={{ marginBottom: "-4px" }} />

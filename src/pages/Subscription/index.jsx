@@ -4,6 +4,7 @@ import crown from "../../assets/crown_icon.svg";
 import bullet from "../../assets/features_bullet.svg";
 import { axios_instance } from "../../Axios/axiosInstance";
 import { loadStripe } from "@stripe/stripe-js";
+import { useNavigate } from "react-router-dom";
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
@@ -15,12 +16,18 @@ const SubscriptionTile = ({
   showCrown = false,
   productId,
   is_subscribed,
+  isAlreadySubscribed,
+  current_active_plan_price,
+  priceId,
 }) => {
+  const navigate = useNavigate();
+  const [proratedPrice, setProratedPrice] = useState();
+
   const handleBuyNow = async (productId) => {
     try {
-      const atoken = localStorage.getItem("accessToken");
-      const rtoken = localStorage.getItem("refreshToken");
-      const user = localStorage.getItem("user");
+      // const atoken = localStorage.getItem("accessToken");
+      // const rtoken = localStorage.getItem("refreshToken");
+      // const user = localStorage.getItem("user");
 
       const stripe = await stripePromise;
       const response = await axios_instance.post(
@@ -41,6 +48,46 @@ const SubscriptionTile = ({
       }
     } catch (error) {
       console.error("Error during checkout process:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (proratedPrice !== undefined) {
+      navigate(`/app/upgrade-plan?id=${productId}&p=${proratedPrice}`);
+    }
+  }, [proratedPrice]);
+
+  const handleUpgradePlan = async (priceId, productId) => {
+    try {
+      let formData = new FormData();
+      formData.append("price_id", priceId);
+
+      const response = await axios_instance.post(
+        "/subscriptions/get-prorated-amount/",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      setProratedPrice(response.data.prorated_amount);
+    } catch (e) {
+      console.error("Error upgrading plan", e);
+    }
+  };
+
+  const handleButtonClick = () => {
+    // console.log(isAlreadySubscribed, current_active_plan_price, price);
+    if (
+      isAlreadySubscribed &&
+      Number(current_active_plan_price) < Number(price)
+    ) {
+      // console.log(Number(current_active_plan_price) < Number(price));
+      handleUpgradePlan(priceId, productId);
+    } else if (isAlreadySubscribed === false) {
+      handleBuyNow(productId);
     }
   };
 
@@ -76,16 +123,19 @@ const SubscriptionTile = ({
       </div>
       <button
         className={styles.buynow_btn}
-        onClick={is_subscribed === true ? null : () => handleBuyNow(productId)}
-        // onClick={is_subscribed === true ? null : null}
-        // disabled={is_subscribed === false}
+        onClick={handleButtonClick}
+        // disabled={current_active_plan_price < price}
         style={{
           backgroundColor: is_subscribed === true ? "white" : "",
           color: is_subscribed === true ? "black" : "",
           // cursor: is_subscribed === true ? "default" : "not-allowed",
         }}
       >
-        {is_subscribed === true ? "Active" : "Buy Now"}
+        {current_active_plan_price > price
+          ? "Cannot Buy"
+          : is_subscribed
+          ? "Active"
+          : "Upgrade Now"}
       </button>
     </div>
   );
@@ -94,6 +144,8 @@ const SubscriptionTile = ({
 const Subscriptions = () => {
   const [plans, setPlans] = useState([]);
   const [error, setError] = useState("");
+  const [currentActivePlanPrice, setCurrentActivePlanPrice] = useState(null);
+  const [isAlreadySubscribed, setIsAlreadySubscribed] = useState(false);
 
   useEffect(() => {
     const getPlans = () => {
@@ -101,11 +153,18 @@ const Subscriptions = () => {
         .get("/api/products")
         .then((response) => {
           setPlans(response.data);
+          response.data.forEach((plan) => {
+            // console.log(plan);
+            if (plan.is_subscribed && plan.active_price.amount) {
+              setCurrentActivePlanPrice(plan.active_price.amount);
+              setIsAlreadySubscribed(plan.is_subscribed);
+            }
+          });
+
           // console.log("these are the subs plans", response.data);
         })
         .catch((error) => {
           setError(error);
-          // console.error("Error fetching subscription plans:", error);
         });
     };
 
@@ -141,6 +200,9 @@ const Subscriptions = () => {
               features={features}
               productId={plan.stripe_product_id}
               is_subscribed={plan.is_subscribed}
+              current_active_plan_price={currentActivePlanPrice}
+              isAlreadySubscribed={isAlreadySubscribed}
+              priceId={plan.active_price.stripe_price_id}
             />
           );
         })}

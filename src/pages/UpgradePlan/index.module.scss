@@ -1,0 +1,130 @@
+@import "../../index.scss";
+
+.outer_container {
+  height: 80vh;
+  box-sizing: border-box;
+  width: 100vw; // Full viewport width
+  display: flex;
+  justify-content: center; // Center horizontally
+  align-items: center; // Center vertically
+  flex-direction: column;
+
+  .container {
+    width: 100%;
+    max-width: 1200px; // Optional: limits how wide the container can get
+    min-height: 80%; // Minimum height to engage vertical centering, adjust as needed
+    // display: grid;
+    // place-items: center;
+    // grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    // // grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    // row-gap: 2rem;
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+    margin-left: 3rem;
+    margin-right: 3rem;
+    align-items: stretch;
+
+    .tile_container {
+      max-width: 33%;
+      padding: 1.5rem 1rem;
+      border: 1px solid $base-pink;
+      border-radius: 8px;
+      width: calc(100% - 2rem);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      height: 100%; // Make sure each tile can stretch to fill the grid cell
+
+      .tile_top_container {
+        .tile_heading_container {
+          display: flex;
+          gap: 0.5rem;
+          align-items: center;
+
+          .tile_heading {
+            text-transform: capitalize;
+            font-weight: 500;
+            font-size: 24px;
+          }
+        }
+
+        .tile_subheading {
+          font-weight: 400;
+          font-size: 14px;
+        }
+
+        .tile_price {
+          font-size: 20px;
+          font-weight: 500;
+          margin-top: 1rem;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          .tile_permonth_text {
+            font-weight: 300;
+            color: grey;
+            font-size: 12px;
+          }
+        }
+        .exclusive_text {
+          font-size: 12px;
+          color: rgb(179, 179, 179);
+        }
+      }
+
+      .tile_middle_container {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .tile_bottom_container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+
+        .feature_container {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 10px;
+
+          .feature {
+            font-size: 14px;
+            line-height: 2;
+          }
+        }
+      }
+
+      .buynow_btn {
+        margin-top: auto; // Push the button to the bottom of the flex container
+        background-color: $base-pink;
+        border: 1px solid black;
+        border-radius: 5px;
+        padding: 10px;
+        color: white;
+        box-shadow: 4px 3px 0px 1px rgb(0, 0, 0);
+        font-size: 18px;
+        font-weight: 500;
+      }
+    }
+  }
+
+  .payBtn {
+    margin-top: auto;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 10px;
+    color: black;
+    -webkit-box-shadow: 0px 4px 5px -1px rgba(0, 0, 0, 0.253);
+    -moz-box-shadow: 0px 4px 5px -1px rgba(0, 0, 0, 0.161);
+    box-shadow: 4px 3px 0px 1px rgb(0, 0, 0);
+    font-size: 18px;
+    font-weight: 500;
+  }
+}

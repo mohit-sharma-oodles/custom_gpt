@@ -9,6 +9,7 @@ $base-golden: #ffb743;
   padding: 0;
   box-sizing: border-box;
   font-family: "Poppins";
+  // outline: 1px solid red;   //this is to check if any item is overflowing
 
   ::-webkit-scrollbar {
     display: none;

@@ -13,6 +13,7 @@ import ForgotPassword from "../pages/ForgotPassword";
 import CreateProject from "../pages/CreateProject/CreateProject";
 import PaymentSuccess from "../pages/PaymentSuccess";
 import CancelPayment from "../pages/Cancel";
+import UpgradePlan from "../pages/UpgradePlan";
 
 const RouterConfig = (isAuthenticated) => {
   return createBrowserRouter([
@@ -40,11 +41,11 @@ const RouterConfig = (isAuthenticated) => {
           path: "reset-password",
           element: <ForgotPassword />,
         },
-        {
-          path: "app",
-          element: <></>,
-          children: [],
-        },
+        // {
+        //   path: "app",
+        //   element: <></>,
+        //   children: [],
+        // },
         {
           path: "app/subscription",
           element: (
@@ -82,6 +83,14 @@ const RouterConfig = (isAuthenticated) => {
           element: (
             <ProtectedRoute isAuthenticated={isAuthenticated}>
               <Profile isAuthenticated={isAuthenticated} />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "app/upgrade-plan",
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <UpgradePlan isAuthenticated={isAuthenticated} />
             </ProtectedRoute>
           ),
         },
