@@ -6,7 +6,7 @@ import ProgressBar from "@ramonak/react-progress-bar";
 import { IoCloseSharp } from "react-icons/io5";
 import defaultUser from "../../assets/person_default.png";
 import crown from "../../assets/crown_icon.svg";
-import { FaPencilAlt, FaCamera } from "react-icons/fa";
+import { FaPencilAlt, FaCamera, FaEye, FaEyeSlash } from "react-icons/fa";
 import { FiDownloadCloud } from "react-icons/fi";
 
 //redux and axios
@@ -33,6 +33,14 @@ const Profile = ({ setShowProfile }) => {
   const mobileNumberRef = useRef(null);
   const [paymentData, setPaymentData] = useState([]);
 
+  const [oldPassword, setOldPassword] = useState("");
+  const [password, setPassword] = useState("");
+  const [isEditingPassword, setIsEditingPassword] = useState(false);
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+
+  const [productName, setProductName] = useState(null);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -44,6 +52,23 @@ const Profile = ({ setShowProfile }) => {
       }
     };
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchCurrentSubscription = async () => {
+      try {
+        const response = await axios_instance.get(
+          "/subscriptions/subscription-details/"
+        );
+        if (response.data) {
+          setProductName(response.data.product_name);
+        }
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error fetching current subscription:", error);
+      }
+    };
+    fetchCurrentSubscription();
   }, []);
 
   useEffect(() => {
@@ -69,26 +94,78 @@ const Profile = ({ setShowProfile }) => {
   };
 
   const handleUpdateDetails = () => {
-    const formData = new FormData();
-    formData.append("first_name", firstName);
-    formData.append("last_name", lastName);
-    formData.append("mobile_number", mobileNumber);
+    try {
+      const formData = new FormData();
+      formData.append("first_name", firstName);
+      formData.append("last_name", lastName);
+      formData.append("mobile_number", mobileNumber);
 
-    if (selectedImage) {
-      formData.append("profile_picture", selectedImage);
+      if (selectedImage) {
+        formData.append("profile_picture", selectedImage);
+      }
+
+      dispatch(updateUserDetails(formData));
+      setHasChanges(false);
+      setFocusedInput(null);
+    } catch (error) {
+      console.error("Error updating user details:", error);
     }
-
-    dispatch(updateUserDetails(formData));
-    setHasChanges(false);
-    setFocusedInput(null);
   };
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setSelectedImage(file);
-      setProfilePicture(URL.createObjectURL(file));
-      setHasChanges(true);
+    try {
+      const file = e.target.files[0];
+      if (file) {
+        setSelectedImage(file);
+        setProfilePicture(URL.createObjectURL(file));
+        setHasChanges(true);
+      }
+    } catch (error) {
+      console.error("Error handling image change:", error);
+    }
+  };
+
+  // password change logic
+  const handleOldPasswordChange = (e) => {
+    setOldPassword(e.target.value.trim());
+  };
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value.trim());
+  };
+
+  const handleSavePassword = async () => {
+    if (!oldPassword || !password) {
+      alert("Please enter both your old and new password before saving.");
+      return;
+    }
+    try {
+      const response = await axios_instance.post("/api/change-password/", {
+        current_password: oldPassword,
+        new_password: password,
+      });
+      console.log(response.data);
+      alert("Password updated successfully!");
+      setIsEditingPassword(false);
+      setOldPassword("");
+      setPassword("");
+    } catch (error) {
+      console.error("Error updating password:", error);
+      alert("Failed to update password.");
+    }
+  };
+  const handleCancel = async () => {
+    try {
+      const response = await axios_instance.post(
+        "/subscriptions/cancel-subscription/"
+      );
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error cancelling subscription:", error);
+      alert(
+        error.response?.data?.error ||
+          "An error occurred while cancelling the subscription."
+      );
     }
   };
 
@@ -115,7 +192,11 @@ const Profile = ({ setShowProfile }) => {
           <div className={styles.top_container}>
             <div className={styles.userInfo}>
               <div>
-                <img src={profilePicture} alt="User" />
+                <img
+                  src={profilePicture}
+                  alt="User"
+                  style={{ marginRight: 0 }}
+                />
                 <label htmlFor="upload-button" className={styles.uploadButton}>
                   <FaCamera />
                 </label>
@@ -131,34 +212,51 @@ const Profile = ({ setShowProfile }) => {
                 <p className={styles.name}>
                   {user.first_name} {user.last_name}
                 </p>
-                <p className={styles.joinDate}>Joined on {user.joined_date}</p>
+                <p className={styles.joinDate}>Joined on {user.date_joined}</p>
               </div>
             </div>
             <div className={styles.subscribedPlanInfo}>
               <div className={styles.left_side}>
                 <div className={styles.left_side_wrapper}>
-                  <img
-                    src={crown}
-                    style={{ height: "20px", width: "20px" }}
-                    alt="Crown"
-                  />
-                  {user?.current_plan}
+                  {productName && (
+                    <>
+                      <img
+                        src={crown}
+                        style={{ height: "20px", width: "20px" }}
+                        alt="Crown"
+                      />
+                      <p style={{ fontWeight: "500", fontSize: "20px" }}>
+                        {productName}
+                      </p>
+                    </>
+                  )}
                 </div>
                 <div style={{ width: "100%", color: "gray", fontSize: "12px" }}>
-                  <ProgressBar
-                    completed={user.days_left}
-                    maxCompleted={30}
-                    labelColor={"transparent"}
-                    bgColor={"#ae407a"}
-                    height="14px"
-                  />
-                  <div style={{ marginTop: "12px" }}>
-                    {user.days_left} /30 Days
-                  </div>
+                  {productName && (
+                    <>
+                      <ProgressBar
+                        completed={user.days_left}
+                        maxCompleted={30}
+                        labelColor={"transparent"}
+                        bgColor={"#ae407a"}
+                        height="14px"
+                        animateOnRender={true}
+                      />
+                      <div style={{ marginTop: "12px" }}>
+                        {user.days_left} /30 Days
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
               <div className={styles.right_side}>
                 <span className={styles.upgrade_plan}>Upgrade Plan</span>
+
+                {user.days_left && (
+                  <span onClick={handleCancel} className={styles.cancel_plan}>
+                    Cancel Plan
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -255,6 +353,89 @@ const Profile = ({ setShowProfile }) => {
               </span>
             )}
           </div>
+
+          <div className={styles.passwordChangeSection}>
+            <h3>Change Password</h3>
+            <div style={{ display: "flex", gap: "1rem", marginBottom: "2rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 0,
+                }}
+              >
+                <span className={styles.label}>
+                  Old Password
+                  <FaPencilAlt
+                    className={styles.pencilIcon}
+                    onClick={() => setIsEditingPassword(true)}
+                  />
+                </span>
+                <span
+                  className={`${styles.editable} ${
+                    isEditingPassword ? styles.underline : ""
+                  }`}
+                >
+                  <input
+                    type={showOldPassword ? "text" : "password"}
+                    value={oldPassword}
+                    placeholder="********"
+                    onChange={handleOldPasswordChange}
+                    disabled={!isEditingPassword}
+                    className={styles.editableInput}
+                  />
+                  {oldPassword.length > 0 && (
+                    <span
+                      onClick={() => setShowOldPassword(!showOldPassword)}
+                      className={styles.icon}
+                    >
+                      {showOldPassword ? <FaEyeSlash /> : <FaEye />}
+                    </span>
+                  )}
+                </span>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+                <span className={styles.label}>
+                  New Password
+                  <FaPencilAlt
+                    className={styles.pencilIcon}
+                    onClick={() => setIsEditingPassword(true)}
+                  />
+                </span>
+                <span
+                  className={`${styles.editable} ${
+                    isEditingPassword ? styles.underline : ""
+                  }`}
+                >
+                  <input
+                    type={showNewPassword ? "text" : "password"}
+                    value={password}
+                    placeholder="********"
+                    onChange={handlePasswordChange}
+                    disabled={!isEditingPassword}
+                    className={styles.editableInput}
+                  />
+                  {password.length > 0 && (
+                    <span
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      className={styles.icon}
+                    >
+                      {showNewPassword ? <FaEyeSlash /> : <FaEye />}
+                    </span>
+                  )}
+                </span>
+              </div>
+            </div>
+            {isEditingPassword && (
+              <button
+                className={styles.saveButton}
+                onClick={handleSavePassword}
+              >
+                Save New Password
+              </button>
+            )}
+          </div>
+
           <div className={styles.paymentContainer}>
             <h2 className={styles.heading}>Payment history</h2>
             <div className={styles.table_container}>

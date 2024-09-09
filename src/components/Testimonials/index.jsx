@@ -1,7 +1,10 @@
 import React from "react";
 import styles from "./index.module.scss";
 import { Swiper, SwiperSlide } from "swiper/react";
-import defaultUser from "../../assets/person_default.png";
+
+// assets
+// import defaultUser from "../../assets/person_default.png";
+import testimonial_lady from "../../assets/testimonial_lady.png";
 
 import "swiper/scss";
 import "swiper/scss/pagination";
@@ -54,7 +57,7 @@ const Testimonials = () => {
               <div className={styles.wrapper}>
                 <div className={styles.internal}>
                   <div className={styles.left}>
-                    <img src={defaultUser} alt="" />
+                    <img src={testimonial_lady} alt="" />
                   </div>
                   <div className={styles.right}>
                     <div className={styles.name}>{test.name}</div>

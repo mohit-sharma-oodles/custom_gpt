@@ -11,6 +11,8 @@ const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 const UpgradePlan = () => {
   const location = useLocation();
   const [plans, setPlans] = useState([]);
+  const [subscriptionId, setSubscriptionId] = useState();
+  const [priceId, setPriceId] = useState();
   const [error, setError] = useState("");
 
   const params = new URLSearchParams(location.search);
@@ -21,36 +23,67 @@ const UpgradePlan = () => {
     const getPlans = () => {
       axios_instance
         .get("/api/products")
-        .then((response) => {
-          setPlans(response.data);
-        })
-        .catch((error) => {
-          setError(error.toString());
-        });
+        .then((response) => setPlans(response.data))
+        .catch((error) => setError(error.toString()));
     };
     getPlans();
   }, []);
 
-  const handleUpgrade = async (productId) => {
+  useEffect(() => {
+    const getSubscriptionID = () => {
+      axios_instance
+        .get("/subscriptions/subscription-details/")
+        .then((response) => {
+          console.log(response.data.stripe_subscription_id);
+          setSubscriptionId(response.data.stripe_subscription_id);
+        })
+        .catch((error) => setError(error.toString()));
+    };
+    getSubscriptionID();
+  }, []);
+
+  // useEffect(() => {
+  //   if (plans.length > 0 && wannaBuy) {
+  //     const activePlan = plans.find(
+  //       (plan) => plan.stripe_product_id === wannaBuy
+  //     );
+  //     if (activePlan) {
+  //       setPriceId(activePlan.active_price.stripe_price_id);
+  //     }
+  //   }
+  // }, [plans, wannaBuy]); // Update priceId based on plans and selection
+
+  // const handleUpgrade = async () => {
+  //   try {
+  //     const stripe = await stripePromise;
+  //     const response = await axios_instance.post(
+  //       "/subscriptions/create-checkout-session/",
+  //       {
+  //         product_id: wannaBuy,
+  //         is_upgrade: true,
+  //       }
+  //     );
+  //     const { id } = response.data;
+  //     const { error } = await stripe.redirectToCheckout({ sessionId: id });
+  //     if (error) throw error;
+  //   } catch (error) {
+  //     console.error("Error during checkout process:", error);
+  //   }
+  // };
+
+  const handleUpgrade = async () => {
     try {
       const stripe = await stripePromise;
       const response = await axios_instance.post(
-        "/subscriptions/create-checkout-session/",
+        "/subscriptions/create-upgrade-subscription/",
         {
-          product_id: wannaBuy, // Corrected to use the 'wannaBuy' variable from URL params
-          is_upgrade: true,
+          subscription_id: subscriptionId,
+          price_id: wannaBuy,
         }
       );
-
       const { id } = response.data;
-
-      const { error } = await stripe.redirectToCheckout({
-        sessionId: id,
-      });
-
-      if (error) {
-        console.error("Stripe Checkout Error:", error);
-      }
+      const { error } = await stripe.redirectToCheckout({ sessionId: id });
+      if (error) throw error;
     } catch (error) {
       console.error("Error during checkout process:", error);
     }
@@ -66,7 +99,14 @@ const UpgradePlan = () => {
       <div className={styles.container}>
         {plans.map((curr, idx) => {
           // Check if current plan is subscribed or if it matches the 'wannaBuy' ID
-          if (curr.is_subscribed || curr.stripe_product_id === wannaBuy) {
+          // console.log(curr.active_price.stripe_price_id);
+          // setPriceId(curr.active_price.stripe_price_id);
+          // console.log(curr.active_price.stripe_price_id === wannaBuy);
+
+          if (
+            curr.is_subscribed ||
+            curr.active_price.stripe_price_id === wannaBuy
+          ) {
             return (
               <div key={idx} className={styles.tile_container}>
                 <div className={styles.tile_top_container}>

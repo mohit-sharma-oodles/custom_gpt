@@ -2,8 +2,8 @@ import axios from "axios";
 // import { jwtDecode } from "jwt-decode";
 
 export const axios_instance = axios.create({
-  baseURL: "http://103.206.101.254:8000", // replace with your API's base URL
-  // baseURL: "https://02eb-2402-8100-2169-47b0-356d-396c-cf31-1d7.ngrok-free.app",
+  // baseURL: "http://103.206.101.254:8000", // replace with your API's base URL
+  baseURL: "https://8d46-14-102-190-50.ngrok-free.app",
   // headers: {
   //   "ngrok-skip-browser-warning": "true",
   // },

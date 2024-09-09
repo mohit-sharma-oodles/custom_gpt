@@ -66,7 +66,38 @@ const Projects = () => {
                 </div>
               </div>
             </div>
-            <div className={styles.table}></div>
+            <div className={styles.tableWrapper}>
+              {/* // TODO: Get the list of all the projects and then render them in the table */}
+              <div className={styles.tableContainer}>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th>S.no</th>
+                      <th>Transaction ID</th>
+                      <th>Payment Date and Time</th>
+                      <th>Payment Mode</th>
+                      <th> Receipt</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr key={2}>
+                      <td>{1 + 1}</td>
+                      <td>45</td>
+                      <td>date</td>
+                      <td>fghjk</td>
+                      <td>fghjfghk</td>
+                    </tr>
+                    {/* ) : (
+                    <tr>
+                      <td colSpan="5" style={{ textAlign: "center" }}>
+                        No prior transaction data available.
+                      </td>
+                    </tr>
+                    )} */}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
       </div>

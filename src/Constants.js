@@ -94,13 +94,7 @@ export const accordionItems = [
       "Primautomation.nl complies with GDPR by obtaining user consent for data collection, protecting user data, providing users with access to or the ability to delete their data, informing users about data breaches, and ensuring that third parties also follow GDPR rules.",
     link: [],
   },
-  {
-    index: "12",
-    title: "How does Primautomation.nl support GDPR?",
-    content:
-      "Primautomation.nl supports GDPR by having policies that protect your privacy and data rights. Primautomation.nl is also actively working towards achieving SOC 2 Type 2 compliance to enhance data security and privacy measures.",
-    link: [],
-  },
+
   {
     index: "13",
     title: "How does Primautomation.nl support GDPR?",
@@ -182,7 +176,7 @@ export const testimonials = [
     title: "Back-end developer at MyDodow",
     message:
       "Primautomation is finally addressing a long time problem we had when building UIs. It's ease of use and workflow seems really intuitive. Promising!",
-    image: "path-to-image", // Add image path here
+    image: "",
   },
   {
     id: 2,

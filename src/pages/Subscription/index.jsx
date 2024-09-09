@@ -53,7 +53,7 @@ const SubscriptionTile = ({
 
   useEffect(() => {
     if (proratedPrice !== undefined) {
-      navigate(`/app/upgrade-plan?id=${productId}&p=${proratedPrice}`);
+      navigate(`/app/upgrade-plan?id=${priceId}&p=${proratedPrice}`);
     }
   }, [proratedPrice]);
 

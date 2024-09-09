@@ -84,12 +84,12 @@ const Home = ({ isAuthenticated }) => {
         <div className={styles.text_area}>
           <h1>
             Talk to all of your <span className={styles.banner_data}>data</span>{" "}
-            in a <span className={styles.naturalWay}>natural way</span>
+            in a <br /> <span className={styles.naturalWay}>natural way</span>
           </h1>
 
           {/* <img className={styles.banner_img} src={banner_img} alt="" /> */}
           <p>
-            Primadeta Automation solution is powered by the popular and
+            Primadeta Automation solution is powered by the popular <br /> and
             increadibly prowerful OpenAI LLMs and ChatGPT-4.
           </p>
 
@@ -151,13 +151,13 @@ const Home = ({ isAuthenticated }) => {
           <div
             style={{
               position: "absolute",
-              // width: "120px",
               aspectRatio: "1",
               height: "50%",
               left: "15%",
               borderRadius: "50%",
               backgroundColor: "#FFEDED",
               zIndex: -1,
+              filter: "blur(8px)",
             }}
           />
           <div
@@ -169,6 +169,7 @@ const Home = ({ isAuthenticated }) => {
               borderRadius: "50%",
               backgroundColor: "#FFFCEB",
               zIndex: -1,
+              filter: "blur(5px)",
             }}
           />
           <div
@@ -181,6 +182,7 @@ const Home = ({ isAuthenticated }) => {
               borderRadius: "50%",
               backgroundColor: "#EBFFED",
               zIndex: -1,
+              filter: "blur(12px)",
             }}
           />
           <div
@@ -193,6 +195,7 @@ const Home = ({ isAuthenticated }) => {
               borderRadius: "50%",
               backgroundColor: "#E8FFFC",
               zIndex: -1,
+              filter: "blur(10px)",
             }}
           />
           <div
@@ -205,6 +208,7 @@ const Home = ({ isAuthenticated }) => {
               borderRadius: "50%",
               backgroundColor: "#F3EDFF",
               zIndex: -1,
+              filter: "blur(3px)",
             }}
           />
           <div
@@ -217,6 +221,7 @@ const Home = ({ isAuthenticated }) => {
               borderRadius: "50%",
               backgroundColor: "#FFFCEB",
               zIndex: -1,
+              filter: "blur(15px)",
             }}
           />
 
@@ -528,6 +533,7 @@ const Home = ({ isAuthenticated }) => {
                   ]}
                 >
                   <div
+                    style={{ marginTop: "1.5rem" }}
                     className={`${styles.archer_element} ${styles.offering2}`}
                   >
                     <div className={styles.larger_div}>

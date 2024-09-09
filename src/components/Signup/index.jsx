@@ -22,6 +22,7 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isSigningUp, setIsSigningUp] = useState(false);
 
   // Error handling state
   const [errorMessage, setErrorMessage] = useState("");
@@ -32,7 +33,7 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
 
   // Clear error message on input change
   const handleInputChange = (setter) => (e) => {
-    setter(e.target.value);
+    setter(e.target.value.trim());
     setErrorMessage("");
   };
 
@@ -51,6 +52,10 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
       setErrorMessage("Please fill in all required fields.");
       return;
     }
+    if (mobileNumber.length < 9 || mobileNumber.length > 13) {
+      setErrorMessage("Mobile number must be between 9 and 13 digits.");
+      return;
+    }
     setStep(2);
   };
 
@@ -64,6 +69,8 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
       setErrorMessage("Passwords do not match");
       return;
     }
+
+    setIsSigningUp(true);
 
     const formData = new FormData();
     formData.append("first_name", firstName);
@@ -108,6 +115,10 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
       } else {
         setErrorMessage("An unexpected error occurred. Please try again.");
       }
+    } finally {
+      {
+        setIsSigningUp(false);
+      }
     }
   };
 
@@ -139,7 +150,7 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
               {step === 1 ? (
                 <>
                   <div className={styles.input_container}>
-                    <label htmlFor="firstName">First Name</label>
+                    <label htmlFor="firstName">First Name*</label>
                     <div className={styles.input}>
                       <input
                         type="text"
@@ -153,7 +164,7 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
                     </div>
                   </div>
                   <div className={styles.input_container}>
-                    <label htmlFor="lastName">Last Name</label>
+                    <label htmlFor="lastName">Last Name*</label>
                     <div className={styles.input}>
                       <input
                         type="text"
@@ -167,13 +178,15 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
                     </div>
                   </div>
                   <div className={styles.input_container}>
-                    <label htmlFor="mobileNumber">Mobile Number</label>
+                    <label htmlFor="mobileNumber">Mobile Number*</label>
                     <div className={styles.input}>
                       <input
                         type="tel"
                         name="mobileNumber"
                         id="mobileNumber"
                         placeholder="Enter your mobile number"
+                        maxLength={13}
+                        minLength={9}
                         value={mobileNumber}
                         onChange={handleInputChange(setMobileNumber)}
                         required
@@ -201,6 +214,9 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
                       Next
                     </button>
                   </div>
+                  {errorMessage && (
+                    <p className={styles.error_message}>{errorMessage}</p>
+                  )}
                 </>
               ) : (
                 <>
@@ -278,7 +294,7 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
 
                   <div className={styles.button_container}>
                     <button type="submit" className={styles.login_btn}>
-                      Sign Up
+                      {isSigningUp ? "Signing Up..." : "Sign Up"}
                     </button>
                     <p>or</p>
                     <button type="button" className={`${styles.google_btn}`}>
