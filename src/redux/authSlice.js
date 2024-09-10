@@ -103,6 +103,7 @@ export const confirmEmailWithToken = createAsyncThunk(
 
       return userDetailsResponse.data;
     } catch (error) {
+      console.log(error);
       return rejectWithValue(error.response.data);
     }
   }

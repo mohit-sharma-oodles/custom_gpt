@@ -64,6 +64,7 @@ const Profile = ({ setShowProfile }) => {
           "/subscriptions/subscription-details/"
         );
         if (response.data) {
+          console.log(response.data);
           setProductName(response.data.product_name);
         }
         console.log(response.data);
@@ -240,7 +241,7 @@ const Profile = ({ setShowProfile }) => {
                   )}
                   {user.days_left === null && <h2>No current active plan.</h2>}
                 </div>
-                {productName && (
+                {user.days_left && (
                   <>
                     <ProgressBar
                       completed={user.days_left}

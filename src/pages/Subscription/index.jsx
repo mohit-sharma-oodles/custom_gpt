@@ -47,7 +47,16 @@ const SubscriptionTile = ({
         console.error("Stripe Checkout Error:", error);
       }
     } catch (error) {
-      console.error("Error during checkout process:", error);
+      console.error(
+        "Error during checkout process:",
+        error.response.data.detail
+      );
+      if (
+        error.response.data.detail ===
+        "Authentication credentials were not provided."
+      ) {
+        alert("You are not logged in.");
+      }
     }
   };
 
@@ -74,6 +83,13 @@ const SubscriptionTile = ({
 
       setProratedPrice(response.data.prorated_amount);
     } catch (e) {
+      console.log(e);
+      if (
+        e.response.data.detail ===
+        "Authentication credentials were not provided."
+      ) {
+        alert("You are not logged in.");
+      }
       console.error("Error upgrading plan", e);
     }
   };

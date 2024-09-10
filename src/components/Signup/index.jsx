@@ -63,8 +63,37 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
     setStep(1);
   };
 
+  const validatePassword = (password) => {
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    const hasMinLength = password.length >= 8;
+
+    if (!hasMinLength) {
+      return "Password must be at least 8 characters long.";
+    }
+    if (!hasUpperCase) {
+      return "Password must contain at least one uppercase letter.";
+    }
+    if (!hasNumber) {
+      return "Password must contain at least one number.";
+    }
+    if (!hasSpecialChar) {
+      return "Password must contain at least one special character.";
+    }
+
+    return ""; // No error
+  };
+
   const handleSignUp = async (e) => {
     e.preventDefault();
+
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      setErrorMessage(passwordError);
+      return;
+    }
+
     if (password !== confirmPassword) {
       setErrorMessage("Passwords do not match");
       return;
@@ -87,38 +116,25 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
       const signupAction = await dispatch(signupUser(formData)).unwrap();
 
       if (signupAction) {
-        // Handle successful signup
         console.log("Signup successful", signupAction);
       }
     } catch (signupError) {
-      // Handle signup failure
-      const errors = signupError?.response?.data;
+      const errors = signupError;
+      console.log(signupError);
+
       if (errors) {
-        // Check for specific error keys and display the corresponding message
-        if (errors.password?.includes("This password is too common.")) {
-          setErrorMessage("This password is too common.");
-        } else if (
-          errors.mobile_number?.includes(
-            "A user with this mobile number already exists."
-          )
-        ) {
-          setErrorMessage("A user with this mobile number already exists.");
-        } else if (errors.mobile_number) {
-          setErrorMessage(errors.mobile_number[0]); // Display the first error message related to mobile number
-        } else {
-          // Extract and display the first error message for other cases
-          const firstErrorMessage = Object.values(errors).flat()[0];
-          setErrorMessage(firstErrorMessage);
+        let allErrors = [];
+
+        for (const key in errors) {
+          if (errors[key].length > 0) {
+            allErrors.push(...errors[key]);
+          }
         }
-      } else if (signupError?.response?.status === 404) {
-        setErrorMessage("The requested resource was not found (404).");
-      } else {
-        setErrorMessage("An unexpected error occurred. Please try again.");
+
+        setErrorMessage(allErrors.join("\n"));
       }
     } finally {
-      {
-        setIsSigningUp(false);
-      }
+      setIsSigningUp(false);
     }
   };
 

@@ -30,13 +30,19 @@ const ConfirmEmail = () => {
             dispatch(initializeAuth());
             // navigate("/");
           } else {
-            setFeedback("Failed to confirm your email. Please try again.");
+            const errorMessage =
+              response.payload?.message ||
+              "Failed to confirm your email. Please try again.";
+            setFeedback(errorMessage);
             setShowResendButton(
-              response.payload?.message === "Invalid or expired token."
+              errorMessage === "Invalid or expired token." ||
+                errorMessage ===
+                  "This link has already been used. You are already verified."
             );
           }
         })
-        .catch(() => {
+        .catch((e) => {
+          console.log(e);
           setFeedback("An unexpected error occurred.");
           setShowResendButton(false);
         });
@@ -58,16 +64,11 @@ const ConfirmEmail = () => {
     if (email) {
       dispatch(resendConfirmationEmail({ email }))
         .then((response) => {
-          if (response.payload && !response.error) {
-            setFeedback("Confirmation email resent. Please check your inbox.");
-            setShowResendButton(false);
-          } else {
-            setFeedback("Failed to resend confirmation email.");
-            setShowResendButton(true);
-          }
+          setFeedback(response.payload.message);
         })
-        .catch(() => {
-          setFeedback("Failed to resend confirmation email.");
+        .catch((e) => {
+          // console.log(e);
+          setFeedback(e.response.data.message);
           setShowResendButton(true);
         });
     }
@@ -85,6 +86,7 @@ const ConfirmEmail = () => {
         gap: "1rem",
       }}
     >
+      {/* {feedback && <p className="feedback-message">{feedback}</p>} */}
       {showResendButton && (
         <>
           <p style={{ color: "red" }}>{feedback}</p>
