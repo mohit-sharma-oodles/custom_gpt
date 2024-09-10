@@ -2,8 +2,8 @@ import axios from "axios";
 // import { jwtDecode } from "jwt-decode";
 
 export const axios_instance = axios.create({
-  // baseURL: "https://customgpt-b.oodleslab.com",
-  baseURL: "https://ff24-14-102-190-50.ngrok-free.app",
+  baseURL: "https://customgpt-b.oodleslab.com",
+  // baseURL: "https://ff24-14-102-190-50.ngrok-free.app",
   // headers: {
   //   "ngrok-skip-browser-warning": "true",
   // },
