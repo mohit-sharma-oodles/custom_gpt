@@ -3,6 +3,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import Header from "../components/Header";
 import Login from "../components/Login";
 import Signup from "../components/Signup";
+import Footer from "../components/Footer";
 
 const HeaderLayout = ({ isAuthenticated }) => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -36,12 +37,19 @@ const HeaderLayout = ({ isAuthenticated }) => {
   const closeSignupModal = () => setIsSignupModalOpen(false);
 
   const hiddenHeaderPaths = ["/app/projects", "/app/create-project"];
+  const showFooterPaths = ["/", "app/home"];
 
   // Check if the current path matches any path in the array
   const showHeader = !hiddenHeaderPaths.includes(location.pathname);
-
+  const showFooter = showFooterPaths.includes(location.pathname);
   return (
-    <>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        position: "relative",
+      }}
+    >
       {showHeader && (
         <Header
           onLoginClick={openLoginModal}
@@ -49,7 +57,10 @@ const HeaderLayout = ({ isAuthenticated }) => {
           isAuthenticated={isAuthenticated}
         />
       )}
-      <Outlet />
+      <div style={{ marginBottom: showFooter ? "2rem" : "0" }}>
+        <Outlet />
+      </div>
+      {showFooter && <Footer />}
 
       {/* Login and Signup Modals */}
       {isLoginModalOpen && (
@@ -67,7 +78,7 @@ const HeaderLayout = ({ isAuthenticated }) => {
           onLoginClick={openLoginModal}
         />
       )}
-    </>
+    </div>
   );
 };
 

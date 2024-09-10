@@ -13,6 +13,7 @@ import { FiDownloadCloud } from "react-icons/fi";
 import { updateUserDetails } from "../../redux/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { axios_instance } from "../../Axios/axiosInstance";
+import { useNavigate } from "react-router-dom";
 
 const Profile = ({ setShowProfile }) => {
   const { user } = useSelector((state) => state.rootReducer.auth);
@@ -40,6 +41,8 @@ const Profile = ({ setShowProfile }) => {
   const [showNewPassword, setShowNewPassword] = useState(false);
 
   const [productName, setProductName] = useState(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -169,6 +172,11 @@ const Profile = ({ setShowProfile }) => {
     }
   };
 
+  const handleRedirectToSubscription = () => {
+    navigate("/app/subscription");
+    setShowProfile(false);
+  };
+
   return (
     <div className={styles.profileOverlay}>
       <div className={styles.profileContainer}>
@@ -230,27 +238,31 @@ const Profile = ({ setShowProfile }) => {
                       </p>
                     </>
                   )}
+                  {user.days_left === null && <h2>No current active plan.</h2>}
                 </div>
-                <div style={{ width: "100%", color: "gray", fontSize: "12px" }}>
-                  {productName && (
-                    <>
-                      <ProgressBar
-                        completed={user.days_left}
-                        maxCompleted={30}
-                        labelColor={"transparent"}
-                        bgColor={"#ae407a"}
-                        height="14px"
-                        animateOnRender={true}
-                      />
-                      <div style={{ marginTop: "12px" }}>
-                        {user.days_left} /30 Days
-                      </div>
-                    </>
-                  )}
-                </div>
+                {productName && (
+                  <>
+                    <ProgressBar
+                      completed={user.days_left}
+                      maxCompleted={30}
+                      labelColor={"transparent"}
+                      bgColor={"#ae407a"}
+                      height="14px"
+                      animateOnRender={true}
+                    />
+                    <div style={{ marginTop: "12px" }}>
+                      {user.days_left} /30 Days
+                    </div>
+                  </>
+                )}
               </div>
               <div className={styles.right_side}>
-                <span className={styles.upgrade_plan}>Upgrade Plan</span>
+                <span
+                  onClick={handleRedirectToSubscription}
+                  className={styles.upgrade_plan}
+                >
+                  Upgrade Plan
+                </span>
 
                 {user.days_left && (
                   <span onClick={handleCancel} className={styles.cancel_plan}>

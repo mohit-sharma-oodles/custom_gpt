@@ -39,6 +39,7 @@ import { ReactFlow, Controls, Background } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import ReactFlowArea from "../../components/ReactFlowArea";
 import { useLocation } from "react-router-dom";
+import Footer from "../../components/Footer";
 
 const sizes = [20, 30, 40, 50, 60];
 const FeatureBox = ({ color, heading, text }) => {
