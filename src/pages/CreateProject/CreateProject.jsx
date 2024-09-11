@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styles from "./index.module.scss";
 
 //icons
@@ -12,14 +12,47 @@ import Sidebar from "../../components/Sidebar";
 import { FileUploader } from "react-drag-drop-files";
 
 const CreateProject = () => {
-  const [files, setFiles] = useState([]);
+  const [fileSelected, setFileSelected] = useState(null); // Single file state
+  const [name, setName] = useState("");
 
-  const handleChange = (fileList) => {
-    const newFiles = Array.from(fileList);
+  const handleChange = (file) => {
+    // console.log(file);
+    if (fileSelected) {
+      alert("You can only upload one file.");
+      return; // Prevent replacing the file if already uploaded
+    }
+    setFileSelected(file); // Replace the file, since only one should be uploaded
+    console.log(fileSelected, "Selected File");
+  };
 
-    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+  const handleCreateProject = async () => {
+    if (!name || !fileSelected) {
+      alert("Please fill in the project name and upload a file.");
+      return;
+    }
 
-    // console.log([...files, ...newFiles], "filesss", files);
+    const formData = new FormData();
+    formData.append("project_name", name);
+    formData.append("file", fileSelected); // file is the state from useState
+
+    try {
+      const response = await fetch("/api/customgpt/projects/create/", {
+        method: "POST",
+        body: formData, // Send the formData
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log("Project created successfully:", result);
+        alert("Project created successfully!");
+      } else {
+        console.error("Error creating project:", response.statusText);
+        alert("Failed to create project.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("An error occurred while creating the project.");
+    }
   };
 
   return (
@@ -37,25 +70,27 @@ const CreateProject = () => {
               type="text"
               name="project_name"
               id="project_name"
+              value={name}
+              onChange={(e) => setName(e.target.value.trim())}
               required
               className={styles.name_input}
             />
             <h2 style={{ marginTop: "1rem" }} className={styles.heading}>
-              Select files to upload
+              Select a file to upload
             </h2>
             <FileUploader
               handleChange={handleChange}
               name="file"
-              multiple={true}
+              multiple={false} // Allow only a single file
               classes="drop_zone"
-              // className={styles.dropzone}
+              // disabled={file ? true : false} // Disable the file uploader if file is uploaded
               style={{ padding: "20rem" }}
             >
               <div className={styles.drop_zone}>
                 <IoCloudUploadOutline size={50} color={"lightgrey"} />
                 <div className={styles.text_container}>
                   <h3>
-                    Drag and Drop files or{" "}
+                    Drag and Drop file or{" "}
                     <span className={styles.browse}>Browse</span>
                   </h3>
                   <p>Supported formats: PDF, DOC, XLSX, SPREADSHEET, etc.</p>
@@ -64,19 +99,19 @@ const CreateProject = () => {
             </FileUploader>
           </div>
           <div className={styles.middle_container}>
-            {files.map((file, idx) => {
-              const fileExtension = file.name.split(".").pop();
-
-              return (
-                <div key={idx} className={styles.file_div}>
-                  <p>{file.name}</p>
-                  <p className={styles.file_type}>{fileExtension}</p>{" "}
-                </div>
-              );
-            })}
+            {fileSelected && ( // Check if a file is selected before rendering its details
+              <div className={styles.file_div}>
+                <p>{fileSelected.name}</p>
+                <p className={styles.file_type}>
+                  {fileSelected.name.split(".").pop()}
+                </p>
+              </div>
+            )}
           </div>
           <div className={styles.submit_container}>
-            <button className={styles.submit_btn}>Submit</button>
+            <button onClick={handleCreateProject} className={styles.submit_btn}>
+              Submit
+            </button>
           </div>
         </div>
       </div>

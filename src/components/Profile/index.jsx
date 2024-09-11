@@ -16,7 +16,7 @@ import { axios_instance } from "../../Axios/axiosInstance";
 import { useNavigate } from "react-router-dom";
 
 const Profile = ({ setShowProfile }) => {
-  const { user } = useSelector((state) => state.rootReducer.auth);
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const dispatch = useDispatch();
 
   const [firstName, setFirstName] = useState(user.first_name);
@@ -43,6 +43,10 @@ const Profile = ({ setShowProfile }) => {
   const [productName, setProductName] = useState(null);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setUser(JSON.parse(localStorage.getItem("user")));
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -166,17 +170,34 @@ const Profile = ({ setShowProfile }) => {
     }
   };
   const handleCancel = async () => {
-    try {
-      const response = await axios_instance.post(
-        "/subscriptions/cancel-subscription/"
-      );
-      console.log(response.data);
-    } catch (error) {
-      console.error("Error cancelling subscription:", error);
-      alert(
-        error.response?.data?.error ||
-          "An error occurred while cancelling the subscription."
-      );
+    // Show confirmation dialog
+    const confirmCancel = window.confirm(
+      "You are going to cancel your subscription. Do you want to continue?"
+    );
+
+    if (confirmCancel) {
+      try {
+        const response = await axios_instance.post(
+          "/subscriptions/cancel-subscription/"
+        );
+
+        if (response.data.message === "Subscription cancelled successfully") {
+          // Alert success message
+          alert("Subscription cancelled successfully");
+
+          // Reload the page to reflect changes
+          window.location.reload();
+        }
+      } catch (error) {
+        console.error("Error cancelling subscription:", error);
+        alert(
+          error.response?.data?.error ||
+            "An error occurred while cancelling the subscription."
+        );
+      }
+    } else {
+      // If user cancels, do nothing (or close modal, etc.)
+      console.log("Subscription cancellation was aborted.");
     }
   };
 

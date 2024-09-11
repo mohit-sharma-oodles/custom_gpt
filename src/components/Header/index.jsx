@@ -10,36 +10,49 @@ import default_icon from "../../assets/person_default.png";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../redux/authSlice";
 import Profile from "../Profile";
-
-// import React, { useEffect, useState } from "react";
-// import { useNavigate } from "react-router-dom";
-// import { useDispatch } from "react-redux";
-// import { logoutUser } from "../../redux/actions"; // Adjust import based on your actual file structure
-// import styles from "./ProfileModal.module.scss"; // Assuming this is your style file
-// import { IoCloseSharp } from "react-icons/io5";
-// import { FaRegUserCircle } from "react-icons/fa";
-// import { PiSignOutBold } from "react-icons/pi";
-// import default_icon from "../../assets/default_icon.svg"; // Replace with your actual path
-// import crown from "../../assets/crown_icon.svg"; // Replace with your actual path
+import { axios_instance } from "../../Axios/axiosInstance";
 
 const ProfileModal = ({ onClose, setShowProfile, setShowProfileModal }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [user, setUser] = useState(localStorage.getItem("user"));
-  console.log(user);
+  const [user, setUser] = useState({});
+  const [subscription, setSubscription] = useState("");
 
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    if (storedUser) {
-      setUser(storedUser);
-      console.log(user);
-    }
+    const getProfile = async () => {
+      try {
+        const response = await axios_instance.get("/api/profile/");
+        setUser(response.data);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    getProfile();
   }, []);
+
+  useEffect(() => {
+    const getDetails = async () => {
+      try {
+        const response = await axios_instance.get(
+          "/subscriptions/subscription-details/"
+        );
+        setSubscription(response.data.product_name);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    getDetails();
+  }, []);
+
   const handleLogout = () => {
     dispatch(logoutUser());
     navigate("/");
     onClose();
   };
+
+  // if (!user) {
+  //   return null; // or a loading spinner, etc.
+  // }
 
   return (
     <div className={styles.profileModal}>
@@ -52,16 +65,16 @@ const ProfileModal = ({ onClose, setShowProfile, setShowProfileModal }) => {
           alt="User"
         />
         <div>
-          <p className={styles.name}>{user?.first_name || "Guest"}</p>
+          <p className={styles.name}>{user?.first_name}</p>
           <p className={styles.plan}>
-            {user?.current_subscription_plan !== null && (
+            {subscription.length !== 0 && (
               <img
                 src={crown}
                 style={{ height: "16px", width: "16px" }}
                 alt="Crown"
               />
             )}
-            {user?.current_subscription_plan || "No Plan"}
+            {subscription}
           </p>
         </div>
         <IoCloseSharp
@@ -86,10 +99,9 @@ const ProfileModal = ({ onClose, setShowProfile, setShowProfileModal }) => {
 const Header = ({ onLoginClick, onSignupClick }) => {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
 
-  const { user, isAuthenticated } = useSelector(
-    (state) => state.rootReducer.auth
-  );
+  const { isAuthenticated } = useSelector((state) => state.rootReducer.auth);
 
   const handleProfileImageClick = () => {
     setShowProfileModal((prev) => !prev);

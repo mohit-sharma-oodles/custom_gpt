@@ -22,21 +22,16 @@ const SubscriptionTile = ({
 }) => {
   const navigate = useNavigate();
   const [proratedPrice, setProratedPrice] = useState();
-  const [user, setUser] = useState(localStorage.getItem("user"));
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
 
-  console.log(user.days_left);
+  console.log(user?.days_left);
 
   useEffect(() => {
-    console.log(localStorage.getItem("user"));
     setUser(JSON.parse(localStorage.getItem("user")));
   }, []);
 
   const handleBuyNow = async (productId) => {
     try {
-      // const atoken = localStorage.getItem("accessToken");
-      // const rtoken = localStorage.getItem("refreshToken");
-      // const user = localStorage.getItem("user");
-
       const stripe = await stripePromise;
       const response = await axios_instance.post(
         "/subscriptions/create-checkout-session/",
@@ -45,9 +40,9 @@ const SubscriptionTile = ({
         }
       );
 
-      const { id } = response.data;
+      const { id } = response?.data;
 
-      const { error } = await stripe.redirectToCheckout({
+      const { error } = await stripe?.redirectToCheckout({
         sessionId: id,
       });
 
@@ -57,10 +52,10 @@ const SubscriptionTile = ({
     } catch (error) {
       console.error(
         "Error during checkout process:",
-        error.response.data.detail
+        error?.response?.data?.detail
       );
       if (
-        error.response.data.detail ===
+        error?.response?.data?.detail ===
         "Authentication credentials were not provided."
       ) {
         alert("You are not logged in.");
@@ -89,11 +84,11 @@ const SubscriptionTile = ({
         }
       );
 
-      setProratedPrice(response.data.prorated_amount);
+      setProratedPrice(response?.data?.prorated_amount);
     } catch (e) {
       console.log(e);
       if (
-        e.response.data.detail ===
+        e?.response?.data?.detail ===
         "Authentication credentials were not provided."
       ) {
         alert("You are not logged in.");
@@ -103,14 +98,12 @@ const SubscriptionTile = ({
   };
 
   const handleButtonClick = () => {
-    // console.log(isAlreadySubscribed, current_active_plan_price, price);
     if (
       isAlreadySubscribed &&
       Number(current_active_plan_price) < Number(price)
     ) {
-      // console.log(Number(current_active_plan_price) < Number(price));
       handleUpgradePlan(priceId, productId);
-    } else if (isAlreadySubscribed === false) {
+    } else if (!isAlreadySubscribed) {
       handleBuyNow(productId);
     }
   };
@@ -136,26 +129,22 @@ const SubscriptionTile = ({
         <span className={styles.right_gradient}></span>
       </div>
       <div className={styles.tile_bottom_container}>
-        {features.map((feature, idx) => {
-          return (
-            <div key={idx} className={styles.feature_container}>
-              <img src={bullet} alt="&#10003;" />
-              <p className={styles.feature}>{feature.description}</p>
-            </div>
-          );
-        })}
+        {features?.map((feature, idx) => (
+          <div key={idx} className={styles.feature_container}>
+            <img src={bullet} alt="&#10003;" />
+            <p className={styles.feature}>{feature?.description}</p>
+          </div>
+        ))}
       </div>
       <button
         className={styles.buynow_btn}
         onClick={handleButtonClick}
-        // disabled={current_active_plan_price < price}
         style={{
-          backgroundColor: is_subscribed === true ? "white" : "",
-          color: is_subscribed === true ? "black" : "",
-          // cursor: is_subscribed === true ? "default" : "not-allowed",
+          backgroundColor: is_subscribed ? "white" : "",
+          color: is_subscribed ? "black" : "",
         }}
       >
-        {user.days_left === null || undefined
+        {user?.days_left === null || user?.days_left === undefined
           ? "Buy Now"
           : current_active_plan_price > price
           ? "Cannot Buy"
@@ -178,16 +167,13 @@ const Subscriptions = () => {
       axios_instance
         .get("/api/products")
         .then((response) => {
-          setPlans(response.data);
-          response.data.forEach((plan) => {
-            // console.log(plan);
-            if (plan.is_subscribed && plan.active_price.amount) {
-              setCurrentActivePlanPrice(plan.active_price.amount);
-              setIsAlreadySubscribed(plan.is_subscribed);
+          setPlans(response?.data);
+          response?.data?.forEach((plan) => {
+            if (plan?.is_subscribed && plan?.active_price?.amount) {
+              setCurrentActivePlanPrice(plan?.active_price?.amount);
+              setIsAlreadySubscribed(plan?.is_subscribed);
             }
           });
-
-          // console.log("these are the subs plans", response.data);
         })
         .catch((error) => {
           setError(error);
@@ -199,12 +185,6 @@ const Subscriptions = () => {
 
   return (
     <div className={`${styles.container} contain_center`}>
-      {/* <a
-        href="https://d7bb-125-63-73-50.ngrok-free.app/auth/google/login/"
-        target="_blank"
-      >
-        google
-      </a> */}
       <div className={styles.top_container}>
         <h1>
           <img src={crown} alt="" />
@@ -215,24 +195,24 @@ const Subscriptions = () => {
         </h3>
       </div>
       <div className={styles.bottom_container}>
-        {plans.map((plan, idx) => {
+        {plans?.map((plan, idx) => {
           const { description, active_price, features, name } = plan;
           return (
             <SubscriptionTile
               key={idx}
               heading={name}
               subHeading={description}
-              price={active_price.amount}
+              price={active_price?.amount}
               features={features}
-              productId={plan.stripe_product_id}
-              is_subscribed={plan.is_subscribed}
+              productId={plan?.stripe_product_id}
+              is_subscribed={plan?.is_subscribed}
               current_active_plan_price={currentActivePlanPrice}
               isAlreadySubscribed={isAlreadySubscribed}
-              priceId={plan.active_price.stripe_price_id}
+              priceId={active_price?.stripe_price_id}
             />
           );
         })}
-        {error && <p style={{ color: "red" }}>{error.message}</p>}
+        {error && <p style={{ color: "red" }}>{error?.message}</p>}
       </div>
     </div>
   );

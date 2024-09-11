@@ -99,7 +99,7 @@ const ContactUs = () => {
               name="message"
               id="message"
               value={text}
-              onChange={(e) => setText(e.target.value.trim())}
+              onChange={(e) => setText(e.target.value)}
               placeholder="*Message"
               rows={7}
             ></textarea>
