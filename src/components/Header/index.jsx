@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./index.module.scss";
 import { IoCloseSharp, IoLanguage } from "react-icons/io5";
 import { FaRegUserCircle, FaUser } from "react-icons/fa";
@@ -11,11 +11,30 @@ import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../redux/authSlice";
 import Profile from "../Profile";
 
+// import React, { useEffect, useState } from "react";
+// import { useNavigate } from "react-router-dom";
+// import { useDispatch } from "react-redux";
+// import { logoutUser } from "../../redux/actions"; // Adjust import based on your actual file structure
+// import styles from "./ProfileModal.module.scss"; // Assuming this is your style file
+// import { IoCloseSharp } from "react-icons/io5";
+// import { FaRegUserCircle } from "react-icons/fa";
+// import { PiSignOutBold } from "react-icons/pi";
+// import default_icon from "../../assets/default_icon.svg"; // Replace with your actual path
+// import crown from "../../assets/crown_icon.svg"; // Replace with your actual path
+
 const ProfileModal = ({ onClose, setShowProfile, setShowProfileModal }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.rootReducer.auth);
+  const [user, setUser] = useState(localStorage.getItem("user"));
+  console.log(user);
 
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (storedUser) {
+      setUser(storedUser);
+      console.log(user);
+    }
+  }, []);
   const handleLogout = () => {
     dispatch(logoutUser());
     navigate("/");
@@ -27,24 +46,22 @@ const ProfileModal = ({ onClose, setShowProfile, setShowProfileModal }) => {
       <div className={styles.top_section}>
         <img
           style={{
-            // width: "100%",
-            // height: "100%",
             borderRadius: "50%",
           }}
           src={user?.profile_picture || default_icon}
           alt="User"
         />
         <div>
-          <p className={styles.name}>{user?.first_name}</p>
+          <p className={styles.name}>{user?.first_name || "Guest"}</p>
           <p className={styles.plan}>
-            {" "}
-            <img
-              src={crown}
-              style={{ height: "16px", width: "16px" }}
-              alt="Crown"
-            />
-            {user?.current_plan}
-            Premium
+            {user?.current_subscription_plan !== null && (
+              <img
+                src={crown}
+                style={{ height: "16px", width: "16px" }}
+                alt="Crown"
+              />
+            )}
+            {user?.current_subscription_plan || "No Plan"}
           </p>
         </div>
         <IoCloseSharp

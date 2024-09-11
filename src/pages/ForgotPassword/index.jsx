@@ -8,9 +8,10 @@ const ForgotPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
   const [uid, setUid] = useState("");
+  const [email, setEmail] = useState("");
   const [token, setToken] = useState("");
   const [countdown, setCountdown] = useState(null);
-
+  const [showResendButton, setShowResendButton] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -18,10 +19,12 @@ const ForgotPassword = () => {
     const params = new URLSearchParams(location.search);
     const uidFromUrl = params.get("uid");
     const tokenFromUrl = params.get("token");
+    const emailFromUrl = params.get("email");
 
     if (uidFromUrl && tokenFromUrl) {
       setUid(uidFromUrl);
       setToken(tokenFromUrl);
+      setEmail(emailFromUrl);
     } else {
       setMessage("Invalid password reset link.");
     }
@@ -44,16 +47,16 @@ const ForgotPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setCountdown(3);
-    const intervalId = setInterval(() => {
-      setCountdown((prevCount) => {
-        if (prevCount === 1) {
-          clearInterval(intervalId);
-          navigate("/?openLogin=true");
-        }
-        return prevCount - 1;
-      });
-    }, 1000);
+    // setCountdown(3);
+    // const intervalId = setInterval(() => {
+    //   setCountdown((prevCount) => {
+    //     if (prevCount === 1) {
+    //       clearInterval(intervalId);
+    //       navigate("/?openLogin=true");
+    //     }
+    //     return prevCount - 1;
+    //   });
+    // }, 1000);
 
     // Regular expression to match:
     // - at least one special character
@@ -94,16 +97,16 @@ const ForgotPassword = () => {
       }
 
       setMessage("Password reset successful. You can now log in.");
-      // setCountdown(3);
-      // const intervalId = setInterval(() => {
-      //   setCountdown((prevCount) => {
-      //     if (prevCount === 1) {
-      //       clearInterval(intervalId);
-      //       navigate("/");
-      //     }
-      //     return prevCount - 1;
-      //   });
-      // }, 1000);
+      setCountdown(3);
+      const intervalId = setInterval(() => {
+        setCountdown((prevCount) => {
+          if (prevCount === 1) {
+            clearInterval(intervalId);
+            navigate("/?openLogin=true");
+          }
+          return prevCount - 1;
+        });
+      }, 1000);
     } catch (error) {
       if (error.response && error.response.data) {
         // Handle non-field errors like an expired reset link
@@ -112,6 +115,7 @@ const ForgotPassword = () => {
           nonFieldErrors &&
           nonFieldErrors.includes("The password reset link has expired.")
         ) {
+          setShowResendButton(true);
           setMessage(
             "The password reset link has expired. Please request a new one."
           );
@@ -136,6 +140,19 @@ const ForgotPassword = () => {
       }
     }
   };
+  const handleResend = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios_instance.post("/api/password-reset/", {
+        email: email,
+      });
+      console.log(response);
+      setMessage("Password reset link sent. Please check your email.");
+      setShowResendButton(false);
+    } catch (error) {
+      setMessage("Failed to send password reset link. Please try again.");
+    }
+  };
 
   return (
     <div className={styles.forgotPasswordContainer}>
@@ -144,7 +161,7 @@ const ForgotPassword = () => {
       >
         Reset Your Password
       </h2>
-      <form onSubmit={handleSubmit} className={styles.forgotPasswordForm}>
+      <form className={styles.forgotPasswordForm}>
         <div className={styles.inputContainer}>
           <label htmlFor="password">New Password</label>
           <input
@@ -168,9 +185,24 @@ const ForgotPassword = () => {
           />
         </div>
         {message && <p className={styles.message}>{message}</p>}
-        <button type="submit" className={styles.submitButton}>
-          Reset Password
-        </button>
+        {showResendButton && (
+          <button
+            onClick={handleResend}
+            type="submit"
+            className={styles.submitButton}
+          >
+            Resend Link
+          </button>
+        )}
+        {!showResendButton && (
+          <button
+            onClick={handleSubmit}
+            type="submit"
+            className={styles.submitButton}
+          >
+            Reset Password
+          </button>
+        )}
       </form>
       {countdown && (
         <p style={{ marginTop: "1rem" }}>

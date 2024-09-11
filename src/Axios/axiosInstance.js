@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const axios_instance = axios.create({
   baseURL: "https://customgpt-b.oodleslab.com",
-  // baseURL: "https://ff24-14-102-190-50.ngrok-free.app",
+  // baseURL: "https://45ce-103-95-83-152.ngrok-free.app",
   // headers: {
   //   "ngrok-skip-browser-warning": "true",
   // },

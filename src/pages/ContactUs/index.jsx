@@ -37,75 +37,82 @@ const ContactUs = () => {
 
   return (
     <div className={`${styles.container} contain_center`}>
-      <div className={styles.left_side}>
-        <h1>Contact Us</h1>
-        <p>
-          Contact us right now to get started <br /> or if you have any queries.
-        </p>
-        <img src={girl} />
-      </div>
-      <div className={styles.right_side}>
-        <form action="" className={styles.form}>
-          <div className={styles.form_names}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-evenly",
+        }}
+      >
+        <div className={styles.left_side}>
+          <h1>Contact Us</h1>
+          <p>
+            Contact us right now to get started <br /> or if you have any
+            queries.
+          </p>
+          <img src={girl} />
+        </div>
+        <div className={styles.right_side}>
+          <form action="" className={styles.form}>
+            <div className={styles.form_names}>
+              <input
+                type="text"
+                name="first_name"
+                id="first_name"
+                placeholder="*First Name"
+                className={styles.firstname}
+                value={firstname}
+                onChange={(e) => setFirstName(e.target.value.trim())}
+                required
+              />
+              <input
+                type="text"
+                name="last_name"
+                id="last_name"
+                placeholder="*Last Name"
+                value={lastname}
+                onChange={(e) => setLastName(e.target.value.trim())}
+                className={styles.lastname}
+                required
+              />
+            </div>
             <input
-              type="text"
-              name="first_name"
-              id="first_name"
-              placeholder="*First Name"
-              className={styles.firstname}
-              value={firstname}
-              onChange={(e) => setFirstName(e.target.value.trim())}
+              type="email"
+              name="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value.trim())}
+              id="email"
+              placeholder="*Email Address"
               required
             />
             <input
-              type="text"
-              name="last_name"
-              id="last_name"
-              placeholder="*Last Name"
-              value={lastname}
-              onChange={(e) => setLastName(e.target.value.trim())}
-              className={styles.lastname}
+              type="tel"
+              name="number"
+              id="number"
+              value={number}
+              onChange={(e) => setNumber(e.target.value)}
+              placeholder="*Phone Number"
               required
             />
-          </div>
-          <input
-            type="email"
-            name="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value.trim())}
-            id="email"
-            placeholder="*Email Address"
-            required
-          />
-          <input
-            type="tel"
-            name="number"
-            id="number"
-            value={number}
-            onChange={(e) => setNumber(e.target.value)}
-            placeholder="*Phone Number"
-            required
-          />
-          <textarea
-            name="message"
-            id="message"
-            value={text}
-            onChange={(e) => setText(e.target.value.trim())}
-            placeholder="*Message"
-            rows={7}
-          ></textarea>
-          <button
-            type="submit"
-            className={styles.button}
-            onClick={handleSubmit}
-          >
-            Send Message
-          </button>
-        </form>
+            <textarea
+              name="message"
+              id="message"
+              value={text}
+              onChange={(e) => setText(e.target.value.trim())}
+              placeholder="*Message"
+              rows={7}
+            ></textarea>
+            <button
+              type="submit"
+              className={styles.button}
+              onClick={handleSubmit}
+            >
+              Send Message
+            </button>
+          </form>
+        </div>
       </div>
-      {/* {message && <p className={styles.message}>{message}</p>} */}
-      {/* {message && <p className={styles.message}>{message}</p>} */}
-      {/* {message && <p className={styles.message}>{message}</p>} */}
       {message && status === "success" ? (
         <p style={{ color: "black" }} className={styles.message}>
           {message}

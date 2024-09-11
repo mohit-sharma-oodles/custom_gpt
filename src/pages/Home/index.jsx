@@ -40,6 +40,7 @@ import "@xyflow/react/dist/style.css";
 import ReactFlowArea from "../../components/ReactFlowArea";
 import { useLocation } from "react-router-dom";
 import Footer from "../../components/Footer";
+import { axios_instance } from "../../Axios/axiosInstance";
 
 const sizes = [20, 30, 40, 50, 60];
 const FeatureBox = ({ color, heading, text }) => {
@@ -77,6 +78,17 @@ const CustomNode = ({ data }) => {
 };
 
 const Home = ({ isAuthenticated }) => {
+  useEffect(() => {
+    const user = async () => {
+      try {
+        const response = await axios_instance.get("/api/profile");
+        const data = response.data;
+        localStorage.setItem("user", JSON.stringify(data));
+        // console.log(data);
+      } catch (error) {}
+    };
+    user();
+  }, []);
   return (
     <div className={styles.container}>
       {/* {isAuthenticated ? <h1>Authenticated</h1> : <h1>Not</h1>} */}

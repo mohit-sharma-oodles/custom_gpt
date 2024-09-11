@@ -14,6 +14,9 @@ const UpgradePlan = () => {
   const [subscriptionId, setSubscriptionId] = useState();
   const [priceId, setPriceId] = useState();
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState(""); // State for success message
+  const [countdown, setCountdown] = useState(3); // State for dynamic countdown
+  const [showPayButton, setShowPayButton] = useState(true); // State for button visibility
 
   const params = new URLSearchParams(location.search);
   const wannaBuy = params.get("id");
@@ -42,35 +45,6 @@ const UpgradePlan = () => {
     getSubscriptionID();
   }, []);
 
-  // useEffect(() => {
-  //   if (plans.length > 0 && wannaBuy) {
-  //     const activePlan = plans.find(
-  //       (plan) => plan.stripe_product_id === wannaBuy
-  //     );
-  //     if (activePlan) {
-  //       setPriceId(activePlan.active_price.stripe_price_id);
-  //     }
-  //   }
-  // }, [plans, wannaBuy]); // Update priceId based on plans and selection
-
-  // const handleUpgrade = async () => {
-  //   try {
-  //     const stripe = await stripePromise;
-  //     const response = await axios_instance.post(
-  //       "/subscriptions/create-checkout-session/",
-  //       {
-  //         product_id: wannaBuy,
-  //         is_upgrade: true,
-  //       }
-  //     );
-  //     const { id } = response.data;
-  //     const { error } = await stripe.redirectToCheckout({ sessionId: id });
-  //     if (error) throw error;
-  //   } catch (error) {
-  //     console.error("Error during checkout process:", error);
-  //   }
-  // };
-
   const handleUpgrade = async () => {
     try {
       const stripe = await stripePromise;
@@ -81,10 +55,24 @@ const UpgradePlan = () => {
           price_id: wannaBuy,
         }
       );
-      const { id } = response.data;
-      const { error } = await stripe.redirectToCheckout({ sessionId: id });
-      if (error) throw error;
+      // Assuming the payment is successful
+      setShowPayButton(false); // Hide the pay button
+
+      // Countdown logic
+      let countdownValue = 3;
+      const countdownInterval = setInterval(() => {
+        setSuccessMessage(
+          `You've upgraded your plan successfully. Remaining amount will be added to your next billing cycle. Redirecting in ${countdownValue}...`
+        );
+        countdownValue--;
+
+        if (countdownValue < 0) {
+          clearInterval(countdownInterval);
+          window.location.href = "/app/home"; // Redirect after countdown ends
+        }
+      }, 1000); // Update every 1 second
     } catch (error) {
+      alert(error);
       console.error("Error during checkout process:", error);
     }
   };
@@ -98,11 +86,6 @@ const UpgradePlan = () => {
 
       <div className={styles.container}>
         {plans.map((curr, idx) => {
-          // Check if current plan is subscribed or if it matches the 'wannaBuy' ID
-          // console.log(curr.active_price.stripe_price_id);
-          // setPriceId(curr.active_price.stripe_price_id);
-          // console.log(curr.active_price.stripe_price_id === wannaBuy);
-
           if (
             curr.is_subscribed ||
             curr.active_price.stripe_price_id === wannaBuy
@@ -140,12 +123,18 @@ const UpgradePlan = () => {
               </div>
             );
           }
-          return null; // Do not render anything if conditions are not met
+          return null;
         })}
       </div>
-      <button className={styles.payBtn} onClick={() => handleUpgrade(wannaBuy)}>
-        Pay $ {proratedPrice}
-      </button>
+
+      {successMessage && (
+        <h4 className={styles.successMessage}>{successMessage}</h4>
+      )}
+      {showPayButton && (
+        <button className={styles.payBtn} onClick={handleUpgrade}>
+          Pay $ {proratedPrice}
+        </button>
+      )}
     </div>
   );
 };

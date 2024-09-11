@@ -123,6 +123,13 @@ const Profile = ({ setShowProfile }) => {
         setSelectedImage(file);
         setProfilePicture(URL.createObjectURL(file));
         setHasChanges(true);
+        // try{
+        //   const formData = new FormData();
+        //   formData.append("first_name", firstName);
+        //   dispatch(updateUserDetails())
+        // }catch{
+
+        // }
       }
     } catch (error) {
       console.error("Error handling image change:", error);
@@ -185,7 +192,7 @@ const Profile = ({ setShowProfile }) => {
           <div className={styles.left_side}>
             <div className={styles.profileImageContainer}>
               <img
-                src={profilePicture}
+                src={defaultUser}
                 alt="User"
                 className={styles.profileImage}
               />
@@ -262,7 +269,7 @@ const Profile = ({ setShowProfile }) => {
                   onClick={handleRedirectToSubscription}
                   className={styles.upgrade_plan}
                 >
-                  Upgrade Plan
+                  {user.days_left > 0 ? "Upgrade Plan" : "Buy Plan"}
                 </span>
 
                 {user.days_left && (
@@ -359,6 +366,17 @@ const Profile = ({ setShowProfile }) => {
             </div>
             {hasChanges && (
               <span
+                style={{
+                  backgroundColor: "#32b4a2",
+                  color: "white",
+                  padding: "10px 20px",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                  marginTop: "3rem",
+                  fontWeight: 500,
+                  boxShadow: "3px 4px 0px 0px rgba(0, 0, 0, 0.9)",
+                }}
                 className={styles.updateButton}
                 onClick={handleUpdateDetails}
               >

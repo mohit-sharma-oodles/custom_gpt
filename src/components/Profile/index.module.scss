@@ -206,7 +206,7 @@
               font-weight: 600;
               text-align: center;
               color: white;
-              background-color: rgb(207, 84, 84);
+              background-color: rgb(214, 97, 97);
               padding: 0.5rem 1rem;
               border-radius: 5px;
               cursor: pointer;
@@ -289,7 +289,6 @@
             -webkit-box-shadow: 5px 5px 3px 0px rgba(0, 0, 0, 0.73);
             -moz-box-shadow: 5px 5px 3px 0px rgba(0, 0, 0, 0.73);
             box-shadow: 3px 4px 0px 0px rgba(0, 0, 0, 0.9);
-            grid-column: 1 / -1;
 
             &:hover {
               /* Optional hover styles */

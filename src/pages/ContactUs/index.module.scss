@@ -2,6 +2,7 @@
 
 .container {
   display: flex;
+  flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
   padding: 3rem;
@@ -38,14 +39,21 @@
         }
       }
 
-      input {
+      input,
+      textarea {
         padding: 7px 13px;
-        outline: none;
+        outline: none; /* This removes the blue outline */
         border: 1px solid rgb(201, 200, 200);
         border-radius: 8px;
         margin-top: 1rem;
         margin-bottom: 0.7rem;
         width: auto;
+        background-color: white !important;
+
+        &:focus {
+          border-color: rgb(150, 150, 150);
+          box-shadow: none;
+        }
       }
 
       textarea {

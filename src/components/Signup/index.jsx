@@ -132,6 +132,7 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
         }
 
         setErrorMessage(allErrors.join("\n"));
+        console.log(errorMessage);
       }
     } finally {
       setIsSigningUp(false);

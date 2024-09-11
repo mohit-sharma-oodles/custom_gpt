@@ -22,6 +22,14 @@ const SubscriptionTile = ({
 }) => {
   const navigate = useNavigate();
   const [proratedPrice, setProratedPrice] = useState();
+  const [user, setUser] = useState(localStorage.getItem("user"));
+
+  console.log(user.days_left);
+
+  useEffect(() => {
+    console.log(localStorage.getItem("user"));
+    setUser(JSON.parse(localStorage.getItem("user")));
+  }, []);
 
   const handleBuyNow = async (productId) => {
     try {
@@ -147,7 +155,9 @@ const SubscriptionTile = ({
           // cursor: is_subscribed === true ? "default" : "not-allowed",
         }}
       >
-        {current_active_plan_price > price
+        {user.days_left === null || undefined
+          ? "Buy Now"
+          : current_active_plan_price > price
           ? "Cannot Buy"
           : is_subscribed
           ? "Active"

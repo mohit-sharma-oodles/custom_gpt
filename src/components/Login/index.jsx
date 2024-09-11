@@ -71,16 +71,19 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
   );
 
   // Handle forgot password click
-  const handleForgotPasswordClick = () => {
+  const handleForgotPasswordClick = async () => {
     if (!email) {
       setMessage("Please enter your email to reset your password.");
       return;
     }
-
-    axios_instance.post("/api/password-reset/", { email });
-
-    // Implement forgot password logic here
-    console.log("Forgot password clicked for email:", email);
+    try {
+      const response = await axios_instance.post("/api/password-reset/", {
+        email,
+      });
+      alert(response.data.message);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // Redirect on successful login
@@ -179,7 +182,9 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
                   className={`${styles.google_btn}`}
                   onClick={() => {
                     // TODO: Change the link below
-                    window.open("http://103.206.101.254:8000/api/auth/google/");
+                    window.open(
+                      "https://customgpt-b.oodleslab.com/api/auth/google/"
+                    );
                   }}
                 >
                   <FcGoogle size={24} />
