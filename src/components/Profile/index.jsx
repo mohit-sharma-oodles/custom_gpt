@@ -234,9 +234,9 @@ const Profile = ({ setShowProfile }) => {
                   alt="User"
                   style={{ marginRight: 0 }}
                 />
-                <label htmlFor="upload-button" className={styles.uploadButton}>
+                {/* <label htmlFor="upload-button" className={styles.uploadButton}>
                   <FaCamera />
-                </label>
+                </label> */}
                 <input
                   type="file"
                   id="upload-button"

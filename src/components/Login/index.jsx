@@ -7,6 +7,7 @@ import { FcGoogle } from "react-icons/fc";
 import { getUserDetails, loginUser } from "../../redux/authSlice";
 import { useNavigate } from "react-router-dom";
 import { axios_instance } from "../../Axios/axiosInstance";
+import axios from "axios";
 
 const Login = ({ isOpen, onClose, onSignupClick }) => {
   const dispatch = useDispatch();
@@ -94,6 +95,15 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
     }
   }, [status, isAuthenticated, navigate, onClose]);
 
+  const handleGoogleClick = async () => {
+    try {
+      const response = await axios_instance.get("/api/auth/google/");
+      const data = response.data;
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   // render
   if (!isOpen) return null;
   return (
@@ -180,12 +190,12 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
                 <button
                   type="button"
                   className={`${styles.google_btn}`}
-                  onClick={() => {
-                    // TODO: Change the link below
-                    window.open(
-                      "https://customgpt-b.oodleslab.com/api/auth/google/"
-                    );
-                  }}
+                  onClick={handleGoogleClick}
+                  // onClick={
+                  //   ()=>{
+                  //     window.open("")
+                  //   }
+                  // }
                 >
                   <FcGoogle size={24} />
                   <p>Continue with google</p>

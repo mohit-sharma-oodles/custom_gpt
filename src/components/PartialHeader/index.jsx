@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./index.module.scss";
 import { IoCloseSharp, IoLanguage } from "react-icons/io5";
 import { FaRegUserCircle, FaUser } from "react-icons/fa";
@@ -9,11 +9,42 @@ import default_icon from "../../assets/person_default.png";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../redux/authSlice";
 import Profile from "../Profile";
+import { axios_instance } from "../../Axios/axiosInstance";
 
 const ProfileModal = ({ onClose, setShowProfile, setShowProfileModal }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.rootReducer.auth);
+  const [user, setUser] = useState({});
+  const [subscription, setSubscription] = useState("");
+  // const { user } = useSelector((state) => state.rootReducer.auth);
+
+  useEffect(() => {
+    const getProfile = async () => {
+      try {
+        const response = await axios_instance.get("/api/profile/");
+        console.log(response.data);
+        setUser(response.data);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    getProfile();
+  }, []);
+
+  useEffect(() => {
+    const getDetails = async () => {
+      try {
+        const response = await axios_instance.get(
+          "/subscriptions/subscription-details/"
+        );
+        console.log(response.data);
+        setSubscription(response.data.product_name);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    getDetails();
+  }, []);
 
   const handleLogout = () => {
     dispatch(logoutUser());
@@ -24,18 +55,24 @@ const ProfileModal = ({ onClose, setShowProfile, setShowProfileModal }) => {
   return (
     <div className={styles.profileModal}>
       <div className={styles.top_section}>
-        <img src={user?.profile_picture || default_icon} alt="User" />
+        <img
+          style={{
+            borderRadius: "50%",
+          }}
+          src={user?.profile_picture || default_icon}
+          alt="User"
+        />
         <div>
           <p className={styles.name}>{user?.first_name}</p>
           <p className={styles.plan}>
-            {" "}
-            <img
-              src={crown}
-              style={{ height: "16px", width: "16px" }}
-              alt="Crown"
-            />
-            {user?.current_plan}
-            Premium
+            {subscription.length !== 0 && (
+              <img
+                src={crown}
+                style={{ height: "16px", width: "16px" }}
+                alt="Crown"
+              />
+            )}
+            {subscription}
           </p>
         </div>
         <IoCloseSharp
@@ -70,7 +107,7 @@ const PartialHeader = ({ title = "Projects" }) => {
 
   return (
     <div className={styles.container}>
-      <h1>{title}</h1>
+      <h1 style={{ textTransform: "capitalize" }}>{title}</h1>
 
       <div className={styles.right_Side_container}>
         <Link

@@ -1,23 +1,83 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./index.module.scss";
 import { useSelector } from "react-redux";
 // assets
 import logo from "../../assets/company_logo.svg";
 
 //icons
-import { MdAddCircleOutline } from "react-icons/md";
+import { MdAddCircleOutline, MdDeleteOutline } from "react-icons/md";
 import { IoIosSearch } from "react-icons/io";
+import { RxFileText } from "react-icons/rx";
+import { IoEyeOutline } from "react-icons/io5";
+import { FaRegEdit } from "react-icons/fa";
 
 //components
 import Sidebar from "../../components/Sidebar";
 import PartialHeader from "../../components/PartialHeader";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { axios_instance } from "../../Axios/axiosInstance";
 
 const Projects = () => {
+  const navigate = useNavigate();
   const { user } = useSelector((state) => state.rootReducer.auth);
   const localstorageuser = localStorage.getItem("user");
 
-  // return <div>{user?.email}</div>;
+  const [projects, setProjects] = useState([]);
+  const [loader, setLoader] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const getAllProjects = async () => {
+    setLoader(true);
+    try {
+      const response = await axios_instance.get(
+        "/api/customgpt/projects/get_all_pages/"
+      );
+      setProjects(response?.data?.projects);
+      console.log(response?.data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoader(false);
+    }
+  };
+
+  useEffect(() => {
+    getAllProjects();
+  }, []);
+
+  const filteredProjects = searchTerm
+    ? projects.filter((project) =>
+        project.project_name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : projects;
+
+  // Action Functions
+  const handleEditClick = (projectID) => {
+    console.log(`Edit clicked for project: ${projectID}`);
+    navigate(`/app/create-project?edit=true&projectID=${projectID}`);
+  };
+
+  const handleViewClick = (projectId) => {
+    navigate(`/app/project/${projectId}`);
+  };
+
+  const handleDeleteProject = async (projectID) => {
+    setLoader(true);
+    try {
+      const response = await axios_instance.delete(
+        `/api/customgpt/projects/delete/${projectID}/`
+      );
+      console.log(response);
+
+      // Refetch projects after deletion
+      await getAllProjects();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoader(false); // Stop loader after delete operation is complete
+    }
+  };
+
   return (
     <div className={styles.container}>
       {/* leftside */}
@@ -35,7 +95,13 @@ const Projects = () => {
                 <div className={styles.left_side}>
                   <div className={styles.input}>
                     <IoIosSearch />
-                    <input type="text" name="" id="" placeholder="Search" />
+                    {/* Input field for search */}
+                    <input
+                      type="text"
+                      placeholder="Search"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                   </div>
                   <select
                     name="upload_time"
@@ -67,33 +133,90 @@ const Projects = () => {
               </div>
             </div>
             <div className={styles.tableWrapper}>
-              {/* // TODO: Get the list of all the projects and then render them in the table */}
               <div className={styles.tableContainer}>
                 <table className={styles.table}>
                   <thead>
                     <tr>
                       <th>S.no</th>
-                      <th>Transaction ID</th>
-                      <th>Payment Date and Time</th>
-                      <th>Payment Mode</th>
-                      <th> Receipt</th>
+                      <th>Project Name</th>
+                      <th>Documents</th>
+                      <th>Created On</th>
+                      <th>Last Modified</th>
+                      <th>Actions</th>
                     </tr>
                   </thead>
+
+                  {loader && <div className={styles.loader} />}
+
                   <tbody>
-                    <tr key={2}>
-                      <td>{1 + 1}</td>
-                      <td>45</td>
-                      <td>date</td>
-                      <td>fghjk</td>
-                      <td>fghjfghk</td>
-                    </tr>
-                    {/* ) : (
-                    <tr>
-                      <td colSpan="5" style={{ textAlign: "center" }}>
-                        No prior transaction data available.
-                      </td>
-                    </tr>
-                    )} */}
+                    {filteredProjects.length > 0 ? (
+                      filteredProjects.map((project, idx) => (
+                        <tr key={idx}>
+                          <td>{idx + 1}</td>
+                          <td style={{ textAlign: "left" }}>
+                            {project.project_name}
+                          </td>
+                          <td className={styles.files_table_data_container}>
+                            {project.documents.map((doc, idx) => {
+                              return (
+                                <div key={idx} className={styles.document_span}>
+                                  <p
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      gap: "5px",
+                                      whiteSpace: "nowrap",
+                                      overflow: "hidden",
+                                      textOverflow: "ellipsis",
+                                    }}
+                                  >
+                                    <RxFileText color="#ae407a" />
+                                    {doc.filename.split(".").shift()}
+                                  </p>
+
+                                  <span className={styles.type_container}>
+                                    {doc.filename.split(".").pop()}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </td>
+                          <td>{project.created_at}</td>
+                          <td>{project.updated_at}</td>
+                          <td>
+                            <div className={styles.actionsContainer}>
+                              <IoEyeOutline
+                                color="#ae407a"
+                                size={16}
+                                onClick={() =>
+                                  handleViewClick(project.project_id)
+                                }
+                              />
+                              <FaRegEdit
+                                color="#ae407a"
+                                size={14}
+                                onClick={() =>
+                                  handleEditClick(project.project_id)
+                                }
+                              />
+                              <MdDeleteOutline
+                                color="#ae407a"
+                                size={16}
+                                onClick={() =>
+                                  handleDeleteProject(project.project_id)
+                                }
+                              />
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="6" style={{ textAlign: "center" }}>
+                          No projects found.
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>

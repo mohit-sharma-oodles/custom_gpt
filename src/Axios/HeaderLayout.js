@@ -36,11 +36,25 @@ const HeaderLayout = ({ isAuthenticated }) => {
   };
   const closeSignupModal = () => setIsSignupModalOpen(false);
 
-  const hiddenHeaderPaths = ["/app/projects", "/app/create-project"];
+  const hiddenHeaderPaths = [
+    "/app/projects",
+    "/app/create-project",
+    "app/project/:projectId",
+  ];
   const showFooterPaths = ["/", "app/home"];
 
+  const matchHiddenHeaderPaths = (pathname) => {
+    return hiddenHeaderPaths.some((path) => {
+      if (path.includes(":projectId")) {
+        const dynamicPathRegex = new RegExp("^/app/project/[^/]+$");
+        return dynamicPathRegex.test(pathname);
+      }
+      return path === pathname;
+    });
+  };
+
   // Check if the current path matches any path in the array
-  const showHeader = !hiddenHeaderPaths.includes(location.pathname);
+  const showHeader = !matchHiddenHeaderPaths(location.pathname);
   const showFooter = showFooterPaths.includes(location.pathname);
   return (
     <div

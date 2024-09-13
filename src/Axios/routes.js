@@ -14,6 +14,7 @@ import CreateProject from "../pages/CreateProject/CreateProject";
 import PaymentSuccess from "../pages/PaymentSuccess";
 import CancelPayment from "../pages/Cancel";
 import UpgradePlan from "../pages/UpgradePlan";
+import ViewProject from "../pages/ViewProject";
 
 const RouterConfig = (isAuthenticated) => {
   return createBrowserRouter([
@@ -75,6 +76,14 @@ const RouterConfig = (isAuthenticated) => {
           element: (
             <ProtectedRoute isAuthenticated={isAuthenticated}>
               <CreateProject isAuthenticated={isAuthenticated} />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "app/project/:projectId",
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <ViewProject isAuthenticated={isAuthenticated} />
             </ProtectedRoute>
           ),
         },
