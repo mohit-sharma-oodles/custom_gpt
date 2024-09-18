@@ -15,6 +15,7 @@ import PaymentSuccess from "../pages/PaymentSuccess";
 import CancelPayment from "../pages/Cancel";
 import UpgradePlan from "../pages/UpgradePlan";
 import ViewProject from "../pages/ViewProject";
+import SharableChat from "../pages/SharableChat";
 
 const RouterConfig = (isAuthenticated) => {
   return createBrowserRouter([
@@ -41,6 +42,10 @@ const RouterConfig = (isAuthenticated) => {
         {
           path: "reset-password",
           element: <ForgotPassword />,
+        },
+        {
+          path: "/app/project/:projectId/chat",
+          element: <SharableChat />,
         },
         // {
         //   path: "app",

@@ -1,30 +1,32 @@
 import React, { useEffect, useState } from "react";
 import styles from "./index.module.scss";
 import { useSelector } from "react-redux";
-// assets
 import logo from "../../assets/company_logo.svg";
 
-//icons
-import { MdAddCircleOutline, MdDeleteOutline } from "react-icons/md";
+// Icons
+import { MdAddCircleOutline } from "react-icons/md";
 import { IoIosSearch } from "react-icons/io";
 import { RxFileText } from "react-icons/rx";
 import { IoEyeOutline } from "react-icons/io5";
 import { FaRegEdit } from "react-icons/fa";
+import { HiOutlineTrash } from "react-icons/hi2";
 
-//components
+// Components
 import Sidebar from "../../components/Sidebar";
 import PartialHeader from "../../components/PartialHeader";
 import { Link, useNavigate } from "react-router-dom";
 import { axios_instance } from "../../Axios/axiosInstance";
+import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
 
 const Projects = () => {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.rootReducer.auth);
-  const localstorageuser = localStorage.getItem("user");
 
   const [projects, setProjects] = useState([]);
   const [loader, setLoader] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isModalOpen, setModalOpen] = useState(false); // For modal visibility
+  const [projectToDelete, setProjectToDelete] = useState(null); // For storing the project ID to delete
 
   const getAllProjects = async () => {
     setLoader(true);
@@ -33,7 +35,6 @@ const Projects = () => {
         "/api/customgpt/projects/get_all_pages/"
       );
       setProjects(response?.data?.projects);
-      console.log(response?.data);
     } catch (error) {
       console.log(error);
     } finally {
@@ -51,9 +52,7 @@ const Projects = () => {
       )
     : projects;
 
-  // Action Functions
   const handleEditClick = (projectID) => {
-    console.log(`Edit clicked for project: ${projectID}`);
     navigate(`/app/create-project?edit=true&projectID=${projectID}`);
   };
 
@@ -61,20 +60,25 @@ const Projects = () => {
     navigate(`/app/project/${projectId}`);
   };
 
-  const handleDeleteProject = async (projectID) => {
+  // Open the modal and set the project to delete
+  const openDeleteModal = (projectId) => {
+    setProjectToDelete(projectId); // Store the project ID
+    setModalOpen(true); // Open the modal
+  };
+
+  // Handle project deletion after modal confirmation
+  const handleDeleteProject = async () => {
     setLoader(true);
     try {
       const response = await axios_instance.delete(
-        `/api/customgpt/projects/delete/${projectID}/`
+        `/api/customgpt/projects/delete/${projectToDelete}/`
       );
-      console.log(response);
-
-      // Refetch projects after deletion
+      setModalOpen(false);
       await getAllProjects();
     } catch (error) {
       console.log(error);
     } finally {
-      setLoader(false); // Stop loader after delete operation is complete
+      setLoader(false);
     }
   };
 
@@ -95,7 +99,6 @@ const Projects = () => {
                 <div className={styles.left_side}>
                   <div className={styles.input}>
                     <IoIosSearch />
-                    {/* Input field for search */}
                     <input
                       type="text"
                       placeholder="Search"
@@ -157,8 +160,8 @@ const Projects = () => {
                             {project.project_name}
                           </td>
                           <td className={styles.files_table_data_container}>
-                            {project.documents.map((doc, idx) => {
-                              return (
+                            {project.documents.length > 0 ? (
+                              project.documents.map((doc, idx) => (
                                 <div key={idx} className={styles.document_span}>
                                   <p
                                     style={{
@@ -173,16 +176,44 @@ const Projects = () => {
                                     <RxFileText color="#ae407a" />
                                     {doc.filename.split(".").shift()}
                                   </p>
-
                                   <span className={styles.type_container}>
                                     {doc.filename.split(".").pop()}
                                   </span>
                                 </div>
-                              );
-                            })}
+                              ))
+                            ) : (
+                              <p
+                                style={{
+                                  color: "red",
+                                  fontWeight: "semibold",
+                                  fontStyle: "italic",
+                                }}
+                              >
+                                No documents found
+                              </p>
+                            )}
                           </td>
-                          <td>{project.created_at}</td>
-                          <td>{project.updated_at}</td>
+
+                          <td>
+                            {new Date(project.created_at).toLocaleDateString(
+                              "en-GB",
+                              {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                              }
+                            )}
+                          </td>
+                          <td>
+                            {new Date(project.updated_at).toLocaleDateString(
+                              "en-GB",
+                              {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                              }
+                            )}
+                          </td>
                           <td>
                             <div className={styles.actionsContainer}>
                               <IoEyeOutline
@@ -199,11 +230,11 @@ const Projects = () => {
                                   handleEditClick(project.project_id)
                                 }
                               />
-                              <MdDeleteOutline
+                              <HiOutlineTrash
                                 color="#ae407a"
                                 size={16}
-                                onClick={() =>
-                                  handleDeleteProject(project.project_id)
+                                onClick={
+                                  () => openDeleteModal(project.project_id) // Open modal on delete
                                 }
                               />
                             </div>
@@ -225,6 +256,14 @@ const Projects = () => {
         </div>
       </div>
       {/* right_side */}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={isModalOpen}
+        onClose={() => setModalOpen(false)} // Close modal
+        onConfirm={handleDeleteProject} // Delete project on confirm
+        title={"Project"}
+      />
     </div>
   );
 };

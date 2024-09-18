@@ -108,7 +108,7 @@
             // background-color: pink;
             height: 90%;
             overflow-y: auto;
-            padding: 0.5rem;
+            // padding: 0.5rem;
             box-sizing: border-box;
             margin-top: 3rem;
             width: 100%;
@@ -121,13 +121,18 @@
               border-collapse: collapse;
               border-radius: 15px;
 
+              thead {
+                position: sticky;
+                top: 0;
+              }
+
               th {
                 border-right: 1px solid #edebeb;
                 border-bottom: 1px solid #edebeb;
                 border-radius: 5px;
                 text-align: center;
                 padding: 8px;
-                background-color: #f2f2f26c;
+                background-color: #f2f2f2;
                 font-weight: 500;
                 font-size: 14px;
               }
@@ -174,7 +179,7 @@
                   width: 100%;
 
                   .type_container {
-                    width: fit-content;
+                    width: max-content;
                     background-color: aquamarine;
                     padding: 5px 10px;
                     border-radius: 4px;

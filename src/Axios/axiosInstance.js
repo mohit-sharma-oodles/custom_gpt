@@ -1,11 +1,13 @@
 import axios from "axios";
 // import { jwtDecode } from "jwt-decode";
 
+// export const baseURL = "https://d07a-14-102-190-50.ngrok-free.app";
+
 export const axios_instance = axios.create({
   baseURL: "https://customgpt-b.oodleslab.com",
-  // baseURL: "https://45ce-103-95-83-152.ngrok-free.app",
+  // baseURL: baseURL,
   // headers: {
-  //   "ngrok-skip-browser-warning": "true",
+  //    "ngrok-skip-browser-warning": "true",
   // },
 });
 

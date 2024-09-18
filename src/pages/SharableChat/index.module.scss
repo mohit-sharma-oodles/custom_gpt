@@ -1,0 +1,120 @@
+@import "../../index.scss";
+
+.chatContainer {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 100px);
+  padding: 1rem;
+  align-items: center;
+
+  .messagesContainer {
+    flex: 1 1 auto; // Allow this container to grow and fill available space
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow-y: auto;
+    padding: 10px;
+    width: 80%;
+
+    .messageList {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      //   max-height: 100%;
+      overflow: hidden;
+
+      .userMessage {
+        align-self: flex-end;
+        background-color: $base-pink;
+        color: white;
+        padding: 10px 1rem;
+        border-radius: 15px 0px 15px 15px;
+        max-width: 70%;
+        margin-bottom: 10px;
+        word-wrap: break-word;
+      }
+
+      .serverMessage {
+        align-self: flex-start;
+        background-color: #ededed;
+        color: #333;
+        padding: 10px 1rem 10px 1.6rem;
+        border-radius: 0px 15px 15px 15px;
+        max-width: 80%;
+        margin-bottom: 10px;
+        word-wrap: break-word;
+      }
+
+      .temp_loader {
+        /* HTML: <div class="loader"></div> */
+        width: 30px;
+        aspect-ratio: 2;
+        --_g: no-repeat radial-gradient(circle closest-side, #000 90%, #0000);
+        background: var(--_g) 0% 50%, var(--_g) 50% 50%, var(--_g) 100% 50%;
+        background-size: calc(100% / 3) 50%;
+        animation: l3 1s infinite linear;
+      }
+
+      @keyframes l3 {
+        20% {
+          background-position: 0% 0%, 50% 50%, 100% 50%;
+        }
+        40% {
+          background-position: 0% 100%, 50% 0%, 100% 50%;
+        }
+        60% {
+          background-position: 0% 50%, 50% 100%, 100% 0%;
+        }
+        80% {
+          background-position: 0% 50%, 50% 50%, 100% 100%;
+        }
+      }
+    }
+  }
+
+  form {
+    // position: sticky;
+    // bottom: 10px;
+    width: 80%;
+
+    .inputContainer {
+      height: 50px;
+      background-color: rgb(240, 240, 240);
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 20px;
+
+      .left_side {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex: 1;
+
+        input {
+          border: none;
+          outline: none;
+          background-color: transparent;
+          width: 70%;
+        }
+      }
+
+      svg {
+        cursor: pointer;
+        color: #f06292; // base-pink
+
+        &:hover {
+          color: darken(#f06292, 10%);
+        }
+      }
+
+      .sendButton {
+        background-color: transparent;
+        border: none;
+        outline: none;
+      }
+    }
+  }
+}

@@ -1,49 +1,148 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import styles from "./index.module.scss";
-
+import ReactMarkdown from "react-markdown";
 import { useParams } from "react-router-dom";
 import { axios_instance } from "../../Axios/axiosInstance";
-
-// Components
 import Sidebar from "../../components/Sidebar";
 import PartialHeader from "../../components/PartialHeader";
-
-// Icons
+import { FileUploader } from "react-drag-drop-files";
+import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
+import ShareChatModal from "../../components/ShareChatModal";
+import DeployModal from "../../components/DeployModal";
 import { HiMiniMagnifyingGlass } from "react-icons/hi2";
-import { IoRocketOutline } from "react-icons/io5";
-import { GoUpload, GoFile } from "react-icons/go";
+import {
+  IoRocketOutline,
+  IoEyeOutline,
+  IoCloudUploadOutline,
+} from "react-icons/io5";
+import { TbSend2 } from "react-icons/tb";
+import { MdMicNone } from "react-icons/md";
+import { GoUpload, GoShareAndroid } from "react-icons/go";
+import { RxFileText } from "react-icons/rx";
+import { HiOutlineTrash } from "react-icons/hi2";
+import { AiOutlineDelete } from "react-icons/ai";
+import logo_small from "../../assets/compnay_icon_small.svg";
 
+// Upload Modal
+const UploadDocumentModal = ({ isOpen, onClose, onUpload }) => {
+  const [fileSelected, setFileSelected] = useState(null);
+  const [uploadError, setUploadError] = useState("");
+
+  const handleChange = (file) => {
+    if (fileSelected) {
+      alert("You can only upload one file.");
+      return;
+    }
+    setFileSelected(file);
+  };
+
+  const handleDeleteFile = () => {
+    setFileSelected(null);
+  };
+
+  const handleUploadDocument = () => {
+    if (!fileSelected) {
+      alert("Please select a file to upload.");
+      return;
+    }
+    onUpload(fileSelected);
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className={styles.modalOverlay}>
+      <div className={styles.modalContainer}>
+        <div className={styles.modalHeader}>
+          <h2 style={{ fontWeight: "500" }}>Upload Document</h2>
+          <button onClick={onClose} className={styles.closeButton}>
+            ×
+          </button>
+        </div>
+        <div style={{ height: "70%", marginBottom: "auto" }}>
+          <FileUploader
+            handleChange={handleChange}
+            name="file"
+            multiple={false}
+            classes="drop_zone"
+          >
+            <div className={styles.drop_zone}>
+              <IoCloudUploadOutline size={50} color={"lightgrey"} />
+              <div className={styles.text_container}>
+                <h3>
+                  Drag and Drop file or{" "}
+                  <span className={styles.browse}>Browse</span>
+                </h3>
+                <p>Supported formats: PDF, DOC, XLSX, SPREADSHEET, etc.</p>
+              </div>
+            </div>
+          </FileUploader>
+        </div>
+        {fileSelected && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              width: "80%",
+            }}
+          >
+            <p>{fileSelected.name.split(".").shift()}</p>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+              }}
+            >
+              <p
+                style={{
+                  width: "fit-content",
+                  backgroundColor: "aquamarine",
+                  padding: "5px 10px",
+                  borderRadius: "4px",
+                  textAlign: "center",
+                }}
+              >
+                {fileSelected.name.split(".").pop()}
+              </p>
+              <button onClick={handleDeleteFile} className={styles.delete_btn}>
+                <AiOutlineDelete size={20} color="red" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {uploadError && <p className={styles.error}>{uploadError}</p>}
+        <button className={styles.uploadButton} onClick={handleUploadDocument}>
+          Upload
+        </button>
+      </div>
+    </div>
+  );
+};
+// Upload Modal
 const ViewProject = () => {
   const { projectId } = useParams();
-
   const [projectData, setProjectData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://cdn.customgpt.ai/js/embed.js";
-    script.defer = true;
-    script.setAttribute("div_id", "customgpt_chat");
-    script.setAttribute("p_id", "41582");
-    script.setAttribute("p_key", "7d6fc283f4128b6448b9eb119bd9dff0");
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [documentToDelete, setDocumentToDelete] = useState(null);
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const [deployModal, setDeployModal] = useState(false);
 
-    script.onerror = () => {
-      console.error("Failed to load the CustomGPT script");
-    };
+  // chatbot
+  const [prompt, setPrompt] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [messageloading, setMessageLoading] = useState(false);
+  const [shareChatModal, setShareChatModal] = useState(false);
+  const [avatar, setAvatar] = useState(null);
 
-    const chatbotContainer = document.getElementById("customgpt_chat");
-    if (chatbotContainer) {
-      chatbotContainer.appendChild(script);
-    }
+  const messageEndRef = useRef(null);
 
-    return () => {
-      // Cleanup: Remove the script when the component is unmounted
-      if (chatbotContainer) {
-        chatbotContainer.innerHTML = ""; // Clear the chatbot container to remove the script
-      }
-    };
-  }, []);
+  // console.log(projectData?.project[0]?.embeded_code);
 
   useEffect(() => {
     const fetchProjectData = async () => {
@@ -52,6 +151,9 @@ const ViewProject = () => {
           `/api/customgpt/projects/${projectId}/pages/`
         );
         setProjectData(response.data);
+        setAvatar(response.data.project[0].avatar_image_url);
+        // console.log(avatar);
+        console.log(projectData);
         setLoading(false);
       } catch (error) {
         setError("Failed to load project data. Please try again later.");
@@ -62,9 +164,53 @@ const ViewProject = () => {
     fetchProjectData();
   }, [projectId]);
 
-  // Render the documents list
+  const handleDeleteDocument = async () => {
+    if (!documentToDelete) return;
+
+    try {
+      await axios_instance.delete(
+        `/api/customgpt/projects/${projectId}/page/delete/${documentToDelete}/`
+      );
+      document.location.reload(); // Reload the page or re-fetch the project data
+      setModalOpen(false); // Close modal after successful deletion
+    } catch (err) {
+      setError("Failed to delete document. Please try again later.");
+      setModalOpen(false); // Close modal even on failure
+    }
+  };
+
+  const handleUploadDocument = async (file) => {
+    setLoading(true);
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await axios_instance.post(
+        `/api/customgpt/projects/update/${projectId}/`,
+        formData
+      );
+      setLoading(false);
+      setUploadModalOpen(false);
+      document.location.reload(); // Refresh to show the new file
+    } catch (e) {
+      setLoading(false);
+      setError("Failed to upload document. Please try again later.");
+    }
+  };
+
+  // document table
   const renderDocuments = () => {
     if (projectData && projectData.project[0]?.documents.length > 0) {
+      // Filter documents based on the search query
+      const filteredDocuments = projectData.project[0].documents.filter((doc) =>
+        doc.filename.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+
+      if (filteredDocuments.length === 0) {
+        return <p>No documents match your search.</p>;
+      }
+
       return (
         <table className={styles.documentTable}>
           <thead>
@@ -76,32 +222,117 @@ const ViewProject = () => {
             </tr>
           </thead>
           <tbody>
-            {projectData.project[0].documents.map((doc, index) => (
-              <tr key={index}>
-                <td style={{ textAlign: "center" }}>{index + 1}</td>
-                <td>
-                  <GoFile size={18} style={{ marginRight: "5px" }} />
-                  <span className={styles.filename}>
-                    {doc.filename.length > 15
-                      ? `${doc.filename.slice(0, 15)}...`
-                      : doc.filename}
-                  </span>
-                </td>{" "}
-                <td>{new Date(doc.uploaded_at).toLocaleString()}</td>{" "}
-                {/* Uploaded On */}
-              </tr>
-            ))}
+            {filteredDocuments.map((doc, index) => {
+              console.log(doc.viewable_url);
+              return (
+                <tr key={doc.id + Math.random()}>
+                  <td style={{ textAlign: "center" }}>{index + 1}</td>
+                  <td className={styles.fileName}>
+                    <div className={styles.left}>
+                      <RxFileText size={18} style={{ marginRight: "5px" }} />
+                      <span className={styles.filename}>
+                        {doc.filename.split(".").shift().length > 30
+                          ? `${doc.filename.split(".").shift().slice(0, 20)}...`
+                          : doc.filename.split(".").shift()}
+                      </span>
+                    </div>
+                    <span className={styles.type_container}>
+                      {doc.filename.split(".").pop()}
+                    </span>
+                  </td>
+                  <td>
+                    {new Date(doc.uploaded_at).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </td>
+                  <td
+                    style={{
+                      textAlign: "center",
+                      verticalAlign: "middle",
+                    }}
+                  >
+                    <IoEyeOutline
+                      size={16}
+                      style={{
+                        marginRight: "10px",
+                        verticalAlign: "middle",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => window.open(doc.viewable_url, "_blank")}
+                    />
+                    <HiOutlineTrash
+                      size={16}
+                      style={{ verticalAlign: "middle", cursor: "pointer" }}
+                      // onClick={() => handleDeleteDocument(doc.page_id)}
+                      onClick={() => {
+                        setModalOpen(true); // Open modal
+                        setDocumentToDelete(doc.page_id);
+                      }}
+                    />
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       );
     }
     return <p>No documents found.</p>;
   };
+  // document table
+
+  //chatbot
+  const handleShareChat = () => {
+    setShareChatModal(true);
+  };
+
+  const handleSendPrompt = async () => {
+    if (!prompt.trim()) return;
+
+    const newMessage = { type: "user", content: prompt };
+    setMessages((prevMessages) => [...prevMessages, newMessage]);
+
+    setMessageLoading(true);
+    setPrompt("");
+
+    try {
+      const response = await axios_instance.post(
+        `/api/customgpt/projects/${projectId}/chat/${projectData.project[0].session_id}/`,
+        { prompt: prompt }
+      );
+
+      const { openai_response, url, title } = response.data.message;
+
+      const serverResponse = {
+        type: "server",
+        content: openai_response,
+        url: url || null,
+        title: title || null,
+      };
+      setMessages((prevMessages) => [...prevMessages, serverResponse]);
+    } catch (e) {
+      console.log(e);
+      const errorMessage = {
+        type: "server",
+        content: "Error fetching response.",
+      };
+      setMessages((prevMessages) => [...prevMessages, errorMessage]);
+    } finally {
+      setMessageLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (messageEndRef.current) {
+      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, messageloading]);
 
   return (
     <div className={styles.container}>
       <Sidebar />
-
       <div className={styles.right}>
         {loading ? (
           <div className={styles.loader} />
@@ -120,30 +351,161 @@ const ViewProject = () => {
                     <h3>All Documents</h3>
                     <div className={styles.input_container}>
                       <HiMiniMagnifyingGlass />
-                      <input type="text" placeholder="Search" />
+                      <input
+                        type="text"
+                        placeholder="Search"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                      />
                     </div>
                   </div>
                   <div className={styles.right}>
-                    <button className={`${styles.button} ${styles.deploy}`}>
+                    <button
+                      className={`${styles.button} ${styles.deploy}`}
+                      onClick={() => setDeployModal(true)}
+                    >
                       <IoRocketOutline size={18} /> Deploy
                     </button>
-                    <button className={`${styles.button} ${styles.upload}`}>
+                    <button
+                      className={`${styles.button} ${styles.upload}`}
+                      onClick={() => setUploadModalOpen(true)}
+                    >
                       <GoUpload size={18} /> Upload
                     </button>
                   </div>
                 </div>
                 <div className={styles.bottom}>{renderDocuments()}</div>
               </div>
-
               {/* ChatBot */}
               <div className={styles.chatbot_container}>
-                <div id="customgpt_chat"></div>
+                <div className={styles.headerContainer}>
+                  <p className={styles.heading}>AI Chat</p>
+                  <GoShareAndroid
+                    size={20}
+                    color="#ae407a"
+                    style={{ cursor: "pointer" }}
+                    onClick={handleShareChat}
+                  />
+                </div>
+                <div className={styles.bottomContainer}>
+                  {/* Message container */}
+                  <div className={styles.messagesContainer}>
+                    <div className={styles.messageList}>
+                      {messages.map((message, index) => {
+                        // console.log(message);
+                        return (
+                          <>
+                            {message.type === "server" && (
+                              <img
+                                src={avatar ? avatar : logo_small}
+                                style={{ width: "30px", height: "30px" }}
+                                alt=""
+                              />
+                            )}
+                            <div
+                              key={index}
+                              className={
+                                message.type === "user"
+                                  ? styles.userMessage
+                                  : styles.serverMessage
+                              }
+                            >
+                              {/* Render Markdown for server messages, plain text for user messages */}
+                              {message.type === "server" ? (
+                                <>
+                                  <ReactMarkdown>
+                                    {message.content}
+                                  </ReactMarkdown>
+                                </>
+                              ) : (
+                                <p>{message.content}</p>
+                              )}
+
+                              {/* If both url and title are available, render them as a link */}
+                              {message.type === "server" &&
+                                message.url &&
+                                message.title && (
+                                  <div style={{ marginTop: "10px" }}>
+                                    &#9432; Related Documents: <br />
+                                    <a
+                                      style={{ color: "black" }}
+                                      href={message.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                    >
+                                      {message.title}
+                                    </a>
+                                  </div>
+                                )}
+                            </div>
+                          </>
+                        );
+                      })}
+                      {/* TODO: Need to change the laoder css here and everywhere else as well. */}
+                      {messageloading && <div className={styles.textloader} />}{" "}
+                      <div ref={messageEndRef} />
+                    </div>
+                  </div>
+
+                  {/* Input container */}
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      handleSendPrompt();
+                    }}
+                  >
+                    <div className={styles.inputContainer}>
+                      <div className={styles.left_side}>
+                        <MdMicNone size={20} />
+                        <input
+                          type="text"
+                          value={prompt}
+                          onChange={(e) => setPrompt(e.target.value)}
+                        />
+                      </div>
+                      <button
+                        style={{
+                          outline: "none",
+                          border: "none",
+                          backgroundColor: "transparent",
+                          cursor: "pointer",
+                        }}
+                        type="submit"
+                      >
+                        <TbSend2 size={20} />
+                      </button>
+                    </div>
+                  </form>
+                </div>
               </div>
               {/* ChatBot */}
             </div>
           </>
         )}
       </div>
+      {/*  Modals */}
+      <ShareChatModal
+        isOpen={shareChatModal}
+        onClose={() => setShareChatModal(false)}
+        projectId={projectId}
+      />
+      <DeployModal
+        isOpen={deployModal}
+        onClose={() => setDeployModal(false)}
+        embedCode={projectData?.project[0]?.embeded_code}
+        projectId={projectId}
+      />
+      <UploadDocumentModal
+        isOpen={uploadModalOpen}
+        onClose={() => setUploadModalOpen(false)}
+        onUpload={handleUploadDocument}
+      />
+      <DeleteConfirmationModal
+        isOpen={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        onConfirm={handleDeleteDocument}
+        title={"Document"}
+      />
     </div>
   );
 };

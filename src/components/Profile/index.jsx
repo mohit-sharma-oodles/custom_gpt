@@ -16,8 +16,8 @@ import { axios_instance } from "../../Axios/axiosInstance";
 import { useNavigate } from "react-router-dom";
 
 const Profile = ({ setShowProfile }) => {
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const dispatch = useDispatch();
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
 
   const [firstName, setFirstName] = useState(user.first_name);
   const [lastName, setLastName] = useState(user.last_name);
@@ -45,7 +45,18 @@ const Profile = ({ setShowProfile }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setUser(JSON.parse(localStorage.getItem("user")));
+    const getUser = async () => {
+      try {
+        const response = await axios_instance.get("/api/profile");
+        // console.log(response.data, "response");
+        setUser(response.data);
+        localStorage.setItem("user", JSON.stringify(response.data));
+      } catch (error) {
+        console.error("Error fetching user data", error);
+      }
+    };
+
+    getUser();
   }, []);
 
   useEffect(() => {
@@ -255,7 +266,7 @@ const Profile = ({ setShowProfile }) => {
             <div className={styles.subscribedPlanInfo}>
               <div className={styles.left_side}>
                 <div className={styles.left_side_wrapper}>
-                  {productName && (
+                  {user.current_subscription_plan && (
                     <>
                       <img
                         src={crown}
@@ -263,8 +274,13 @@ const Profile = ({ setShowProfile }) => {
                         alt="Crown"
                       />
                       <p style={{ fontWeight: "500", fontSize: "20px" }}>
-                        {productName}
+                        {user.current_subscription_plan}
                       </p>
+                      {user.subscription_status === "Cancelled" && (
+                        <p style={{ fontWeight: "300", fontSize: "10px" }}>
+                          (cancelled)
+                        </p>
+                      )}
                     </>
                   )}
                   {user.days_left === null && <h2>No current active plan.</h2>}
@@ -290,10 +306,12 @@ const Profile = ({ setShowProfile }) => {
                   onClick={handleRedirectToSubscription}
                   className={styles.upgrade_plan}
                 >
-                  {user.days_left > 0 ? "Upgrade Plan" : "Buy Plan"}
+                  {user.subscription_status === "active" && user.days_left > 0
+                    ? "Upgrade Plan"
+                    : "Buy Plan"}
                 </span>
 
-                {user.days_left && (
+                {user.subscription_status === "active" && user.days_left && (
                   <span onClick={handleCancel} className={styles.cancel_plan}>
                     Cancel Plan
                   </span>
