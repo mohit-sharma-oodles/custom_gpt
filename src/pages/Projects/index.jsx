@@ -172,7 +172,7 @@ const Projects = () => {
                                     <p
                                       style={{
                                         display: "flex",
-                                        alignItems: "left",
+                                        alignItems: "center",
                                         gap: "5px",
                                         whiteSpace: "nowrap",
                                         overflow: "hidden",
