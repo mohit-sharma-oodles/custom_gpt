@@ -98,14 +98,14 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
     const googleAuthURL = "https://customgpt-b.oodleslab.com/api/auth/google/";
     window.location.href = googleAuthURL;
 
-    const popupListener = setInterval(() => {
-      if (popup.closed) {
-        clearInterval(popupListener);
+    // const popupListener = setInterval(() => {
+    //   if (popup.closed) {
+    //     clearInterval(popupListener);
 
-        // Reload the page to reflect any changes
-        // window.location.reload();
-      }
-    }, 2000);
+    //     // Reload the page to reflect any changes
+    //     // window.location.reload();
+    //   }
+    // }, 2000);
 
     // const messageListener = (event) => {
     //   // Check for the origin if needed
