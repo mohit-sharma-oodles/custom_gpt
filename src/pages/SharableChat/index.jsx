@@ -114,6 +114,7 @@ const SharableChat = () => {
                     width: "30px",
                     height: "30px",
                     marginBottom: "10px",
+                    borderRadius: "50%",
                   }}
                   alt=""
                 />

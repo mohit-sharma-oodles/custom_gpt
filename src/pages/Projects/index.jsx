@@ -10,6 +10,7 @@ import { RxFileText } from "react-icons/rx";
 import { IoEyeOutline } from "react-icons/io5";
 import { FaRegEdit } from "react-icons/fa";
 import { HiOutlineTrash } from "react-icons/hi2";
+import { LuFolderOpen } from "react-icons/lu";
 
 // Components
 import Sidebar from "../../components/Sidebar";
@@ -157,25 +158,31 @@ const Projects = () => {
                         <tr key={idx}>
                           <td>{idx + 1}</td>
                           <td style={{ textAlign: "left" }}>
+                            <LuFolderOpen
+                              color="#ae407a"
+                              style={{ marginRight: "10px" }}
+                            />
                             {project.project_name}
                           </td>
                           <td className={styles.files_table_data_container}>
                             {project.documents.length > 0 ? (
                               project.documents.map((doc, idx) => (
                                 <div key={idx} className={styles.document_span}>
-                                  <p
-                                    style={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                      gap: "5px",
-                                      whiteSpace: "nowrap",
-                                      overflow: "hidden",
-                                      textOverflow: "ellipsis",
-                                    }}
-                                  >
-                                    <RxFileText color="#ae407a" />
-                                    {doc.filename.split(".").shift()}
-                                  </p>
+                                  <>
+                                    <p
+                                      style={{
+                                        display: "flex",
+                                        alignItems: "left",
+                                        gap: "5px",
+                                        whiteSpace: "nowrap",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                      }}
+                                    >
+                                      <RxFileText color="#ae407a" />
+                                      {doc.filename.split(".").shift()}
+                                    </p>
+                                  </>
                                   <span className={styles.type_container}>
                                     {doc.filename.split(".").pop()}
                                   </span>
