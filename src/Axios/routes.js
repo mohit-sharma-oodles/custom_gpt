@@ -16,6 +16,7 @@ import CancelPayment from "../pages/Cancel";
 import UpgradePlan from "../pages/UpgradePlan";
 import ViewProject from "../pages/ViewProject";
 import SharableChat from "../pages/SharableChat";
+import OAuth from "../pages/OAuth";
 
 const RouterConfig = (isAuthenticated) => {
   return createBrowserRouter([
@@ -38,6 +39,10 @@ const RouterConfig = (isAuthenticated) => {
         {
           path: "confirm-email",
           element: <ConfirmEmail />,
+        },
+        {
+          path: "oauth",
+          element: <OAuth />,
         },
         {
           path: "reset-password",

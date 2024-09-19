@@ -13,13 +13,15 @@
     flex-direction: column;
     padding: 10px;
     width: 80%;
-    overflow: hidden; // Hide overflow here
+    overflow: hidden; // to make it start from bottom
+    // overflow: auto;
 
     .messageList {
-      flex: 1; // Take available space within messagesContainer
-      overflow-y: auto; // Enable vertical scrolling
+      flex: 1;
+      overflow-y: auto; // to make it start from bottom
       display: flex;
       flex-direction: column;
+      // justify-content: flex-end;
 
       .userMessage {
         align-self: flex-end;

@@ -1,15 +1,15 @@
 import axios from "axios";
 // import { jwtDecode } from "jwt-decode";
 
-// export const baseURL = "https://d07a-14-102-190-50.ngrok-free.app";
-
 export const axios_instance = axios.create({
   baseURL: "https://customgpt-b.oodleslab.com",
-  // baseURL: baseURL,
+  // baseURL: "https://a5fc-14-102-190-50.ngrok-free.app",
   // headers: {
   //    "ngrok-skip-browser-warning": "true",
   // },
 });
+
+// let retries = 0;
 
 // Request interceptor to add the access token to headers
 axios_instance.interceptors.request.use(
@@ -35,6 +35,7 @@ axios_instance.interceptors.response.use(
   },
   async (error) => {
     const originalRequest = error.config;
+    console.log(originalRequest);
 
     if (
       error.response &&
@@ -55,7 +56,7 @@ axios_instance.interceptors.response.use(
         localStorage.setItem("accessToken", response.data.access);
         localStorage.setItem("refreshToken", response.data.refresh);
 
-        originalRequest.headers.Authorization = `Bearer ${response.data.access}`;
+        // originalRequest.headers.Authorization = `Bearer ${response.data.access}`;
 
         return axios_instance(originalRequest);
       } catch (err) {
@@ -67,41 +68,3 @@ axios_instance.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-// axios_instance.interceptors.request.use(
-//   async (config) => {
-//     const accessToken = localStorage.getItem("accessToken");
-
-//     if (accessToken) {
-//       const decodedToken = jwtDecode(accessToken);
-//       const currentTime = Date.now() / 1000;
-
-//       if (decodedToken.exp < currentTime) {
-//         // Token is expired, try to refresh it
-//         try {
-//           const refreshToken = localStorage.getItem("refreshToken");
-//           const response = await axios_instance.post("/api/token/refresh/", {
-//             refresh: refreshToken,
-//           });
-
-//           // Store the new tokens in localStorage
-//           localStorage.setItem("accessToken", response.data.access);
-//           localStorage.setItem("refreshToken", response.data.refresh);
-
-//           // Update the Authorization header in the config with the new token
-//           config.headers.Authorization = `Bearer ${response.data.access}`;
-//         } catch (err) {
-//           // Handle token refresh errors (e.g., refresh token is invalid/expired)
-//           return Promise.reject(err);
-//         }
-//       } else {
-//         // Token is still valid, continue with the original request
-//         config.headers.Authorization = `Bearer ${accessToken}`;
-//       }
-//     }
-
-//     return config;
-//   },
-//   (error) => {
-//     return Promise.reject(error);
-//   }
-// );

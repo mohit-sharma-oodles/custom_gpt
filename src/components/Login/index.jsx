@@ -7,7 +7,6 @@ import { FcGoogle } from "react-icons/fc";
 import { getUserDetails, loginUser } from "../../redux/authSlice";
 import { useNavigate } from "react-router-dom";
 import { axios_instance } from "../../Axios/axiosInstance";
-import axios from "axios";
 
 const Login = ({ isOpen, onClose, onSignupClick }) => {
   const dispatch = useDispatch();
@@ -95,14 +94,44 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
     }
   }, [status, isAuthenticated, navigate, onClose]);
 
-  const handleGoogleClick = async () => {
-    try {
-      const response = await axios_instance.get("/api/auth/google/");
-      const data = response.data;
-      console.log(data);
-    } catch (error) {
-      console.log(error);
-    }
+  const handleGoogleLogin = async () => {
+    const googleAuthURL = "https://customgpt-b.oodleslab.com/api/auth/google/";
+    window.location.href = googleAuthURL;
+
+    const popupListener = setInterval(() => {
+      if (popup.closed) {
+        clearInterval(popupListener);
+
+        // Reload the page to reflect any changes
+        // window.location.reload();
+      }
+    }, 2000);
+
+    // const messageListener = (event) => {
+    //   // Check for the origin if needed
+    //   // if (event.origin !== "http://127.0.0.1:8001") return;
+
+    //   console.log(event.data);
+    //   const { token } = event.data;
+    //   if (token) {
+    //     localStorage.setItem("access", token);
+
+    //     // Optionally, dispatch an action to update the user state if needed
+    //     dispatch(getUserDetails());
+
+    //     // Redirect to the app home or dashboard after dispatch
+    //     navigate("/app/home");
+    //   }
+    // };
+
+    // // Add event listener for message event
+    // window.addEventListener("message", messageListener);
+
+    // // Remove the event listener when the popup is closed
+    // popup.addEventListener("unload", () => {
+    //   window.removeEventListener("message", messageListener);
+    // });
+    // window.location.reload();
   };
   // render
   if (!isOpen) return null;
@@ -190,12 +219,12 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
                 <button
                   type="button"
                   className={`${styles.google_btn}`}
-                  onClick={handleGoogleClick}
-                  // onClick={
-                  //   ()=>{
-                  //     window.open("")
-                  //   }
-                  // }
+                  onClick={async () => {
+                    await handleGoogleLogin();
+                    // if(localStorage.getItem(user)){
+                    //   window.location.reload()
+                    // }
+                  }}
                 >
                   <FcGoogle size={24} />
                   <p>Continue with google</p>

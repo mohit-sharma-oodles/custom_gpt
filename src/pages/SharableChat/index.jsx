@@ -110,7 +110,11 @@ const SharableChat = () => {
               {message.type === "server" && (
                 <img
                   src={avatar ? avatar : logo_small}
-                  style={{ width: "30px", height: "30px" }}
+                  style={{
+                    width: "30px",
+                    height: "30px",
+                    marginBottom: "10px",
+                  }}
                   alt=""
                 />
               )}
