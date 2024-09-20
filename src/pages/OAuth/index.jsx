@@ -26,7 +26,7 @@ const OAuth = () => {
             localStorage.setItem("user", JSON.stringify(res.payload));
           }
           dispatch(initializeAuth());
-          navigate("/");
+          navigate("/app/projects");
 
           // Close the window after the user details are saved
           // window.close();
@@ -37,7 +37,31 @@ const OAuth = () => {
     }
   }, [accessToken, refreshToken, dispatch]);
 
-  return <div>Redirecting...</div>;
+  return (
+    <div
+      style={{
+        display: "grid",
+        placeItems: "center",
+        height: "100vh",
+        textAlign: "center",
+      }}
+    >
+      <p>Redirecting...</p>
+      <p>
+        If you are not automatically redirected, please click the link below:
+      </p>
+      <a
+        onClick={() => navigate("/app/projects")}
+        style={{
+          color: "blue",
+          textDecoration: "underline",
+          cursor: "pointer",
+        }}
+      >
+        Click here to proceed
+      </a>
+    </div>
+  );
 };
 
 export default OAuth;

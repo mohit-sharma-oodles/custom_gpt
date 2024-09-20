@@ -50,6 +50,16 @@ const DeployModal = ({
       alert("Failed to copy embed code.");
     }
   };
+  const handleShreLinkCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(
+        `https://customgpt-f.oodleslab.com/app/project/${projectId}/chat`
+      );
+      alert("Share link copied to clipboard!");
+    } catch (err) {
+      alert("Failed to copy share link.");
+    }
+  };
   // const copyLinkToClipboard = () => {
   //   const dynamicLink = `https://customgpt-f.oodleslab.com/app/project/${projectId}/chat`;
 
@@ -160,7 +170,7 @@ const DeployModal = ({
                   chatbot.
                 </p>
                 <textarea readOnly value={embedCode} />
-                {/* /////////////////////////////////////////////////////////////// */}
+
                 <p style={{ marginTop: "12px", marginBottom: "12px" }}>
                   <MdShare /> Share your chatbot
                 </p>
@@ -175,11 +185,15 @@ const DeployModal = ({
                 <div className={styles.buttons}>
                   <button onClick={copyToClipboard}>
                     <GrCopy />
-                    Copy Link
+                    Copy EmbedingLink
                   </button>
                   <button>
                     <MdOutlineEmail />
                     Email Link
+                  </button>
+                  <button onClick={handleShreLinkCopy}>
+                    <MdShare />
+                    Copy Share Link
                   </button>
                 </div>
               </div>

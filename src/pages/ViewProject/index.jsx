@@ -27,6 +27,7 @@ import logo_small from "../../assets/compnay_icon_small.svg";
 const UploadDocumentModal = ({ isOpen, onClose, onUpload }) => {
   const [fileSelected, setFileSelected] = useState(null);
   const [uploadError, setUploadError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (file) => {
     if (fileSelected) {
@@ -40,12 +41,19 @@ const UploadDocumentModal = ({ isOpen, onClose, onUpload }) => {
     setFileSelected(null);
   };
 
-  const handleUploadDocument = () => {
+  const handleUploadDocument = async () => {
     if (!fileSelected) {
       alert("Please select a file to upload.");
       return;
     }
-    onUpload(fileSelected);
+    setLoading(true); // Set loading to true before upload starts
+    try {
+      await onUpload(fileSelected); // Assuming onUpload is an async function
+    } catch (error) {
+      setUploadError("Failed to upload document. Please try again.");
+    } finally {
+      setLoading(false); // Reset loading state after upload finishes
+    }
   };
 
   if (!isOpen) return null;
@@ -113,8 +121,17 @@ const UploadDocumentModal = ({ isOpen, onClose, onUpload }) => {
         )}
 
         {uploadError && <p className={styles.error}>{uploadError}</p>}
-        <button className={styles.uploadButton} onClick={handleUploadDocument}>
-          Upload
+
+        <div className={styles.loaderContainer}>
+          {loading && <div className={styles.loader}></div>} {/* Loader */}
+        </div>
+
+        <button
+          className={styles.uploadButton}
+          onClick={handleUploadDocument}
+          disabled={loading}
+        >
+          {loading ? "Uploading..." : "Upload"}
         </button>
       </div>
     </div>
@@ -164,6 +181,46 @@ const ViewProject = () => {
 
     fetchProjectData();
   }, [projectId]);
+
+  useEffect(() => {
+    // Ensure that projectData is loaded and has the necessary information
+    if (projectData && projectData.project[0]?.session_id) {
+      const fetchMessages = async () => {
+        try {
+          const response = await axios_instance.get(
+            `/api/customgpt/projects/${projectId}/conversations/${projectData.project[0].session_id}/messages/`
+          );
+          const messagesData = response.data.messages;
+
+          // Map the messagesData to the format expected by the chat UI
+          const formattedMessages = messagesData.flatMap((message) => {
+            const formatted = [];
+            if (message.user_query) {
+              formatted.push({
+                type: "user",
+                content: message.user_query,
+              });
+            }
+            if (message.openai_response) {
+              formatted.push({
+                type: "server",
+                content: message.openai_response,
+                url: message.url || null,
+                title: message.title || null,
+              });
+            }
+            return formatted.reverse();
+          });
+
+          setMessages(formattedMessages.reverse());
+        } catch (error) {
+          console.error("Failed to fetch messages", error);
+        }
+      };
+
+      fetchMessages();
+    }
+  }, [projectData, projectId]);
 
   const handleDeleteDocument = async () => {
     if (!documentToDelete) return;
@@ -407,6 +464,7 @@ const ViewProject = () => {
                                   width: "30px",
                                   height: "30px",
                                   borderRadius: "50%",
+                                  marginBottom: "10px",
                                 }}
                                 alt=""
                               />
