@@ -56,7 +56,7 @@ const ConfirmEmail = () => {
     const token = localStorage.getItem("accessToken");
     // console.log("isAuth", isAuthenticated);
     if (isAuthenticated && token) {
-      navigate("/app/home");
+      navigate("/app/projects");
     }
   }, [isAuthenticated]);
 

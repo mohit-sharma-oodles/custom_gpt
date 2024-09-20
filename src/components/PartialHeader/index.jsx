@@ -3,13 +3,14 @@ import styles from "./index.module.scss";
 import { IoCloseSharp, IoLanguage } from "react-icons/io5";
 import { FaRegUserCircle, FaUser } from "react-icons/fa";
 import { PiSignOutBold } from "react-icons/pi";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import crown from "../../assets/crown_icon.svg";
 import default_icon from "../../assets/person_default.png";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../redux/authSlice";
 import Profile from "../Profile";
 import { axios_instance } from "../../Axios/axiosInstance";
+import { GoPencil } from "react-icons/go";
 
 const ProfileModal = ({ onClose, setShowProfile, setShowProfileModal }) => {
   const navigate = useNavigate();
@@ -72,7 +73,7 @@ const ProfileModal = ({ onClose, setShowProfile, setShowProfileModal }) => {
                 alt="Crown"
               />
             )}
-            {subscription}
+            {user.current_subscription_plan}
           </p>
         </div>
         <IoCloseSharp
@@ -94,7 +95,11 @@ const ProfileModal = ({ onClose, setShowProfile, setShowProfileModal }) => {
   );
 };
 
-const PartialHeader = ({ title = "Projects" }) => {
+const PartialHeader = ({
+  title = "Projects",
+  setDeployModal,
+  setDefaultOpen,
+}) => {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
 
@@ -105,9 +110,24 @@ const PartialHeader = ({ title = "Projects" }) => {
     (state) => state.rootReducer.auth
   );
 
+  const location = useLocation();
+  const isProjectEditPath = /\/app\/project\/\d+/.test(location.pathname);
+
   return (
     <div className={styles.container}>
-      <h1 style={{ textTransform: "capitalize" }}>{title}</h1>
+      <h1 style={{ textTransform: "capitalize" }}>
+        {title}
+        {isProjectEditPath && (
+          <GoPencil
+            size={20}
+            style={{ marginLeft: "10px", cursor: "pointer" }}
+            onClick={() => {
+              setDeployModal(true);
+              setDefaultOpen("customise");
+            }}
+          />
+        )}
+      </h1>
 
       <div className={styles.right_Side_container}>
         <Link
@@ -123,9 +143,9 @@ const PartialHeader = ({ title = "Projects" }) => {
             Subscriptions
           </span>
         </Link>
-        <span className="clickable">
+        {/* <span className="clickable">
           <IoLanguage size={24} color="grey" style={{ marginBottom: "-7px" }} />
-        </span>
+        </span> */}
         <div
           className={styles.profile_img_wrapper}
           onClick={handleProfileImageClick}
@@ -137,6 +157,7 @@ const PartialHeader = ({ title = "Projects" }) => {
               width: "100%",
               height: "100%",
               objectFit: "cover",
+              borderRadius: "50%",
             }}
           />
           {showProfileModal && (

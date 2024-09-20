@@ -107,7 +107,7 @@ const Projects = () => {
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
                   </div>
-                  <select
+                  {/* <select
                     name="upload_time"
                     id="upload_time"
                     className={styles.dropdown}
@@ -123,6 +123,7 @@ const Projects = () => {
                     <option value="mercedes">Range</option>
                     <option value="audi">Range</option>
                   </select>
+                  */}
                 </div>
                 <div className={styles.top_right_side}>
                   <Link

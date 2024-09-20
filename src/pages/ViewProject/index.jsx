@@ -132,6 +132,7 @@ const ViewProject = () => {
   const [documentToDelete, setDocumentToDelete] = useState(null);
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [deployModal, setDeployModal] = useState(false);
+  const [defaultOpen, setDefaultOpen] = useState("deploy");
 
   // chatbot
   const [prompt, setPrompt] = useState("");
@@ -223,7 +224,6 @@ const ViewProject = () => {
           </thead>
           <tbody>
             {filteredDocuments.map((doc, index) => {
-              console.log(doc.viewable_url);
               return (
                 <tr key={doc.id + Math.random()}>
                   <td style={{ textAlign: "center" }}>{index + 1}</td>
@@ -341,6 +341,8 @@ const ViewProject = () => {
         ) : (
           <>
             <PartialHeader
+              setDeployModal={setDeployModal}
+              setDefaultOpen={setDefaultOpen}
               title={projectData?.project[0]?.project_name || "Project"}
             />
             <div className={styles.bottom}>
@@ -362,7 +364,10 @@ const ViewProject = () => {
                   <div className={styles.right}>
                     <button
                       className={`${styles.button} ${styles.deploy}`}
-                      onClick={() => setDeployModal(true)}
+                      onClick={() => {
+                        setDeployModal(true);
+                        setDefaultOpen("deploy");
+                      }}
                     >
                       <IoRocketOutline size={18} /> Deploy
                     </button>
@@ -398,7 +403,11 @@ const ViewProject = () => {
                             {message.type === "server" && (
                               <img
                                 src={avatar ? avatar : logo_small}
-                                style={{ width: "30px", height: "30px" }}
+                                style={{
+                                  width: "30px",
+                                  height: "30px",
+                                  borderRadius: "50%",
+                                }}
                                 alt=""
                               />
                             )}
@@ -494,6 +503,7 @@ const ViewProject = () => {
         onClose={() => setDeployModal(false)}
         embedCode={projectData?.project[0]?.embeded_code}
         projectId={projectId}
+        defaultOpen={defaultOpen}
       />
       <UploadDocumentModal
         isOpen={uploadModalOpen}

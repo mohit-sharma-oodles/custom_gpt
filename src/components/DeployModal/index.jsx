@@ -1,24 +1,31 @@
 import React, { useEffect, useState } from "react";
 import styles from "./index.module.scss";
-import axios from "axios"; // Import axios
+import { axios_instance } from "../../Axios/axiosInstance";
 
 // Assets
 import { IoRocketOutline } from "react-icons/io5";
 import { AiOutlineCode } from "react-icons/ai";
 import { GrCopy } from "react-icons/gr";
-import { MdOutlineEmail } from "react-icons/md";
+import { MdOutlineEmail, MdShare } from "react-icons/md";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import { TbMoodEdit } from "react-icons/tb";
-import { axios_instance } from "../../Axios/axiosInstance";
 
-const DeployModal = ({ isOpen, onClose, embedCode, projectId }) => {
-  const [activeTab, setActiveTab] = useState("deploy");
+const DeployModal = ({
+  isOpen,
+  onClose,
+  embedCode,
+  projectId,
+  defaultOpen = "deploy",
+}) => {
+  const [activeTab, setActiveTab] = useState(defaultOpen);
   const [avatar, setAvatar] = useState(null);
   const [chatbotName, setChatbotName] = useState("");
   const [loading, setLoading] = useState(false);
+  console.log(defaultOpen, activeTab);
 
   useEffect(() => {
     if (isOpen) {
+      setActiveTab(defaultOpen); // Update activeTab when modal opens
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "unset";
@@ -27,7 +34,7 @@ const DeployModal = ({ isOpen, onClose, embedCode, projectId }) => {
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, [isOpen]);
+  }, [isOpen, defaultOpen]);
 
   if (!isOpen) return null;
 
@@ -43,6 +50,18 @@ const DeployModal = ({ isOpen, onClose, embedCode, projectId }) => {
       alert("Failed to copy embed code.");
     }
   };
+  // const copyLinkToClipboard = () => {
+  //   const dynamicLink = `https://customgpt-f.oodleslab.com/app/project/${projectId}/chat`;
+
+  //   navigator.clipboard
+  //     .writeText(dynamicLink)
+  //     .then(() => {
+  //       alert("Link copied to clipboard!");
+  //     })
+  //     .catch((err) => {
+  //       console.error("Failed to copy the link: ", err);
+  //     });
+  // };
 
   const handleSaveSettings = async () => {
     setLoading(true);
@@ -141,6 +160,18 @@ const DeployModal = ({ isOpen, onClose, embedCode, projectId }) => {
                   chatbot.
                 </p>
                 <textarea readOnly value={embedCode} />
+                {/* /////////////////////////////////////////////////////////////// */}
+                <p style={{ marginTop: "12px", marginBottom: "12px" }}>
+                  <MdShare /> Share your chatbot
+                </p>
+                <p style={{ fontSize: "14px", fontWeight: 400 }}>
+                  Please copy the following link and share it with your
+                  colleagues so they can use this chatbot.{" "}
+                </p>
+                <textarea
+                  readOnly
+                  value={`https://customgpt-f.oodleslab.com/app/project/${projectId}/chat`}
+                />
                 <div className={styles.buttons}>
                   <button onClick={copyToClipboard}>
                     <GrCopy />

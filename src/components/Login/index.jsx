@@ -89,7 +89,7 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
   // Redirect on successful login
   useEffect(() => {
     if (status === "succeeded" && isAuthenticated) {
-      navigate("/app/home");
+      navigate("/app/projects");
       onClose();
     }
   }, [status, isAuthenticated, navigate, onClose]);

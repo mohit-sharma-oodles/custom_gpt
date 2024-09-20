@@ -138,13 +138,13 @@ const Header = ({ onLoginClick, onSignupClick }) => {
           >
             <span className="clickable">Contact Us</span>
           </Link>
-          <span className="clickable">
+          {/* <span className="clickable">
             <IoLanguage
               size={24}
               color="grey"
               style={{ marginBottom: "-7px" }}
             />
-          </span>
+          </span> */}
           <span className={styles.auth_btn_contnainer}>
             {!isAuthenticated ? (
               <>
