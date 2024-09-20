@@ -185,7 +185,7 @@ const DeployModal = ({
                 <div className={styles.buttons}>
                   <button onClick={copyToClipboard}>
                     <GrCopy />
-                    Copy EmbedingLink
+                    Copy Embeding Link
                   </button>
                   <button>
                     <MdOutlineEmail />
