@@ -24,7 +24,7 @@ const SubscriptionTile = ({
   const [proratedPrice, setProratedPrice] = useState();
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
 
-  console.log(user?.days_left);
+  console.log(user?.subscription_status);
 
   useEffect(() => {
     setUser(JSON.parse(localStorage.getItem("user")));
@@ -144,7 +144,9 @@ const SubscriptionTile = ({
           color: is_subscribed ? "black" : "",
         }}
       >
-        {user?.days_left === null || user?.days_left === undefined
+        {user?.days_left === null ||
+        user?.days_left === undefined ||
+        user?.subscription_status === "Cancelled"
           ? "Buy Now"
           : current_active_plan_price > price
           ? "Cannot Buy"
@@ -161,6 +163,19 @@ const Subscriptions = () => {
   const [error, setError] = useState("");
   const [currentActivePlanPrice, setCurrentActivePlanPrice] = useState(null);
   const [isAlreadySubscribed, setIsAlreadySubscribed] = useState(false);
+
+  useEffect(() => {
+    const getUser = async () => {
+      try {
+        const response = await axios_instance.get("/api/profile");
+        const data = localStorage.setItem(
+          "user",
+          JSON.stringify(response.data)
+        );
+      } catch (e) {}
+    };
+    getUser();
+  }, []);
 
   useEffect(() => {
     const getPlans = () => {

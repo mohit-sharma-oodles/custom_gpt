@@ -120,7 +120,12 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
       }
     } catch (signupError) {
       const errors = signupError;
-      console.log(signupError);
+      console.log(signupError, "statussssssssss");
+
+      if (errors.status >= 500) {
+        console.log(errors.status);
+        setErrorMessage("Server error. Please try again later.");
+      }
 
       if (errors) {
         let allErrors = [];

@@ -17,7 +17,7 @@ const PaymentSuccess = () => {
           return prevTime - 1;
         } else {
           clearInterval(intervalId);
-          navigate("/app/home");
+          navigate("/app/subscription");
           dispatch(getUserDetails());
           return 0;
         }
