@@ -1,6 +1,8 @@
 import axios from "axios";
 
-// const baseURL = "https://5d59-14-102-190-50.ngrok-free.app/custom/api";
+// const domain = "https://191b-103-95-83-174.ngrok-free.app";
+const domain = "https://customgpt-b.oodleslab.com";
+const baseURL = `${domain}/custom/api`;
 
 // Initialize retry count in sessionStorage
 if (!sessionStorage.getItem("refreshTokenRetryCount")) {
@@ -8,8 +10,7 @@ if (!sessionStorage.getItem("refreshTokenRetryCount")) {
 }
 
 export const axios_instance = axios.create({
-  baseURL: "https://customgpt-b.oodleslab.com",
-  // baseURL: baseURL,
+  baseURL: baseURL,
 });
 
 axios_instance.interceptors.request.use(
