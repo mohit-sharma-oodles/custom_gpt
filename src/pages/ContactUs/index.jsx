@@ -16,7 +16,7 @@ const ContactUs = () => {
     e.preventDefault();
 
     try {
-      const resp = await axios_instance.post("/api/contact-us/", {
+      const resp = await axios_instance.post("contact-us/", {
         first_name: firstname,
         last_name: lastname,
         email: email,

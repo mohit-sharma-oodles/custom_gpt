@@ -81,7 +81,7 @@ const Home = ({ isAuthenticated }) => {
   useEffect(() => {
     const user = async () => {
       try {
-        const response = await axios_instance.get("/api/profile");
+        const response = await axios_instance.get("profile");
         const data = response.data;
         localStorage.setItem("user", JSON.stringify(data));
         // console.log(data);

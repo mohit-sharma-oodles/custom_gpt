@@ -43,7 +43,7 @@ const CreateProject = () => {
       const fetchProject = async () => {
         try {
           const response = await axios_instance.get(
-            `/api/customgpt/projects/${projectId}/pages/`
+            `customgpt/projects/${projectId}/pages/`
           );
           console.log(response.data, "Response Data");
 
@@ -89,7 +89,7 @@ const CreateProject = () => {
 
     try {
       const response = await axios_instance.post(
-        "/api/customgpt/projects/create/",
+        "customgpt/projects/create/",
         formData
       );
       setMessage(response?.data?.message);
@@ -122,7 +122,7 @@ const CreateProject = () => {
 
     try {
       const response = await axios_instance.post(
-        `/api/customgpt/projects/update/${projectId}/`,
+        `customgpt/projects/update/${projectId}/`,
         formData
       );
       setMessage(response?.data?.message);

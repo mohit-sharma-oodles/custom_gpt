@@ -1,17 +1,17 @@
 import axios from "axios";
-// import { jwtDecode } from "jwt-decode";
+
+// const baseURL = "https://5d59-14-102-190-50.ngrok-free.app/custom/api";
+
+// Initialize retry count in sessionStorage
+if (!sessionStorage.getItem("refreshTokenRetryCount")) {
+  sessionStorage.setItem("refreshTokenRetryCount", "0");
+}
 
 export const axios_instance = axios.create({
   baseURL: "https://customgpt-b.oodleslab.com",
-  // baseURL: "https://a5fc-14-102-190-50.ngrok-free.app",
-  // headers: {
-  //    "ngrok-skip-browser-warning": "true",
-  // },
+  // baseURL: baseURL,
 });
 
-// let retries = 0;
-
-// Request interceptor to add the access token to headers
 axios_instance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("accessToken");
@@ -37,31 +37,75 @@ axios_instance.interceptors.response.use(
     const originalRequest = error.config;
     console.log(originalRequest);
 
-    if (
-      error.response &&
-      error.response.status === 401 &&
-      error.response.data.code === "token_not_valid" &&
-      !originalRequest._retry
-    ) {
-      originalRequest._retry = true;
+    // Check if error status is 401
+    if (error.response && error.response.status === 401) {
+      // Prevent infinite loop by checking if request is already retried
+      if (!originalRequest._retry) {
+        originalRequest._retry = true;
 
-      try {
-        const refreshToken = localStorage.getItem("refreshToken");
+        // Increment retry count
+        let refreshTokenRetryCount = parseInt(
+          sessionStorage.getItem("refreshTokenRetryCount") || "0",
+          10
+        );
+        refreshTokenRetryCount += 1;
+        sessionStorage.setItem(
+          "refreshTokenRetryCount",
+          refreshTokenRetryCount.toString()
+        );
+        // console.log(
+        //   "outside try",
+        //   refreshTokenRetryCount > 7,
+        //   refreshTokenRetryCount
+        // );
+        // if (refreshTokenRetryCount > 7) {
+        //   localStorage.removeItem("accessToken");
+        //   localStorage.removeItem("refreshToken");
+        //   localStorage.removeItem("user");
+        //   sessionStorage.removeItem("refreshTokenRetryCount");
+        //   window.location.href = "/";
+        // }
+        try {
+          const refreshToken = localStorage.getItem("refreshToken");
 
-        const response = await axios_instance.post("/api/token/refresh/", {
-          refresh: refreshToken,
-        });
+          // Check if refreshToken is present
+          if (!refreshToken) {
+            // If no refresh token, just reject the error without redirecting
+            return Promise.reject(error);
+          }
 
-        // Store the new tokens in localStorage
-        localStorage.setItem("accessToken", response.data.access);
-        localStorage.setItem("refreshToken", response.data.refresh);
+          // Attempt to refresh the token
+          const response = await axios.post(`${baseURL}/token/refresh/`, {
+            // const response = await axios.get(`${baseURL}/temp/refresh/token/`, {
+            refresh: refreshToken,
+          });
 
-        // originalRequest.headers.Authorization = `Bearer ${response.data.access}`;
+          // Store the new tokens in localStorage
+          localStorage.setItem("accessToken", response.data.access);
+          localStorage.setItem("refreshToken", response.data.refresh);
 
-        return axios_instance(originalRequest);
-      } catch (err) {
-        // Handle token refresh errors (e.g., refresh token is invalid/expired)
-        return Promise.reject(err);
+          // Reset the retry count after successful refresh
+          sessionStorage.setItem("refreshTokenRetryCount", "0");
+
+          // Update the Authorization header and retry the original request
+          originalRequest.headers.Authorization = `Bearer ${response.data.access}`;
+
+          return axios_instance(originalRequest);
+        } catch (err) {
+          console.log("inside catch", refreshTokenRetryCount);
+          // Handle token refresh errors
+          if (refreshTokenRetryCount > 5) {
+            // Logout the user after exceeding retry limit
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
+            localStorage.removeItem("user");
+            sessionStorage.removeItem("refreshTokenRetryCount");
+            window.location.href = "/";
+
+            return Promise.reject(err);
+          }
+          return Promise.reject(err);
+        }
       }
     }
 

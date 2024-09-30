@@ -88,7 +88,7 @@ const ForgotPassword = () => {
 
     try {
       const response = await axios_instance.post(
-        "/api/password-reset-confirm/",
+        "password-reset-confirm/",
         body
       );
 
@@ -143,7 +143,7 @@ const ForgotPassword = () => {
   const handleResend = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios_instance.post("/api/password-reset/", {
+      const response = await axios_instance.post("password-reset/", {
         email: email,
       });
       console.log(response);

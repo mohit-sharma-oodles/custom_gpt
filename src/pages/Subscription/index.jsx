@@ -167,7 +167,7 @@ const Subscriptions = () => {
   useEffect(() => {
     const getUser = async () => {
       try {
-        const response = await axios_instance.get("/api/profile");
+        const response = await axios_instance.get("/profile");
         const data = localStorage.setItem(
           "user",
           JSON.stringify(response.data)
@@ -180,7 +180,7 @@ const Subscriptions = () => {
   useEffect(() => {
     const getPlans = () => {
       axios_instance
-        .get("/api/products")
+        .get("/products")
         .then((response) => {
           setPlans(response?.data);
           response?.data?.forEach((plan) => {

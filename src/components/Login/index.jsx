@@ -77,7 +77,7 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
       return;
     }
     try {
-      const response = await axios_instance.post("/api/password-reset/", {
+      const response = await axios_instance.post("/password-reset/", {
         email,
       });
       alert(response.data.message);
@@ -95,7 +95,7 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
   }, [status, isAuthenticated, navigate, onClose]);
 
   const handleGoogleLogin = async () => {
-    const googleAuthURL = "https://customgpt-b.oodleslab.com/api/auth/google/";
+    const googleAuthURL = "https://customgpt-b.oodleslab.comauth/google/";
     window.location.href = googleAuthURL;
 
     // const popupListener = setInterval(() => {

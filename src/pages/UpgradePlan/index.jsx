@@ -25,7 +25,7 @@ const UpgradePlan = () => {
   useEffect(() => {
     const getPlans = () => {
       axios_instance
-        .get("/api/products")
+        .get("products")
         .then((response) => setPlans(response.data))
         .catch((error) => setError(error.toString()));
     };

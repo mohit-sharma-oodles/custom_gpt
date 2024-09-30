@@ -21,7 +21,7 @@ const ProfileModal = ({ onClose, setShowProfile, setShowProfileModal }) => {
   useEffect(() => {
     const getProfile = async () => {
       try {
-        const response = await axios_instance.get("/api/profile/");
+        const response = await axios_instance.get("profile/");
         setUser(response.data);
       } catch (e) {
         console.log(e);

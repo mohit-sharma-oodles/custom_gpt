@@ -9,6 +9,8 @@ import { FileUploader } from "react-drag-drop-files";
 import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
 import ShareChatModal from "../../components/ShareChatModal";
 import DeployModal from "../../components/DeployModal";
+
+// Assets
 import { HiMiniMagnifyingGlass } from "react-icons/hi2";
 import {
   IoRocketOutline,
@@ -145,6 +147,8 @@ const ViewProject = () => {
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const [changesMade, setChangesMade] = useState(false);
+
   const [isModalOpen, setModalOpen] = useState(false);
   const [documentToDelete, setDocumentToDelete] = useState(null);
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
@@ -157,6 +161,10 @@ const ViewProject = () => {
   const [messageloading, setMessageLoading] = useState(false);
   const [shareChatModal, setShareChatModal] = useState(false);
   const [avatar, setAvatar] = useState(null);
+  const [placeholderPrompt, setPlaceholderPrompt] = useState("");
+  const [responseSource, setResponseSource] = useState("");
+  const [backgroundImage, setBackgroundImage] = useState("");
+  const [showCitations, setShowCitations] = useState("");
 
   const messageEndRef = useRef(null);
 
@@ -165,13 +173,30 @@ const ViewProject = () => {
   useEffect(() => {
     const fetchProjectData = async () => {
       try {
-        const response = await axios_instance.get(
-          `/api/customgpt/projects/${projectId}/pages/`
+        const [projectDataResponse, projectSettingsResponse] =
+          await Promise.all([
+            axios_instance.get(`customgpt/projects/${projectId}/pages/`),
+            axios_instance.get(
+              `customgpt/projects/update/settings/${projectId}`
+            ),
+          ]);
+
+        const projectData = projectDataResponse.data;
+        setProjectData(projectData);
+        // console.log(projectData.project[0]);
+
+        console.log(projectSettingsResponse.data.result.data);
+        setAvatar(projectSettingsResponse.data.result.data.chatbot_avatar);
+        setBackgroundImage(
+          projectSettingsResponse.data.result.data.chatbot_background
         );
-        setProjectData(response.data);
-        setAvatar(response.data.project[0].avatar_image_url);
-        // console.log(avatar);
-        console.log(projectData);
+        // console.log(backgroundImage);
+        setPlaceholderPrompt(
+          projectSettingsResponse.data.result.data.default_prompt
+        );
+        setResponseSource(
+          projectSettingsResponse.data.result.data.response_source
+        );
         setLoading(false);
       } catch (error) {
         setError("Failed to load project data. Please try again later.");
@@ -180,7 +205,7 @@ const ViewProject = () => {
     };
 
     fetchProjectData();
-  }, [projectId]);
+  }, []);
 
   useEffect(() => {
     // Ensure that projectData is loaded and has the necessary information
@@ -188,7 +213,7 @@ const ViewProject = () => {
       const fetchMessages = async () => {
         try {
           const response = await axios_instance.get(
-            `/api/customgpt/projects/${projectId}/conversations/${projectData.project[0].session_id}/messages/`
+            `customgpt/projects/${projectId}/conversations/${projectData.project[0].session_id}/messages/`
           );
           const messagesData = response.data.messages;
 
@@ -227,7 +252,7 @@ const ViewProject = () => {
 
     try {
       await axios_instance.delete(
-        `/api/customgpt/projects/${projectId}/page/delete/${documentToDelete}/`
+        `customgpt/projects/${projectId}/page/delete/${documentToDelete}/`
       );
       document.location.reload(); // Reload the page or re-fetch the project data
       setModalOpen(false); // Close modal after successful deletion
@@ -245,7 +270,7 @@ const ViewProject = () => {
 
     try {
       const response = await axios_instance.post(
-        `/api/customgpt/projects/update/${projectId}/`,
+        `customgpt/projects/update/${projectId}/`,
         formData
       );
       setLoading(false);
@@ -356,7 +381,7 @@ const ViewProject = () => {
 
     try {
       const response = await axios_instance.post(
-        `/api/customgpt/projects/${projectId}/chat/${projectData.project[0].session_id}/`,
+        `customgpt/projects/${projectId}/chat/${projectData.project[0].session_id}/`,
         { prompt: prompt }
       );
 
@@ -439,8 +464,28 @@ const ViewProject = () => {
                 <div className={styles.bottom}>{renderDocuments()}</div>
               </div>
               {/* ChatBot */}
-              <div className={styles.chatbot_container}>
-                <div className={styles.headerContainer}>
+              <div
+                style={{
+                  backgroundImage: `url(${
+                    backgroundImage === "" ? "" : backgroundImage
+                  })`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
+                className={styles.chatbot_container}
+              >
+                <div
+                  style={{
+                    backgroundImage: `url(${
+                      backgroundImage === "" ? "" : backgroundImage
+                    })`,
+                    // backgroundColor: "transparent",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    // scale: "1.5",
+                  }}
+                  className={styles.headerContainer}
+                >
                   <p className={styles.heading}>AI Chat</p>
                   <GoShareAndroid
                     size={20}
@@ -454,7 +499,7 @@ const ViewProject = () => {
                   <div className={styles.messagesContainer}>
                     <div className={styles.messageList}>
                       {messages.map((message, index) => {
-                        // console.log(message);
+                        // console.log(backgroundImage);
                         return (
                           <>
                             {message.type === "server" && (
@@ -527,6 +572,7 @@ const ViewProject = () => {
                         <input
                           type="text"
                           value={prompt}
+                          placeholder={placeholderPrompt}
                           onChange={(e) => setPrompt(e.target.value)}
                         />
                       </div>
@@ -544,6 +590,17 @@ const ViewProject = () => {
                     </div>
                   </form>
                 </div>
+                <div
+                  style={{
+                    backgroundColor: "transparent",
+                    width: "100%",
+                    height: "1rem",
+                    position: "fixed",
+                    bottom: "0",
+                    left: "0",
+                    // zIndex: 9999,
+                  }}
+                />
               </div>
               {/* ChatBot */}
             </div>
@@ -558,10 +615,23 @@ const ViewProject = () => {
       />
       <DeployModal
         isOpen={deployModal}
-        onClose={() => setDeployModal(false)}
+        onClose={() => {
+          setDeployModal(false);
+          if (changesMade) {
+            document.location.reload();
+          }
+        }}
         embedCode={projectData?.project[0]?.embeded_code}
         projectId={projectId}
         defaultOpen={defaultOpen}
+        changesMade={changesMade}
+        setChangesMade={setChangesMade}
+        placeholderPrompt={placeholderPrompt}
+        setPlaceholderPrompt={setPlaceholderPrompt}
+        responseSource={responseSource}
+        setResponseSource={setResponseSource}
+        backgroundImage={backgroundImage}
+        setBackgroundImage={setBackgroundImage}
       />
       <UploadDocumentModal
         isOpen={uploadModalOpen}

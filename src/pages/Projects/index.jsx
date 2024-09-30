@@ -33,7 +33,7 @@ const Projects = () => {
     setLoader(true);
     try {
       const response = await axios_instance.get(
-        "/api/customgpt/projects/get_all_pages/"
+        "customgpt/projects/get_all_pages/"
       );
       setProjects(response?.data?.projects);
     } catch (error) {
@@ -72,7 +72,7 @@ const Projects = () => {
     setLoader(true);
     try {
       const response = await axios_instance.delete(
-        `/api/customgpt/projects/delete/${projectToDelete}/`
+        `customgpt/projects/delete/${projectToDelete}/`
       );
       setModalOpen(false);
       await getAllProjects();

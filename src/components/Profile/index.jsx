@@ -47,7 +47,7 @@ const Profile = ({ setShowProfile }) => {
   useEffect(() => {
     const getUser = async () => {
       try {
-        const response = await axios_instance.get("/api/profile");
+        const response = await axios_instance.get("profile");
         // console.log(response.data, "response");
         setUser(response.data);
         localStorage.setItem("user", JSON.stringify(response.data));
@@ -166,7 +166,7 @@ const Profile = ({ setShowProfile }) => {
       return;
     }
     try {
-      const response = await axios_instance.post("/api/change-password/", {
+      const response = await axios_instance.post("change-password/", {
         current_password: oldPassword,
         new_password: password,
       });
