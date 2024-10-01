@@ -52,7 +52,7 @@ const SharableChat = () => {
     try {
       // Make the API call to fetch the server response
       const response = await axios_instance.post(
-        `customgpt/projects/${projectId}/chat/${session}/sharablebot`,
+        `customgpt/projects/${projectId}/chat/${session}/sharablebot/`,
         { prompt: inputMessage }
       );
 
