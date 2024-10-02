@@ -2,6 +2,7 @@
   "name": "custom_gpt",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://193.34.167.58/custom/api",
   "dependencies": {
     "@ramonak/react-progress-bar": "^5.2.0",
     "@reduxjs/toolkit": "^2.2.7",
