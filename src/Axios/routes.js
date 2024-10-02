@@ -19,122 +19,125 @@ import SharableChat from "../pages/SharableChat";
 import OAuth from "../pages/OAuth";
 
 const RouterConfig = (isAuthenticated) => {
-  return createBrowserRouter([
-    {
-      path: "/",
-      element: <HeaderLayout isAuthenticated={isAuthenticated} />,
-      children: [
-        {
-          path: "faq",
-          element: <FAQ />,
-        },
-        {
-          path: "contact-us",
-          element: <ContactUs />,
-        },
-        {
-          path: "subscription",
-          element: <Subscription />,
-        },
-        {
-          path: "confirm-email",
-          element: <ConfirmEmail />,
-        },
-        {
-          path: "oauth",
-          element: <OAuth />,
-        },
-        {
-          path: "reset-password",
-          element: <ForgotPassword />,
-        },
-        {
-          path: "/app/project/:projectId/chat",
-          element: <SharableChat />,
-        },
-        {
-          path: "app/subscription",
-          element: (
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <Subscription />
-            </ProtectedRoute>
-          ),
-        },
-        {
-          path: "app/home",
-          element: (
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <Home isAuthenticated={isAuthenticated} />
-            </ProtectedRoute>
-          ),
-        },
-        {
-          path: "app/projects",
-          element: (
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <Projects isAuthenticated={isAuthenticated} />
-            </ProtectedRoute>
-          ),
-        },
-        {
-          path: "app/create-project",
-          element: (
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <CreateProject isAuthenticated={isAuthenticated} />
-            </ProtectedRoute>
-          ),
-        },
-        {
-          path: "app/project/:projectId",
-          element: (
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <ViewProject isAuthenticated={isAuthenticated} />
-            </ProtectedRoute>
-          ),
-        },
-        {
-          path: "app/profile",
-          element: (
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <Profile isAuthenticated={isAuthenticated} />
-            </ProtectedRoute>
-          ),
-        },
-        {
-          path: "app/upgrade-plan",
-          element: (
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <UpgradePlan isAuthenticated={isAuthenticated} />
-            </ProtectedRoute>
-          ),
-        },
-        {
-          path: "success",
-          element: (
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <PaymentSuccess isAuthenticated={isAuthenticated} />
-            </ProtectedRoute>
-          ),
-        },
-        {
-          path: "cancel",
-          element: (
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <CancelPayment isAuthenticated={isAuthenticated} />
-            </ProtectedRoute>
-          ),
-        },
-        {
-          path: "/",
-          element: <Home />,
-        },
-        {
-          path: "*",
-          element: <Navigate to="/app/home" replace />,
-        },
-      ],
-    },
-  ]);
+  return createBrowserRouter(
+    [
+      {
+        path: "/",
+        element: <HeaderLayout isAuthenticated={isAuthenticated} />,
+        children: [
+          {
+            path: "faq",
+            element: <FAQ />,
+          },
+          {
+            path: "contact-us",
+            element: <ContactUs />,
+          },
+          {
+            path: "subscription",
+            element: <Subscription />,
+          },
+          {
+            path: "confirm-email",
+            element: <ConfirmEmail />,
+          },
+          {
+            path: "oauth",
+            element: <OAuth />,
+          },
+          {
+            path: "reset-password",
+            element: <ForgotPassword />,
+          },
+          {
+            path: "/app/project/:projectId/chat",
+            element: <SharableChat />,
+          },
+          {
+            path: "app/subscription",
+            element: (
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <Subscription />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "app/home",
+            element: (
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <Home isAuthenticated={isAuthenticated} />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "app/projects",
+            element: (
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <Projects isAuthenticated={isAuthenticated} />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "app/create-project",
+            element: (
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <CreateProject isAuthenticated={isAuthenticated} />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "app/project/:projectId",
+            element: (
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <ViewProject isAuthenticated={isAuthenticated} />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "app/profile",
+            element: (
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <Profile isAuthenticated={isAuthenticated} />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "app/upgrade-plan",
+            element: (
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <UpgradePlan isAuthenticated={isAuthenticated} />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "success",
+            element: (
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <PaymentSuccess isAuthenticated={isAuthenticated} />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "cancel",
+            element: (
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <CancelPayment isAuthenticated={isAuthenticated} />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "/",
+            element: <Home />,
+          },
+          {
+            path: "*",
+            element: <Navigate to="/custom" replace />,
+          },
+        ],
+      },
+    ],
+    { basename: "/custom" }
+  );
 };
 
 export default RouterConfig;
