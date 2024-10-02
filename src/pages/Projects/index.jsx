@@ -35,9 +35,11 @@ const Projects = () => {
       const response = await axios_instance.get(
         "customgpt/projects/get_all_pages/"
       );
-      setProjects(response?.data?.projects);
+      const projectsFromResponse = response?.data?.projects || [];
+      setProjects(projectsFromResponse);
     } catch (error) {
       console.log(error);
+      setProjects([]); // Ensure projects is set to an empty array on error
     } finally {
       setLoader(false);
     }
@@ -48,7 +50,7 @@ const Projects = () => {
   }, []);
 
   const filteredProjects = searchTerm
-    ? projects.filter((project) =>
+    ? projects?.filter((project) =>
         project.project_name.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : projects;

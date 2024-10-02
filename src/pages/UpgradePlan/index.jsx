@@ -17,6 +17,7 @@ const UpgradePlan = () => {
   const [successMessage, setSuccessMessage] = useState(""); // State for success message
   const [countdown, setCountdown] = useState(3); // State for dynamic countdown
   const [showPayButton, setShowPayButton] = useState(true); // State for button visibility
+  const [isLoading, setIsLoading] = useState(false); // State for loading
 
   const params = new URLSearchParams(location.search);
   const wannaBuy = params.get("id");
@@ -46,6 +47,7 @@ const UpgradePlan = () => {
   }, []);
 
   const handleUpgrade = async () => {
+    setIsLoading(true); // Set loading state to true
     try {
       const stripe = await stripePromise;
       const response = await axios_instance.post(
@@ -68,12 +70,14 @@ const UpgradePlan = () => {
 
         if (countdownValue < 0) {
           clearInterval(countdownInterval);
-          window.location.href = "/app/home"; // Redirect after countdown ends
+          window.location.href = "/app/subscription";
         }
       }, 1000); // Update every 1 second
     } catch (error) {
       alert(error);
       console.error("Error during checkout process:", error);
+    } finally {
+      setIsLoading(false); // Reset loading state
     }
   };
 
@@ -131,8 +135,12 @@ const UpgradePlan = () => {
         <h4 className={styles.successMessage}>{successMessage}</h4>
       )}
       {showPayButton && (
-        <button className={styles.payBtn} onClick={handleUpgrade}>
-          Pay $ {proratedPrice}
+        <button
+          className={styles.payBtn}
+          onClick={handleUpgrade}
+          disabled={isLoading} // Disable the button when loading
+        >
+          {isLoading ? "Processing..." : `Pay $ ${proratedPrice}`}
         </button>
       )}
     </div>

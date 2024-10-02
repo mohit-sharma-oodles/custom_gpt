@@ -23,6 +23,7 @@ const SubscriptionTile = ({
   const navigate = useNavigate();
   const [proratedPrice, setProratedPrice] = useState();
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+  const [isLoading, setIsLoading] = useState(false);
 
   console.log(user?.subscription_status);
 
@@ -60,6 +61,8 @@ const SubscriptionTile = ({
       ) {
         alert("You are not logged in.");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -94,10 +97,13 @@ const SubscriptionTile = ({
         alert("You are not logged in.");
       }
       console.error("Error upgrading plan", e);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleButtonClick = () => {
+    setIsLoading(true);
     if (
       isAlreadySubscribed &&
       Number(current_active_plan_price) < Number(price)
@@ -105,6 +111,8 @@ const SubscriptionTile = ({
       handleUpgradePlan(priceId, productId);
     } else if (!isAlreadySubscribed) {
       handleBuyNow(productId);
+    } else {
+      setIsLoading(false);
     }
   };
 
@@ -139,14 +147,17 @@ const SubscriptionTile = ({
       <button
         className={styles.buynow_btn}
         onClick={handleButtonClick}
+        disabled={isLoading}
         style={{
           backgroundColor: is_subscribed ? "white" : "",
           color: is_subscribed ? "black" : "",
         }}
       >
-        {user?.days_left === null ||
-        user?.days_left === undefined ||
-        user?.subscription_status === "Cancelled"
+        {isLoading
+          ? "Loading..."
+          : user?.days_left === null ||
+            user?.days_left === undefined ||
+            user?.subscription_status === "Cancelled"
           ? "Buy Now"
           : current_active_plan_price > price
           ? "Cannot Buy"
