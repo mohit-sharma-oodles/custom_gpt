@@ -6,7 +6,7 @@ export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async (credentials, { rejectWithValue }) => {
     try {
-      const response = await axios_instance.post("/login/", credentials);
+      const response = await axios_instance.post("/api/login/", credentials);
       localStorage.setItem("accessToken", response?.data?.access);
       localStorage.setItem("refreshToken", response?.data?.refresh);
       return response.data;
@@ -40,7 +40,7 @@ export const signupUser = createAsyncThunk(
   "auth/signupUser",
   async (credentials, { rejectWithValue }) => {
     try {
-      const response = await axios_instance.post("/register/", credentials);
+      const response = await axios_instance.post("/api/register/", credentials);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -53,7 +53,7 @@ export const getUserDetails = createAsyncThunk(
   "auth/getUserDetails",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios_instance.get("/profile/");
+      const response = await axios_instance.get("/api/profile/");
       localStorage.setItem("user", JSON.stringify(response.data));
       return response.data;
     } catch (error) {
@@ -67,7 +67,10 @@ export const updateUserDetails = createAsyncThunk(
   "auth/updateUserDetails",
   async (updatedDetails, { rejectWithValue }) => {
     try {
-      const response = await axios_instance.put("/profile/", updatedDetails);
+      const response = await axios_instance.put(
+        "/api/profile/",
+        updatedDetails
+      );
       localStorage.setItem("user", JSON.stringify(response.data));
       return response.data;
     } catch (error) {
@@ -81,7 +84,7 @@ export const confirmEmailWithToken = createAsyncThunk(
   "auth/confirmEmailWithToken",
   async (token, { rejectWithValue }) => {
     try {
-      const response = await axios_instance.post("/confirm-email/", {
+      const response = await axios_instance.post("/api/confirm-email/", {
         token,
       });
 
@@ -95,7 +98,7 @@ export const confirmEmailWithToken = createAsyncThunk(
         throw new Error("Access token is missing from the response.");
       }
 
-      const userDetailsResponse = await axios_instance.get("/profile/");
+      const userDetailsResponse = await axios_instance.get("/api/profile/");
       localStorage.setItem("user", JSON.stringify(userDetailsResponse.data));
 
       return userDetailsResponse.data;
@@ -112,7 +115,7 @@ export const resendConfirmationEmail = createAsyncThunk(
   async ({ email }, { rejectWithValue }) => {
     try {
       const response = await axios_instance.post(
-        "api/resend-verification-link/",
+        "/api/resend-verification-link/",
         { email }
       );
       return response.data;
