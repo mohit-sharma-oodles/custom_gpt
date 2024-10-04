@@ -95,8 +95,7 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
   }, [status, isAuthenticated, navigate, onClose]);
 
   const handleGoogleLogin = async () => {
-    const googleAuthURL =
-      "https://customgpt-b.oodleslab.com/custom/api/auth/google/";
+    const googleAuthURL = "https://customgpt-b.chattodata.com/auth/google/";
     window.location.href = googleAuthURL;
 
     // const popupListener = setInterval(() => {
