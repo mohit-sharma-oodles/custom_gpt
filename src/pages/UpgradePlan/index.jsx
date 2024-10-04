@@ -26,7 +26,7 @@ const UpgradePlan = () => {
   useEffect(() => {
     const getPlans = () => {
       axios_instance
-        .get("products")
+        .get("/api/products")
         .then((response) => setPlans(response.data))
         .catch((error) => setError(error.toString()));
     };
@@ -36,7 +36,7 @@ const UpgradePlan = () => {
   useEffect(() => {
     const getSubscriptionID = () => {
       axios_instance
-        .get("/subscriptions/subscription-details/")
+        .get("/api/subscriptions/subscription-details/")
         .then((response) => {
           console.log(response.data.stripe_subscription_id);
           setSubscriptionId(response.data.stripe_subscription_id);
@@ -51,7 +51,7 @@ const UpgradePlan = () => {
     try {
       const stripe = await stripePromise;
       const response = await axios_instance.post(
-        "/subscriptions/create-upgrade-subscription/",
+        "/api/subscriptions/create-upgrade-subscription/",
         {
           subscription_id: subscriptionId,
           price_id: wannaBuy,
@@ -72,12 +72,12 @@ const UpgradePlan = () => {
           clearInterval(countdownInterval);
           window.location.href = "/app/subscription";
         }
-      }, 1000); // Update every 1 second
+      }, 1000);
     } catch (error) {
       alert(error);
       console.error("Error during checkout process:", error);
     } finally {
-      setIsLoading(false); // Reset loading state
+      setIsLoading(false);
     }
   };
 

@@ -164,6 +164,7 @@ const ViewProject = () => {
   const [placeholderPrompt, setPlaceholderPrompt] = useState("");
   const [responseSource, setResponseSource] = useState("");
   const [backgroundImage, setBackgroundImage] = useState("");
+  const [noAnswerMessage, setNoAnswerMessage] = useState("");
   const [showCitations, setShowCitations] = useState("");
 
   const messageEndRef = useRef(null);
@@ -175,9 +176,9 @@ const ViewProject = () => {
       try {
         const [projectDataResponse, projectSettingsResponse] =
           await Promise.all([
-            axios_instance.get(`customgpt/projects/${projectId}/pages/`),
+            axios_instance.get(`/api/customgpt/projects/${projectId}/pages/`),
             axios_instance.get(
-              `customgpt/projects/update/settings/${projectId}`
+              `/api/customgpt/projects/update/settings/${projectId}`
             ),
           ]);
 
@@ -187,6 +188,9 @@ const ViewProject = () => {
 
         console.log(projectSettingsResponse.data.result.data);
         setAvatar(projectSettingsResponse.data.result.data.chatbot_avatar);
+        setNoAnswerMessage(
+          projectSettingsResponse.data.result.data.no_answer_message
+        );
         setBackgroundImage(
           projectSettingsResponse.data.result.data.chatbot_background
         );
@@ -213,7 +217,7 @@ const ViewProject = () => {
       const fetchMessages = async () => {
         try {
           const response = await axios_instance.get(
-            `customgpt/projects/${projectId}/conversations/${projectData.project[0].session_id}/messages/`
+            `/api/customgpt/projects/${projectId}/conversations/${projectData.project[0].session_id}/messages/`
           );
           const messagesData = response.data.messages;
 
@@ -252,7 +256,7 @@ const ViewProject = () => {
 
     try {
       await axios_instance.delete(
-        `customgpt/projects/${projectId}/page/delete/${documentToDelete}/`
+        `/api/customgpt/projects/${projectId}/page/delete/${documentToDelete}/`
       );
       document.location.reload(); // Reload the page or re-fetch the project data
       setModalOpen(false); // Close modal after successful deletion
@@ -270,7 +274,7 @@ const ViewProject = () => {
 
     try {
       const response = await axios_instance.post(
-        `customgpt/projects/update/${projectId}/`,
+        `/api/customgpt/projects/update/${projectId}/`,
         formData
       );
       setLoading(false);
@@ -381,7 +385,7 @@ const ViewProject = () => {
 
     try {
       const response = await axios_instance.post(
-        `customgpt/projects/${projectId}/chat/${projectData.project[0].session_id}/`,
+        `/api/customgpt/projects/${projectId}/chat/${projectData.project[0].session_id}/`,
         { prompt: prompt }
       );
 
@@ -632,6 +636,8 @@ const ViewProject = () => {
         setResponseSource={setResponseSource}
         backgroundImage={backgroundImage}
         setBackgroundImage={setBackgroundImage}
+        noAnswerMessage={noAnswerMessage}
+        setNoAnswerMessage={setNoAnswerMessage}
       />
       <UploadDocumentModal
         isOpen={uploadModalOpen}

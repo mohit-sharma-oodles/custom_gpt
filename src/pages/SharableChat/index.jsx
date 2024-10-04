@@ -21,7 +21,7 @@ const SharableChat = () => {
     const getSessionId = async () => {
       try {
         const response = await axios_instance.post(
-          `customgpt/projects/conversation/${projectId}/`
+          `/api/customgpt/projects/conversation/${projectId}/`
         );
         setSession(response.data.session_id);
         setAvatar(response.data.project.avatar_image_url);
@@ -52,7 +52,7 @@ const SharableChat = () => {
     try {
       // Make the API call to fetch the server response
       const response = await axios_instance.post(
-        `customgpt/projects/${projectId}/chat/${session}/sharablebot/`,
+        `/api/customgpt/projects/${projectId}/chat/${session}/sharablebot/`,
         { prompt: inputMessage }
       );
 
