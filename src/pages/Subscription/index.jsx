@@ -35,7 +35,7 @@ const SubscriptionTile = ({
     try {
       const stripe = await stripePromise;
       const response = await axios_instance.post(
-        "/api/subscriptions/create-checkout-session/",
+        "/subscriptions/create-checkout-session/",
         {
           product_id: productId,
         }
@@ -78,7 +78,7 @@ const SubscriptionTile = ({
       formData.append("price_id", priceId);
 
       const response = await axios_instance.post(
-        "/api/subscriptions/get-prorated-amount/",
+        "/subscriptions/get-prorated-amount/",
         formData,
         {
           headers: {

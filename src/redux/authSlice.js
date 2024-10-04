@@ -87,7 +87,6 @@ export const confirmEmailWithToken = createAsyncThunk(
       const response = await axios_instance.post("/api/confirm-email/", {
         token,
       });
-
       const accessToken = response?.data?.tokens?.access_token;
       const refreshToken = response?.data?.tokens?.refresh_token;
 

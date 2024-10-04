@@ -47,7 +47,7 @@ const Profile = ({ setShowProfile }) => {
   useEffect(() => {
     const getUser = async () => {
       try {
-        const response = await axios_instance.get("profile");
+        const response = await axios_instance.get("/api/profile");
         // console.log(response.data, "response");
         setUser(response.data);
         localStorage.setItem("user", JSON.stringify(response.data));

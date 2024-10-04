@@ -36,7 +36,7 @@ const UpgradePlan = () => {
   useEffect(() => {
     const getSubscriptionID = () => {
       axios_instance
-        .get("/api/subscriptions/subscription-details/")
+        .get("/subscriptions/subscription-details/")
         .then((response) => {
           console.log(response.data.stripe_subscription_id);
           setSubscriptionId(response.data.stripe_subscription_id);
@@ -51,7 +51,7 @@ const UpgradePlan = () => {
     try {
       const stripe = await stripePromise;
       const response = await axios_instance.post(
-        "/api/subscriptions/create-upgrade-subscription/",
+        "/subscriptions/create-upgrade-subscription/",
         {
           subscription_id: subscriptionId,
           price_id: wannaBuy,
