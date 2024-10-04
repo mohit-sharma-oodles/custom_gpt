@@ -35,7 +35,7 @@ const SubscriptionTile = ({
     try {
       const stripe = await stripePromise;
       const response = await axios_instance.post(
-        "/subscriptions/create-checkout-session/",
+        "/api/subscriptions/create-checkout-session/",
         {
           product_id: productId,
         }
@@ -78,7 +78,7 @@ const SubscriptionTile = ({
       formData.append("price_id", priceId);
 
       const response = await axios_instance.post(
-        "/subscriptions/get-prorated-amount/",
+        "/api/subscriptions/get-prorated-amount/",
         formData,
         {
           headers: {
@@ -178,7 +178,7 @@ const Subscriptions = () => {
   useEffect(() => {
     const getUser = async () => {
       try {
-        const response = await axios_instance.get("/profile");
+        const response = await axios_instance.get("/api/profile");
         const data = localStorage.setItem(
           "user",
           JSON.stringify(response.data)
@@ -191,7 +191,7 @@ const Subscriptions = () => {
   useEffect(() => {
     const getPlans = () => {
       axios_instance
-        .get("/products")
+        .get("/api/products")
         .then((response) => {
           setPlans(response?.data);
           response?.data?.forEach((plan) => {

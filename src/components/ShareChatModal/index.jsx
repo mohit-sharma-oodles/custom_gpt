@@ -20,7 +20,7 @@ const ShareChatModal = ({ isOpen, onClose, projectId, session_id }) => {
   }, [isOpen]);
 
   const copyLinkToClipboard = () => {
-    const dynamicLink = `https://customgpt-f.oodleslab.com/app/project/${projectId}/chat`;
+    const dynamicLink = `https://chattodata.com/app/project/${projectId}/chat`;
 
     navigator.clipboard
       .writeText(dynamicLink)
