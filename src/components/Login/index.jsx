@@ -77,7 +77,7 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
       return;
     }
     try {
-      const response = await axios_instance.post("/password-reset/", {
+      const response = await axios_instance.post("/api/password-reset/", {
         email,
       });
       alert(response.data.message);

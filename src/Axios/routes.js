@@ -131,12 +131,12 @@ const RouterConfig = (isAuthenticated) => {
           },
           {
             path: "*",
-            element: <Navigate to="/custom" replace />,
+            element: <Navigate to="/" replace />,
           },
         ],
       },
-    ],
-    { basename: "/custom" }
+    ]
+    // { basename: "/custom" }
   );
 };
 
