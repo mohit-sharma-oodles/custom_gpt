@@ -11,7 +11,11 @@ const Footer = () => {
       <div className={`contain_center ${styles.inner}`}>
         <img src={logo} alt="Primadeta" className={styles.company_logo} />
         <p>
-          <span>2024</span> Primadeta. All Rights Reserved.
+          <span>2024</span>{" "}
+          <a style={{ color: "#ae407a" }} href="https://primeautomations.com/">
+            Primautomations.com
+          </a>
+          . All Rights Reserved.
         </p>
         <div className={styles.company_logos}>
           <FaFacebookF

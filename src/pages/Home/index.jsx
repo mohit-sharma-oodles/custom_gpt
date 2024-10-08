@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useOutletContext } from "react-router-dom";
 import "../../../node_modules/swiper/swiper-bundle.min.css";
 import styles from "./index.module.scss";
 import wallmart from "../../assets/walmart.svg";
@@ -77,7 +78,10 @@ const CustomNode = ({ data }) => {
   );
 };
 
-const Home = ({ isAuthenticated }) => {
+const Home = (props) => {
+  const { openLoginModal, closeLoginModal, openSignupModal, closeSignupModal } =
+    useOutletContext();
+
   useEffect(() => {
     const user = async () => {
       try {
@@ -102,12 +106,15 @@ const Home = ({ isAuthenticated }) => {
 
           {/* <img className={styles.banner_img} src={banner_img} alt="" /> */}
           <p>
-            Primadeta Automation solution is powered by the popular <br /> and
-            increadibly prowerful OpenAI LLMs and ChatGPT-4.
+            Primautomation solution is powered by the popular <br />
+            and increadibly prowerful OpenAI LLMs.
           </p>
 
           <div className={styles.button_container}>
-            <button className={`${styles.cta_button} ${styles.getStarted}`}>
+            <button
+              onClick={openSignupModal}
+              className={`${styles.cta_button} ${styles.getStarted}`}
+            >
               Get Started
             </button>
             <button className={`${styles.cta_button} ${styles.watchDemo}`}>
@@ -118,13 +125,13 @@ const Home = ({ isAuthenticated }) => {
       </div>
 
       {/* company images */}
-      <div className={`${styles.company_images_wrapper} contain_center`}>
+      {/* <div className={`${styles.company_images_wrapper} contain_center`}>
         <img src={wallmart} alt="wallmart" srcSet="" />
         <img src={cisco} alt="cisco" srcSet="" />
         <img src={volvo} alt="volvo" srcSet="" />
         <img src={deloitte} alt="deloitte" srcSet="" />
         <img src={okta} alt="okta" srcSet="" />
-      </div>
+      </div> */}
 
       {/* features section */}
       <div className={`${styles.feature_section_container} contain_center`}>
@@ -590,7 +597,7 @@ const Home = ({ isAuthenticated }) => {
             <div className={styles.left}>
               <h3>Security and privacy are our top priority</h3>
               <p>Your data is fully encrypted and files are never stored</p>
-              <span>Get Started</span>
+              <span onClick={openSignupModal}>Get Started</span>
             </div>
             <div className={styles.right}>
               <div className={styles.security_right_item}>
@@ -627,8 +634,8 @@ const Home = ({ isAuthenticated }) => {
         {/* want heads on section */}
         <div className={styles.handson_container}>
           <div className={styles.top}>
-            <h3>Want a hands on?</h3>
-            <p>Try it out Yourself.</p>
+            <h3>Want to do a hands on test?</h3>
+            <p onClick={openSignupModal}>Try it out Yourself.</p>
           </div>
           <div className={styles.bottom}>
             <img src={tryItOut} />
@@ -636,14 +643,14 @@ const Home = ({ isAuthenticated }) => {
         </div>
 
         {/* User Testimonials might be fetched from api later on */}
-        <div className={styles.testimonial_container}>
+        {/* <div className={styles.testimonial_container}>
           <h2>
             Users do love us.{" "}
             <span className={styles.Testimonials}>Testimonials.</span>
           </h2>
 
           <Testimonials />
-        </div>
+        </div> */}
       </div>
     </div>
   );

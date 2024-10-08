@@ -72,7 +72,14 @@ const HeaderLayout = ({ isAuthenticated }) => {
         />
       )}
       <div style={{ marginBottom: showFooter ? "2rem" : "0" }}>
-        <Outlet />
+        <Outlet
+          context={{
+            openLoginModal,
+            closeLoginModal,
+            openSignupModal,
+            closeSignupModal,
+          }}
+        />
       </div>
       {showFooter && <Footer />}
 

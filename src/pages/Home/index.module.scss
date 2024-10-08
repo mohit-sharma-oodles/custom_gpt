@@ -445,12 +445,18 @@
       gap: 1rem;
 
       .top {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
         h3 {
           color: $base-pink;
         }
         p {
           cursor: pointer;
           text-decoration: underline;
+          width: fit-content;
+          align-self: center;
         }
       }
 
