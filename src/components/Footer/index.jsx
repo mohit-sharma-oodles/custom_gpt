@@ -12,7 +12,7 @@ const Footer = () => {
         <img src={logo} alt="Primadeta" className={styles.company_logo} />
         <p>
           <span>2024</span>{" "}
-          <a style={{ color: "#ae407a" }} href="https://primeautomations.com/">
+          <a style={{ color: "#ae407a" }} href="https://primautomation.com/">
             Primautomations.com
           </a>
           . All Rights Reserved.

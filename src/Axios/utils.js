@@ -5,7 +5,7 @@ import { baseURL } from "./axiosInstance";
 async function updateToken(retries = 3) {
   try {
     // const response = await axios.get(`${baseURL}/temp/refresh/token/`, {
-    const response = await axios.post(`${baseURL}/token/refresh/`, {
+    const response = await axios.post(`${baseURL}/api/token/refresh/`, {
       refresh: localStorage.getItem("refreshToken"),
     });
     localStorage.setItem("accessToken", response.data.access);

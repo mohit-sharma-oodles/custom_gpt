@@ -1,12 +1,16 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import styles from "./index.module.scss";
-import left_banner from "../../assets/login_banner.svg";
-import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
-import { FcGoogle } from "react-icons/fc";
+import { axios_instance } from "../../Axios/axiosInstance";
 import { getUserDetails, loginUser } from "../../redux/authSlice";
 import { useNavigate } from "react-router-dom";
-import { axios_instance } from "../../Axios/axiosInstance";
+
+// assets
+import styles from "./index.module.scss";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
+import { FcGoogle } from "react-icons/fc";
+import left_banner from "../../assets/login_banner.svg";
+import logo from "../../assets/company_logo_white.svg";
+import tryItOut from "../../assets/tryItOut.svg";
 
 const Login = ({ isOpen, onClose, onSignupClick }) => {
   const dispatch = useDispatch();
@@ -142,7 +146,17 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <div className={styles.left_side}>
-          <img src={left_banner} alt="Pimadeta" />
+          {/* <img src={left_banner} alt="Pimadeta" /> */}
+          <div className={styles.container}>
+            <img src={logo} alt="PrimAutomation" srcset="" height={35} />
+            <div className={styles.text_container}>
+              <h2>Welcome back to Prima deta Automations.</h2>
+              <p>
+                Your one stop solution for all document management and AI needs.
+              </p>
+            </div>
+            <img src={tryItOut} srcset="" className={styles.tryitout_image} />
+          </div>
         </div>
         <div className={styles.right_side}>
           <span className={styles.close} onClick={handleClose}>

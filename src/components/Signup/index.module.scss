@@ -25,12 +25,48 @@
 
   .left_side {
     flex: 1;
-    background-color: #f0f0f0;
-    img {
+    background-color: $base-pink;
+    padding: 1.8rem;
+
+    .container {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+      align-items: start;
+      position: relative;
+      gap: 2rem;
+
+      .text_container {
+        color: white;
+      }
+
+      .tryitout_image {
+        position: absolute;
+        width: 100%;
+        height: auto;
+        bottom: -20%;
+
+        @media screen and (max-width: 600px) {
+          bottom: -5%;
+        }
+        @media screen and (width > 1000px) {
+          bottom: -10%;
+        }
+        @media screen and (width > 1600px) {
+          width: 100%;
+        }
+        @media screen and (width > 2000px) {
+          width: 80%;
+        }
+      }
     }
+    // img {
+    //   width: 100%;
+    //   height: 100%;
+    //   object-fit: cover;
+    // }
   }
 
   .right_side {

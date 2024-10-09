@@ -110,7 +110,11 @@ const Header = ({ onLoginClick, onSignupClick }) => {
   return (
     <div className={styles.container}>
       <div className={`${styles.wrapper} `}>
-        <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
+        {/* <Link to="/" style={{ textDecoration: "none", color: "inherit" }}> */}
+        <Link
+          to="https://primautomation.com/"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
           <div className={`${styles.left_side_wrapper}`}>
             <img src={logo} alt="Primadeta" className={styles.company_logo} />
           </div>
