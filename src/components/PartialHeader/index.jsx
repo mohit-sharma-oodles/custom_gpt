@@ -11,6 +11,7 @@ import { logoutUser } from "../../redux/authSlice";
 import Profile from "../Profile";
 import { axios_instance } from "../../Axios/axiosInstance";
 import { GoPencil } from "react-icons/go";
+import { useTranslation } from "react-i18next";
 
 const ProfileModal = ({ onClose, setShowProfile, setShowProfileModal }) => {
   const navigate = useNavigate();
@@ -100,6 +101,8 @@ const PartialHeader = ({
   setDeployModal,
   setDefaultOpen,
 }) => {
+  const { t, i18n } = useTranslation();
+
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
 
@@ -116,7 +119,7 @@ const PartialHeader = ({
   return (
     <div className={styles.container}>
       <h1 style={{ textTransform: "capitalize" }}>
-        {title}
+        {t(title)}
         {isProjectEditPath && (
           <GoPencil
             size={20}
@@ -140,12 +143,20 @@ const PartialHeader = ({
               style={{ width: "24px", height: "24px" }}
               alt="Crown"
             />
-            Subscriptions
+            {t("Subscriptions")}
           </span>
         </Link>
-        {/* <span className="clickable">
-          <IoLanguage size={24} color="grey" style={{ marginBottom: "-7px" }} />
-        </span> */}
+        <span className="clickable">
+          <IoLanguage
+            size={24}
+            color="grey"
+            style={{ marginBottom: "-7px" }}
+            onClick={() => {
+              const newLanguage = i18n.language === "en" ? "nl" : "en";
+              i18n.changeLanguage(newLanguage);
+            }}
+          />
+        </span>
         <div
           className={styles.profile_img_wrapper}
           onClick={handleProfileImageClick}

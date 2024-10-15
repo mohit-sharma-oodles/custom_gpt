@@ -5,19 +5,22 @@ import { useLocation } from "react-router-dom";
 import crown from "../../assets/crown_icon.svg";
 import bullet from "../../assets/features_bullet.svg";
 import { loadStripe } from "@stripe/stripe-js";
+import { useTranslation } from "react-i18next";
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
 const UpgradePlan = () => {
+  const { t } = useTranslation();
+
   const location = useLocation();
   const [plans, setPlans] = useState([]);
   const [subscriptionId, setSubscriptionId] = useState();
   const [priceId, setPriceId] = useState();
   const [error, setError] = useState("");
-  const [successMessage, setSuccessMessage] = useState(""); // State for success message
-  const [countdown, setCountdown] = useState(3); // State for dynamic countdown
-  const [showPayButton, setShowPayButton] = useState(true); // State for button visibility
-  const [isLoading, setIsLoading] = useState(false); // State for loading
+  const [successMessage, setSuccessMessage] = useState("");
+  const [countdown, setCountdown] = useState(3);
+  const [showPayButton, setShowPayButton] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const params = new URLSearchParams(location.search);
   const wannaBuy = params.get("id");
@@ -64,7 +67,7 @@ const UpgradePlan = () => {
       let countdownValue = 3;
       const countdownInterval = setInterval(() => {
         setSuccessMessage(
-          `You've upgraded your plan successfully. Remaining amount will be added to your next billing cycle. Redirecting in ${countdownValue}...`
+          `${t("upgradeSuccessMessage")}, ${countdownValue}...`
         );
         countdownValue--;
 
@@ -84,8 +87,9 @@ const UpgradePlan = () => {
   return (
     <div className={styles.outer_container}>
       <h2 style={{ marginTop: "2rem" }}>
-        You are going to upgrade your plan. Here is the breakdown of the
-        upgraded plan.
+        {t(
+          "You are going to upgrade your plan. Here is the breakdown of the upgraded plan."
+        )}
       </h2>
 
       <div className={styles.container}>
@@ -107,13 +111,17 @@ const UpgradePlan = () => {
                   <p className={styles.tile_subheading}>{curr.description}</p>
                   <h4 className={styles.tile_price}>
                     ${curr.active_price.amount}{" "}
-                    <span className={styles.tile_permonth_text}>/ month</span>
+                    <span className={styles.tile_permonth_text}>
+                      / {t("month")}
+                    </span>
                   </h4>
-                  <p className={styles.exclusive_text}>* exclusive of taxes</p>
+                  <p className={styles.exclusive_text}>
+                    * {t("exclusive of taxes")}
+                  </p>
                 </div>
                 <div className={styles.tile_middle_container}>
                   <span className={styles.left_gradient}></span>
-                  <p className={styles.features}>Features</p>
+                  <p className={styles.features}>{t("Features")}</p>
                   <span className={styles.right_gradient}></span>
                 </div>
                 <div className={styles.tile_bottom_container}>
@@ -140,7 +148,9 @@ const UpgradePlan = () => {
           onClick={handleUpgrade}
           disabled={isLoading} // Disable the button when loading
         >
-          {isLoading ? "Processing..." : `Pay $ ${proratedPrice}`}
+          {isLoading
+            ? `${t("Processing")}...`
+            : `${t("Pay")} $ ${proratedPrice}`}
         </button>
       )}
     </div>

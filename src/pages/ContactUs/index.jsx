@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import styles from "./index.module.scss";
 import girl from "../../assets/contact_us_girl.svg";
 import { axios_instance } from "../../Axios/axiosInstance";
+import { useTranslation } from "react-i18next";
 
 const ContactUs = () => {
+  const { t } = useTranslation();
   const [firstname, setFirstName] = useState("");
   const [lastname, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -29,7 +31,7 @@ const ContactUs = () => {
       setStatus(data.status);
       // console.log(data);
     } catch (e) {
-      setMessage(e.response.data.message.message);
+      setMessage(e?.response?.data?.message?.message);
       // console.log(e.response.data.message.message);
       // console.log(e.message);
     }
@@ -46,12 +48,12 @@ const ContactUs = () => {
         }}
       >
         <div className={styles.left_side}>
-          <h1>Contact Us</h1>
+          <h1>{t("Contact Us")}</h1>
           <p>
-            Contact us right now to get started <br /> or if you have any
-            queries.
+            {t("Contact us right now to get started")} <br />{" "}
+            {t("or if you have any queries.")}
           </p>
-          <img src={girl} />
+          <img src={girl} alt="" />
         </div>
         <div className={styles.right_side}>
           <form action="" className={styles.form}>
@@ -60,7 +62,7 @@ const ContactUs = () => {
                 type="text"
                 name="first_name"
                 id="first_name"
-                placeholder="*First Name"
+                placeholder={t("*First Name")}
                 className={styles.firstname}
                 value={firstname}
                 onChange={(e) => setFirstName(e.target.value.trim())}
@@ -70,7 +72,7 @@ const ContactUs = () => {
                 type="text"
                 name="last_name"
                 id="last_name"
-                placeholder="*Last Name"
+                placeholder={t("*Last Name")}
                 value={lastname}
                 onChange={(e) => setLastName(e.target.value.trim())}
                 className={styles.lastname}
@@ -83,7 +85,7 @@ const ContactUs = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value.trim())}
               id="email"
-              placeholder="*Email Address"
+              placeholder={t("*Email Address")}
               required
             />
             <input
@@ -92,7 +94,7 @@ const ContactUs = () => {
               id="number"
               value={number}
               onChange={(e) => setNumber(e.target.value)}
-              placeholder="*Phone Number"
+              placeholder={t("*Phone Number")}
               required
             />
             <textarea
@@ -100,7 +102,7 @@ const ContactUs = () => {
               id="message"
               value={text}
               onChange={(e) => setText(e.target.value)}
-              placeholder="*Message"
+              placeholder={t("*Message")}
               rows={7}
             ></textarea>
             <button
@@ -108,7 +110,7 @@ const ContactUs = () => {
               className={styles.button}
               onClick={handleSubmit}
             >
-              Send Message
+              {t("Send Message")}
             </button>
           </form>
         </div>

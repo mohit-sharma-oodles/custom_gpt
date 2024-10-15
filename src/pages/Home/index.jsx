@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useOutletContext } from "react-router-dom";
 import "../../../node_modules/swiper/swiper-bundle.min.css";
 import styles from "./index.module.scss";
@@ -79,6 +80,7 @@ const CustomNode = ({ data }) => {
 };
 
 const Home = (props) => {
+  const { t, i18n } = useTranslation();
   const { openLoginModal, closeLoginModal, openSignupModal, closeSignupModal } =
     useOutletContext();
 
@@ -100,14 +102,15 @@ const Home = (props) => {
       <div className={styles.hero_banner}>
         <div className={styles.text_area}>
           <h1>
-            Talk to all of your <span className={styles.banner_data}>data</span>{" "}
-            in a <br /> <span className={styles.naturalWay}>natural way</span>
+            {t("Talk to all of your")}{" "}
+            <span className={styles.banner_data}>{t("data")}</span> {t("in a")}{" "}
+            <br /> <span className={styles.naturalWay}>{t("natural way")}</span>
           </h1>
 
           {/* <img className={styles.banner_img} src={banner_img} alt="" /> */}
           <p>
-            Primautomation solution is powered by the popular <br />
-            and increadibly prowerful OpenAI LLMs.
+            {t("Primautomation solution is powered by the popular")} <br />
+            {t("and increadibly prowerful OpenAI LLMs.")}
           </p>
 
           <div className={styles.button_container}>
@@ -115,10 +118,10 @@ const Home = (props) => {
               onClick={openSignupModal}
               className={`${styles.cta_button} ${styles.getStarted}`}
             >
-              Get Started
+              {t("Get Started")}
             </button>
             <button className={`${styles.cta_button} ${styles.watchDemo}`}>
-              Watch Demo <IoPlayOutline />{" "}
+              {t("Watch Demo")} <IoPlayOutline />{" "}
             </button>
           </div>
         </div>
@@ -137,34 +140,34 @@ const Home = (props) => {
       <div className={`${styles.feature_section_container} contain_center`}>
         <div className={styles.headingContainer}>
           <h1 className={styles.headingContainer_heading}>
-            Packed with over 100 business features
+            {t("Packed with over 100 business features")}
           </h1>
           <p className={styles.headingContainer_subheading}>
-            All within a secure, privacy-first, enterprise platform.
+            {t("All within a secure, privacy-first, enterprise platform.")}
           </p>
         </div>
 
         <div className={`${styles.feature_boxes} `}>
           <FeatureBox
             color={"#AE407A"}
-            heading={"Privacy First"}
-            text={
+            heading={t("Privacy eerst")}
+            text={t(
               "We never store your files unless you choose to see them in the comments. By default, your chatbot is private."
-            }
+            )}
           />
           <FeatureBox
             color={"#32b4a2"}
-            heading={"Website Integration"}
-            text={
+            heading={t("Website Integration")}
+            text={t(
               "Bring in ALL your business content with our seamless website integration guaranteed to be easy to set up!"
-            }
+            )}
           />
           <FeatureBox
             color={"#84c1df"}
-            heading={"Realtime Streaming Reactions"}
-            text={
+            heading={t("Realtime Streaming Reactions")}
+            text={t(
               "Streaming reactions based on your content without making up facts. See even the sources of the comments."
-            }
+            )}
           />
         </div>
         <div className={styles.helpmeSection}>
@@ -247,8 +250,9 @@ const Home = (props) => {
 
           <img src={help_me} />
           <h1 className={styles.offer2}>
-            Increase your customer engagement and knowledge <br /> management by
-            a <span className={styles.factor_box}>factor of 10</span>
+            {t("Increase your customer engagement and knowledge")} <br />{" "}
+            {t("management by a")}{" "}
+            <span className={styles.factor_box}>{t("factor of 10")}</span>
           </h1>
         </div>
         <div className={styles.ratings_container}>
@@ -258,12 +262,12 @@ const Home = (props) => {
           <img src={rating_kid} alt="" />
           <div className={styles.rating_text_container}>
             <h3 className={styles.rating}>
-              Powered by ChatGPT
+              {t("Powered by ChatGPT")}
               <SiOpenai color="#32b4a2" />
             </h3>
             <p>
-              Build your own Primadeta Automation <br /> chatbot based on your
-              own content in <br /> minutes.
+              {t("Build your own Primadeta Automation")} <br />{" "}
+              {t("chatbot based on your own content in")} <br /> {t("minutes.")}
             </p>
           </div>
         </div>
@@ -314,8 +318,8 @@ const Home = (props) => {
                 <div className={`${styles.archer_element1} ${styles.offering}`}>
                   <div className={styles.left}>
                     <img src={offering1_1} alt="" />
-                    <h4>{offerings1[0].heading}</h4>
-                    <p>{offerings1[0].subheading}</p>
+                    <h4>{t(offerings1[0].heading)}</h4>
+                    <p>{t(offerings1[0].subheading)}</p>
                   </div>
                   <div className={styles.right}>
                     <img src={offering1_1_img} alt="" />
@@ -337,8 +341,8 @@ const Home = (props) => {
                 <div className={`${styles.archer_element2} ${styles.offering}`}>
                   <div className={styles.left}>
                     <img src={offering1_2} alt="" />
-                    <h4>{offerings1[1].heading}</h4>
-                    <p>{offerings1[1].subheading}</p>
+                    <h4>{t(offerings1[1].heading)}</h4>
+                    <p>{t(offerings1[1].subheading)}</p>
                   </div>
                   <div className={styles.right}>
                     <img src={offering1_2_img} alt="" />
@@ -365,8 +369,8 @@ const Home = (props) => {
                 >
                   <div className={styles.left}>
                     <img src={offering1_3} alt="" />
-                    <h4>{offerings1[2].heading}</h4>
-                    <p>{offerings1[2].subheading}</p>
+                    <h4>{t(offerings1[2].heading)}</h4>
+                    <p>{t(offerings1[2].subheading)}</p>
                   </div>
                   <div className={styles.right}>
                     <img src={offering1_3_img} alt="" />
@@ -428,8 +432,8 @@ const Home = (props) => {
                 >
                   <div className={styles.left}>
                     <img src={offering1_4} alt="" />
-                    <h4>{offerings1[3].heading}</h4>
-                    <p>{offerings1[3].subheading}</p>
+                    <h4>{t(offerings1[3].heading)}</h4>
+                    <p>{t(offerings1[3].subheading)}</p>
                   </div>
                   <div className={styles.right}>
                     <img src={offering1_4_img} alt="" />
@@ -466,17 +470,17 @@ const Home = (props) => {
                         alt=""
                       />
                       <h3 className={`${styles.paddingLeft}`}>
-                        Increase customer engagement with lightning-fast
-                        responses.
+                        {t(
+                          "Increase customer engagement with lightning-fast responses."
+                        )}
                       </h3>
                       <div
                         className={`${styles.text_container} ${styles.paddingLeft}`}
                       >
                         <p>
-                          Provide personalized responses to customer inquiries,
-                          reduce response times, and improve overall customer
-                          experience and engagement. It’s as if ChatGPT has
-                          learned all your business content.
+                          {t(
+                            `Provide personalized responses to customer inquiries, reduce response times, and improve overall customer experience and engagement. It’s as if ChatGPT learned all your business content.`
+                          )}
                         </p>
                       </div>
                     </div>
@@ -515,15 +519,13 @@ const Home = (props) => {
                         className={styles.imagePositionRight}
                       />
                       <h3 className={styles.paddingRight}>
-                        Save hours researching your PDF Documents.
+                        {t("Save hours researching your PDF Documents.")}
                       </h3>
                       <div className={styles.text_containerRight}>
                         <p>
-                          Bring together the knowledge of all your business and
-                          teams in a Primadeta Automation-driven chatbot. Unlock
-                          insights and improve the efficiency of your employees
-                          and teams. No more typing keywords. Just ask for
-                          answers from your content.
+                          {t(
+                            `Bring together the knowledge of all your business and teams in a Primadeta Automation-driven chatbot. Unlock insights and improve the efficiency of your employees and teams. No more typing keywords. Just ask for answers from your content.`
+                          )}
                         </p>
                       </div>
                     </div>
@@ -563,16 +565,15 @@ const Home = (props) => {
                         alt=""
                       />
                       <h3 className={`${styles.paddingLeft}`}>
-                        Make your helpdesk staff 10x more efficient.
+                        {t("Make your helpdesk staff 10x more efficient.")}
                       </h3>
                       <div
                         className={`${styles.text_container} ${styles.paddingLeft}`}
                       >
                         <p>
-                          No more hours of searching through documents. Make
-                          your help desk staff more efficient with quick
-                          ChatGPT-driven responses from your content. Resolve
-                          customer issues quickly.
+                          {t(
+                            "No more hours of searching through documents. Make your help desk staff more efficient with quick ChatGPT-driven responses from your content. Resolve customer issues quickly."
+                          )}
                         </p>
                       </div>
                     </div>
@@ -590,41 +591,43 @@ const Home = (props) => {
         <div className={styles.security_container}>
           <div className={styles.top_container}>
             <img src={securityAndPrivacy} />
-            <h2>Security and Privacy Principles</h2>
-            <span className={styles.trust_center}>The Trust Center</span>
+            <h2>{t("Security and Privacy Principles")}</h2>
+            <span className={styles.trust_center}>{t("The Trust Center")}</span>
           </div>
           <div className={styles.bottom_container}>
             <div className={styles.left}>
-              <h3>Security and privacy are our top priority</h3>
-              <p>Your data is fully encrypted and files are never stored</p>
-              <span onClick={openSignupModal}>Get Started</span>
+              <h3>{t("Security and privacy are our top priority")}</h3>
+              <p>
+                {t("Your data is fully encrypted and files are never stored")}
+              </p>
+              <span onClick={openSignupModal}>{t("Get Started")}</span>
             </div>
             <div className={styles.right}>
               <div className={styles.security_right_item}>
                 <IoShieldCheckmarkOutline size={22} />
                 <div className={styles.top_item}>
-                  <h4>Encrypted in transit and at rest</h4>
+                  <h4>{t("Encrypted in transit and at rest")}</h4>
                   <p>
-                    SSL Encryption at Rest <br /> Industry-standard 256-bit AES
-                    encryption at rest.
+                    {t("SSL Encryption at Rest")} <br />{" "}
+                    {t("Industry-standard 256-bit AES encryption at rest.")}
                   </p>
                 </div>
               </div>
               <div className={styles.security_right_item}>
                 <GrStorage size={22} />
                 <div className={styles.top_item}>
-                  <h4>No data sharing</h4>
+                  <h4>{t("No data sharing")}</h4>
                   <p>
-                    SSL Encryption Completely self-contained bots <br /> No data
-                    sharing, even within same accounts.
+                    {t("SSL Encryption Completely self-contained bots")} <br />{" "}
+                    {t("No data sharing, even within same accounts.")}
                   </p>
                 </div>
               </div>
               <div className={styles.security_right_item}>
                 <GoLock size={22} />
                 <div className={styles.top_item}>
-                  <h4>SOC 2 compliant</h4>
-                  <p>SOC 2 Type-2 compliant</p>
+                  <h4>{t("SOC 2 compliant")}</h4>
+                  <p>{t("SOC 2 Type II Compliance")}</p>
                 </div>
               </div>
             </div>
@@ -634,8 +637,8 @@ const Home = (props) => {
         {/* want heads on section */}
         <div className={styles.handson_container}>
           <div className={styles.top}>
-            <h3>Want to do a hands on test?</h3>
-            <p onClick={openSignupModal}>Try it out Yourself.</p>
+            <h3>{t("Want to do a hands on test?")}</h3>
+            <p onClick={openSignupModal}>{t("Try it out Yourself.")}</p>
           </div>
           <div className={styles.bottom}>
             <img src={tryItOut} />

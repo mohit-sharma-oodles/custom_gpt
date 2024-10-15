@@ -18,8 +18,11 @@ import PartialHeader from "../../components/PartialHeader";
 import { Link, useNavigate } from "react-router-dom";
 import { axios_instance } from "../../Axios/axiosInstance";
 import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
+import { useTranslation } from "react-i18next";
 
 const Projects = () => {
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.rootReducer.auth);
 
@@ -97,7 +100,7 @@ const Projects = () => {
         <div className={styles.bottom}>
           <div className={styles.right_side}>
             <div className={styles.top}>
-              <h2>All Projects</h2>
+              <h2>{t("All Projects")}</h2>
               <div className={styles.bottom_container}>
                 <div className={styles.left_side}>
                   <div className={styles.input}>
@@ -133,7 +136,7 @@ const Projects = () => {
                     style={{ textDecoration: "none", color: "inherit" }}
                   >
                     <span className={styles.create_project_button}>
-                      <MdAddCircleOutline /> Create Project
+                      <MdAddCircleOutline /> {t("Create Project")}
                     </span>
                   </Link>
                 </div>
@@ -144,12 +147,12 @@ const Projects = () => {
                 <table className={styles.table}>
                   <thead>
                     <tr>
-                      <th>S.no</th>
-                      <th>Project Name</th>
-                      <th>Documents</th>
-                      <th>Created On</th>
-                      <th>Last Modified</th>
-                      <th>Actions</th>
+                      <th>{t("S.no")}</th>
+                      <th>{t("Project Name")}</th>
+                      <th>{t("Documents")}</th>
+                      <th>{t("Created On")}</th>
+                      <th>{t("Last Modified")}</th>
+                      <th>{t("Actions")}</th>
                     </tr>
                   </thead>
 

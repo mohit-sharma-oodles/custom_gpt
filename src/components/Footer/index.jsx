@@ -1,11 +1,13 @@
 import React from "react";
 import styles from "./index.module.scss";
+import { useTranslation } from "react-i18next";
 
 // assets
 import logo from "../../assets/company_logo.svg";
 import { FaFacebookF, FaLinkedinIn, FaTwitter } from "react-icons/fa";
 
 const Footer = () => {
+  const { t } = useTranslation();
   return (
     <div className={styles.container}>
       <div className={`contain_center ${styles.inner}`}>
@@ -15,7 +17,7 @@ const Footer = () => {
           <a style={{ color: "#ae407a" }} href="https://primautomation.com/">
             Primautomations.com
           </a>
-          . All Rights Reserved.
+          {t(". All Rights Reserved.")}
         </p>
         <div className={styles.company_logos}>
           <FaFacebookF

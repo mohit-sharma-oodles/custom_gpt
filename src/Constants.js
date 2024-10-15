@@ -3,9 +3,8 @@ export const accordionItems = [
     index: "01",
     title:
       "Does Primaautomation.nl guarantee the confidentiality of my business information?",
-    content: `Absolutely. Primaautomation.nl is built on strong privacy principles, ensuring that all information uploaded to a bot remains within that bot's environment and is not shared with other bots, even within the same account.
-    
-        It is important to note that your data is not included in OpenAI's training sets. For more details, see their announcement and data usage policy: .`,
+    content:
+      "Absolutely. Primaautomation.nl is built on strong privacy principles, ensuring that all information uploaded to a bot remains within that bot's environment and is not shared with other bots, even within the same account. It is important to note that your data is not included in OpenAI's training sets. For more details, see their announcement and data usage policy: .",
     link: ["https://openai.com/policies/api-data-usage-policies"],
   },
   {

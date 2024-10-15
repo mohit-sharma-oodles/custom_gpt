@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import styles from "./index.module.scss";
 import { IoCloseSharp, IoLanguage } from "react-icons/io5";
 import { FaRegUserCircle, FaUser } from "react-icons/fa";
@@ -97,6 +98,7 @@ const ProfileModal = ({ onClose, setShowProfile, setShowProfileModal }) => {
 };
 
 const Header = ({ onLoginClick, onSignupClick }) => {
+  const { t, i18n } = useTranslation();
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
@@ -130,25 +132,31 @@ const Header = ({ onLoginClick, onSignupClick }) => {
                 style={{ width: "24px", height: "24px" }}
                 alt="Crown"
               />
-              Subscriptions
+              {t("Subscriptions")}
             </span>
           </Link>
           <Link to="/faq" style={{ textDecoration: "none", color: "inherit" }}>
-            <span className="clickable">FAQ</span>
+            <span className="clickable">{t("FAQ")}</span>
           </Link>
           <Link
             to="/contact-us"
             style={{ textDecoration: "none", color: "inherit" }}
           >
-            <span className="clickable">Contact Us</span>
+            <span className="clickable">{t("Contact Us")}</span>
           </Link>
-          {/* <span className="clickable">
+          <span
+            className="clickable"
+            onClick={() => {
+              const newLanguage = i18n.language === "en" ? "nl" : "en";
+              i18n.changeLanguage(newLanguage);
+            }}
+          >
             <IoLanguage
               size={24}
               color="grey"
               style={{ marginBottom: "-7px" }}
             />
-          </span> */}
+          </span>
           <span className={styles.auth_btn_contnainer}>
             {!isAuthenticated ? (
               <>
@@ -156,13 +164,13 @@ const Header = ({ onLoginClick, onSignupClick }) => {
                   onClick={onLoginClick}
                   className={`clickable ${styles.login_btn}`}
                 >
-                  Log In
+                  {t("Log In")}
                 </span>
                 <span
                   onClick={onSignupClick}
                   className={`clickable ${styles.signup_btn}`}
                 >
-                  Sign Up
+                  {t("Sign Up")}
                 </span>
               </>
             ) : (
@@ -174,7 +182,7 @@ const Header = ({ onLoginClick, onSignupClick }) => {
                   style={{ textDecoration: "none", color: "inherit" }}
                 >
                   <span className={`clickable ${styles.signup_btn}`}>
-                    My Projects
+                    {t("My Projects")}
                   </span>
                 </Link>
                 <div

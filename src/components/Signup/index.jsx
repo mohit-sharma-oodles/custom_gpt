@@ -7,8 +7,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { signupUser } from "../../redux/authSlice";
 import logo from "../../assets/company_logo_white.svg";
 import tryItOut from "../../assets/tryItOut.svg";
+import { useTranslation } from "react-i18next";
 
 const Signup = ({ isOpen, onClose, onLoginClick }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
 
   // State for form steps
@@ -51,11 +53,11 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
 
   const handleNext = () => {
     if (!firstName || !lastName || !mobileNumber) {
-      setErrorMessage("Please fill in all required fields.");
+      setErrorMessage(t("Please fill in all required fields."));
       return;
     }
     if (mobileNumber.length < 9 || mobileNumber.length > 13) {
-      setErrorMessage("Mobile number must be between 9 and 13 digits.");
+      setErrorMessage(t("Mobile number must be between 9 and 13 digits."));
       return;
     }
     setStep(2);
@@ -72,16 +74,16 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
     const hasMinLength = password.length >= 8;
 
     if (!hasMinLength) {
-      return "Password must be at least 8 characters long.";
+      return t("Password must be at least 8 characters long.");
     }
     if (!hasUpperCase) {
-      return "Password must contain at least one uppercase letter.";
+      return t("Password must contain at least one uppercase letter.");
     }
     if (!hasNumber) {
-      return "Password must contain at least one number.";
+      return t("Password must contain at least one number.");
     }
     if (!hasSpecialChar) {
-      return "Password must contain at least one special character.";
+      return t("Password must contain at least one special character.");
     }
 
     return ""; // No error
@@ -97,7 +99,7 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
     }
 
     if (password !== confirmPassword) {
-      setErrorMessage("Passwords do not match");
+      setErrorMessage(t("Passwords do not match"));
       return;
     }
 
@@ -126,7 +128,7 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
 
       if (errors.status >= 500) {
         console.log(errors.status);
-        setErrorMessage("Server error. Please try again later.");
+        setErrorMessage(t("Server error. Please try again later."));
       }
 
       if (errors) {
@@ -155,16 +157,23 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <div className={styles.left_side}>
-          {/* <img src={left_banner} alt="Pimadeta" /> */}
+          {/* <img src={left_banner} alt={t("Pimadeta")} /> */}
           <div className={styles.container}>
-            <img src={logo} alt="PrimAutomation" srcset="" height={35} />
+            <img src={logo} alt={t("PrimAutomation")} srcSet="" height={35} />
             <div className={styles.text_container}>
-              <h2>Welcome back to Prima deta Automations.</h2>
+              <h2>{t("Welcome back to Prima deta Automations.")}</h2>
               <p>
-                Your one stop solution for all document management and AI needs.
+                {t(
+                  "Your one stop solution for all document management and AI needs."
+                )}
               </p>
             </div>
-            <img src={tryItOut} srcset="" className={styles.tryitout_image} />
+            <img
+              src={tryItOut}
+              srcSet=""
+              className={styles.tryitout_image}
+              alt=""
+            />
           </div>
         </div>
         <div className={styles.right_side}>
@@ -178,19 +187,19 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
           </span>
           <div className={styles.right_side_container}>
             <h2 className={`poppins-semibold`}>
-              {step === 1 ? "Personal Information" : "Sign Up"}
+              {step === 1 ? t("Personal Information") : t("Sign Up")}
             </h2>
             <form className={styles.form} onSubmit={handleSignUp}>
               {step === 1 ? (
                 <>
                   <div className={styles.input_container}>
-                    <label htmlFor="firstName">First Name*</label>
+                    <label htmlFor="firstName">{t("First Name")}*</label>
                     <div className={styles.input}>
                       <input
                         type="text"
                         name="firstName"
                         id="firstName"
-                        placeholder="Enter your first name"
+                        placeholder={t("Enter your first name")}
                         value={firstName}
                         onChange={handleInputChange(setFirstName)}
                         required
@@ -198,13 +207,13 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
                     </div>
                   </div>
                   <div className={styles.input_container}>
-                    <label htmlFor="lastName">Last Name*</label>
+                    <label htmlFor="lastName">{t("Last Name")}*</label>
                     <div className={styles.input}>
                       <input
                         type="text"
                         name="lastName"
                         id="lastName"
-                        placeholder="Enter your last name"
+                        placeholder={t("Enter your last name")}
                         value={lastName}
                         onChange={handleInputChange(setLastName)}
                         required
@@ -212,13 +221,13 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
                     </div>
                   </div>
                   <div className={styles.input_container}>
-                    <label htmlFor="mobileNumber">Mobile Number*</label>
+                    <label htmlFor="mobileNumber">{t("Mobile Number")}*</label>
                     <div className={styles.input}>
                       <input
                         type="tel"
                         name="mobileNumber"
                         id="mobileNumber"
-                        placeholder="Enter your mobile number"
+                        placeholder={t("Enter your mobile number")}
                         maxLength={13}
                         minLength={9}
                         value={mobileNumber}
@@ -228,7 +237,7 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
                     </div>
                   </div>
                   <div className={styles.input_container}>
-                    <label htmlFor="profileImage">Profile Image</label>
+                    <label htmlFor="profileImage">{t("Profile Image")}</label>
                     <div className={styles.input}>
                       <input
                         type="file"
@@ -245,7 +254,7 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
                       className={styles.login_btn}
                       onClick={handleNext}
                     >
-                      Next
+                      {t("Next")}
                     </button>
                   </div>
                   {errorMessage && (
@@ -255,13 +264,13 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
               ) : (
                 <>
                   <div className={styles.input_container}>
-                    <label htmlFor="email">Email</label>
+                    <label htmlFor="email">{t("Email")}</label>
                     <div className={styles.input}>
                       <input
                         type="email"
                         name="email"
                         id="email"
-                        placeholder="Please enter your Email"
+                        placeholder={t("Please enter your Email")}
                         value={email}
                         onChange={handleInputChange(setEmail)}
                         required
@@ -269,13 +278,13 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
                     </div>
                   </div>
                   <div className={styles.input_container}>
-                    <label htmlFor="password">Password</label>
+                    <label htmlFor="password">{t("Password")}</label>
                     <div className={`${styles.input} ${styles.password_input}`}>
                       <input
                         type={!viewPassword ? "password" : "text"}
                         name="password"
                         id="password"
-                        placeholder="Please enter your password"
+                        placeholder={t("Please enter your password")}
                         value={password}
                         onChange={handleInputChange(setPassword)}
                         required
@@ -290,13 +299,15 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
                     </div>
                   </div>
                   <div className={styles.input_container}>
-                    <label htmlFor="confirmPassword">Confirm Password</label>
+                    <label htmlFor="confirmPassword">
+                      {t("Confirm Password")}
+                    </label>
                     <div className={`${styles.input} ${styles.password_input}`}>
                       <input
                         type={!viewConfirmPassword ? "password" : "text"}
                         name="confirmPassword"
                         id="confirmPassword"
-                        placeholder="Please confirm your password"
+                        placeholder={t("Please confirm your password")}
                         value={confirmPassword}
                         onChange={handleInputChange(setConfirmPassword)}
                         required
@@ -328,21 +339,21 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
 
                   <div className={styles.button_container}>
                     <button type="submit" className={styles.login_btn}>
-                      {isSigningUp ? "Signing Up..." : "Sign Up"}
+                      {isSigningUp ? t("Signing Up...") : t("Sign Up")}
                     </button>
-                    <p>or</p>
+                    <p>{t("or")}</p>
                     <button type="button" className={`${styles.google_btn}`}>
                       <FcGoogle size={24} />
-                      <p>Continue with Google</p>
+                      <p>{t("Continue with Google")}</p>
                     </button>
                   </div>
                 </>
               )}
             </form>
             <p>
-              Already Have An Account?{" "}
+              {t("Already Have An Account?")}{" "}
               <span className={styles.signup_text} onClick={onLoginClick}>
-                Log In
+                {t("Log In")}
               </span>
             </p>
           </div>

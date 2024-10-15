@@ -11,8 +11,10 @@ import { FcGoogle } from "react-icons/fc";
 import left_banner from "../../assets/login_banner.svg";
 import logo from "../../assets/company_logo_white.svg";
 import tryItOut from "../../assets/tryItOut.svg";
+import { useTranslation } from "react-i18next";
 
 const Login = ({ isOpen, onClose, onSignupClick }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -150,9 +152,11 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
           <div className={styles.container}>
             <img src={logo} alt="PrimAutomation" srcset="" height={35} />
             <div className={styles.text_container}>
-              <h2>Welcome back to Prima deta Automations.</h2>
+              <h2>{t("Welcome back to Prima deta Automations.")}</h2>
               <p>
-                Your one stop solution for all document management and AI needs.
+                {t(
+                  "Your one stop solution for all document management and AI needs."
+                )}
               </p>
             </div>
             <img src={tryItOut} srcset="" className={styles.tryitout_image} />
@@ -163,7 +167,7 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
             &times;
           </span>
           <div className={styles.right_side_container}>
-            <h2 className={`poppins-semibold`}>Log In</h2>
+            <h2 className={`poppins-semibold`}>{t("Log In")}</h2>
             <form action="" className={styles.form} onSubmit={handleLoginClick}>
               <div className={styles.input_container}>
                 <label htmlFor="email">Email*</label>
@@ -172,7 +176,7 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
                     type="email"
                     name="email"
                     id="email"
-                    placeholder="Please enter your Email"
+                    placeholder={t("Please enter your Email")}
                     value={email}
                     required
                     onChange={(e) => {
@@ -182,13 +186,13 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
                 </div>
               </div>
               <div className={styles.input_container}>
-                <label htmlFor="password">Password*</label>
+                <label htmlFor="password">{t("Password")}*</label>
                 <div className={`${styles.input} ${styles.password_input}`}>
                   <input
                     type={!viewPassword ? "password" : "text"}
                     name="password"
                     id="password"
-                    placeholder="Please enter your password"
+                    placeholder={t("Please enter your password")}
                     value={password}
                     onChange={(e) => setPassword(e.target.value.trim())}
                     required
@@ -213,7 +217,7 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
                       cursor: "pointer",
                     }}
                   >
-                    Forgot Password?
+                    {t("Forgot Password?")}
                   </button>
                 </div>
               </div>
@@ -227,9 +231,11 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
                   className={styles.login_btn}
                   disabled={status === "loading"}
                 >
-                  {status === "loading" ? "Logging In..." : "Log In"}
+                  {status === `${t("Loading")}`
+                    ? `${t("Logging In")}...`
+                    : `${t("Log In")}`}
                 </button>
-                <p>or</p>
+                <p>{t("or")}</p>
                 <button
                   type="button"
                   className={`${styles.google_btn}`}
@@ -241,14 +247,14 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
                   }}
                 >
                   <FcGoogle size={24} />
-                  <p>Continue with google</p>
+                  <p>{t("Continue with google")}</p>
                 </button>
               </div>
             </form>
             <p>
-              Don't Have An Account?{" "}
+              {t("Don't Have An Account?")}{" "}
               <span className={styles.signup_text} onClick={onSignupClick}>
-                Sign Up
+                {t("Sign Up")}
               </span>
             </p>
           </div>

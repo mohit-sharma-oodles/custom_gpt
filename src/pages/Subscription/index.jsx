@@ -5,6 +5,7 @@ import bullet from "../../assets/features_bullet.svg";
 import { axios_instance } from "../../Axios/axiosInstance";
 import { loadStripe } from "@stripe/stripe-js";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
@@ -20,6 +21,7 @@ const SubscriptionTile = ({
   current_active_plan_price,
   priceId,
 }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [proratedPrice, setProratedPrice] = useState();
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
@@ -127,13 +129,14 @@ const SubscriptionTile = ({
         </span>
         <p className={styles.tile_subheading}>{subHeading}</p>
         <h4 className={styles.tile_price}>
-          ${price} <span className={styles.tile_permonth_text}>/ month</span>
+          ${price}{" "}
+          <span className={styles.tile_permonth_text}>/ {t("month")}</span>
         </h4>
-        <p className={styles.exclusive_text}>* exclusive of taxes</p>
+        <p className={styles.exclusive_text}>* {t("exclusive of taxes")}</p>
       </div>
       <div className={styles.tile_middle_container}>
         <span className={styles.left_gradient}></span>
-        <p className={styles.features}>Features</p>
+        <p className={styles.features}>{t("Features")}</p>
         <span className={styles.right_gradient}></span>
       </div>
       <div className={styles.tile_bottom_container}>
@@ -154,22 +157,24 @@ const SubscriptionTile = ({
         }}
       >
         {isLoading
-          ? "Loading..."
+          ? `${t("Loading")}...`
           : user?.days_left === null ||
             user?.days_left === undefined ||
             user?.subscription_status === "Cancelled"
-          ? "Buy Now"
+          ? t("Buy Now")
           : current_active_plan_price > price
-          ? "Cannot Buy"
+          ? t("Cannot Buy")
           : is_subscribed
-          ? "Active"
-          : "Upgrade Now"}
+          ? t("Active")
+          : t("Upgrade Now")}
       </button>
     </div>
   );
 };
 
 const Subscriptions = () => {
+  const { t } = useTranslation();
+
   const [plans, setPlans] = useState([]);
   const [error, setError] = useState("");
   const [currentActivePlanPrice, setCurrentActivePlanPrice] = useState(null);
@@ -215,9 +220,11 @@ const Subscriptions = () => {
         <h1>
           <img src={crown} alt="" />
         </h1>
-        <h1 className={styles.heading}>Subscription Plans</h1>
+        <h1 className={styles.heading}>{t("Subscription Plans")}</h1>
         <h3 className={styles.subHeading}>
-          Get started on your journey of seamless document management with AI
+          {t(
+            "Get started on your journey of seamless document management with AI"
+          )}
         </h3>
       </div>
       <div className={styles.bottom_container}>

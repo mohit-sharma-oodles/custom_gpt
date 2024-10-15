@@ -2,8 +2,10 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getUserDetails } from "../../redux/authSlice";
+import { useTranslation } from "react-i18next";
 
 const PaymentSuccess = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [time, setTime] = useState(5);
@@ -43,8 +45,8 @@ const PaymentSuccess = () => {
         overflow: "hidden",
       }}
     >
-      <h1>Congratulations! &#127881; Your payment was successfull.</h1>
-      <p>Redirecting you to home in {time}</p>
+      <h1>{t("congratulations")}</h1>
+      <p>{t("redirecting", { time })}</p>
     </div>
   );
 };
