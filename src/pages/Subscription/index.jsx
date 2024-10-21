@@ -27,7 +27,7 @@ const SubscriptionTile = ({
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const [isLoading, setIsLoading] = useState(false);
 
-  console.log(user?.subscription_status);
+  // console.log(user?.subscription_status);
 
   useEffect(() => {
     setUser(JSON.parse(localStorage.getItem("user")));

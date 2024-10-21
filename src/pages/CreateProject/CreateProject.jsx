@@ -2,20 +2,22 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./index.module.scss";
 
-//icons
+// Icons
 import { IoCloudUploadOutline } from "react-icons/io5";
 import { AiOutlineDelete } from "react-icons/ai";
 import { GoPencil } from "react-icons/go";
 
-//components
+// Components
 import PartialHeader from "../../components/PartialHeader";
 import Sidebar from "../../components/Sidebar";
 
-//imports
+// Imports
 import { FileUploader } from "react-drag-drop-files";
 import { axios_instance } from "../../Axios/axiosInstance";
+import { useTranslation } from "react-i18next";
 
 const CreateProject = () => {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -23,76 +25,96 @@ const CreateProject = () => {
   const edit = queryParams.get("edit") === "true";
   const projectId = queryParams.get("projectID");
 
-  const [fileSelected, setFileSelected] = useState(null);
+  const [fileSelected, setFileSelected] = useState([]);
   const [name, setName] = useState("");
   const [existingFiles, setExistingFiles] = useState([]);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loader, setLoader] = useState(false);
 
-  console.log(existingFiles);
-
-  // Fetch the existing project if edit mode and projectId are present
+  // Fetch the existing project if in edit mode
   useEffect(() => {
     if (edit && projectId) {
-      // console.log(
-      //   "Edit mode: You are editing an existing project",
-      //   edit,
-      //   projectId
-      // );
       const fetchProject = async () => {
         try {
           const response = await axios_instance.get(
             `/api/customgpt/projects/${projectId}/pages/`
           );
-          console.log(response.data, "Response Data");
 
-          // Extract project_name and documents from the response
           const { project_name, documents } = response.data.project[0];
-          console.log(documents);
 
           setName(project_name);
           setExistingFiles(documents);
-
-          console.log(existingFiles);
         } catch (e) {
-          setError("Failed to fetch project details.");
+          setError(t("Failed to fetch project details."));
         }
       };
       fetchProject();
     }
-  }, [edit, projectId]);
+  }, [edit, projectId, t]);
 
-  const handleChange = (file) => {
-    if (fileSelected) {
-      alert("You can only upload one file.");
-      return;
-    }
-    setFileSelected(file);
+  // Handle file selection
+  const handleChange = (files) => {
+    setFileSelected((prevFiles) => [...prevFiles, ...files]);
   };
 
-  const handleDeleteFile = () => {
-    setFileSelected(null);
+  // Delete a selected file
+  const handleDeleteFile = (index) => {
+    setFileSelected((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
 
+  // Create a new project and upload files
   const handleCreateProject = async () => {
-    if (!name || !fileSelected) {
-      alert("Please fill in the project name and upload a file.");
+    if (!name || fileSelected.length === 0) {
+      alert(t("Please fill in the project name and upload at least one file."));
       return;
     }
 
     setLoader(true);
+    // Clear previous messages
+    setError("");
+    setMessage("");
 
     const formData = new FormData();
     formData.append("project_name", name);
-    formData.append("file", fileSelected);
 
     try {
+      // Create the project and get the project_id
       const response = await axios_instance.post(
         "/api/customgpt/projects/create/",
         formData
       );
-      setMessage(response?.data?.message);
+
+      const { message, project_id } = response.data;
+
+      // Loop over each file and upload it
+      const promises = fileSelected.map((file) => {
+        const fileData = new FormData();
+        fileData.append("file", file);
+
+        return axios_instance.post(
+          `/api/customgpt/projects/update/${project_id}/`,
+          fileData
+        );
+      });
+
+      try {
+        await Promise.all(promises);
+        setMessage(message);
+        // Clear any previous errors
+        setError("");
+      } catch (uploadErrors) {
+        const errorMessages = uploadErrors.map(
+          (error) =>
+            `${t("Failed to upload file")} ${error.response.data.file.name}: ${
+              error.response.data.error
+            }`
+        );
+        setError(errorMessages.join("\n"));
+        // Clear any previous success messages
+        setMessage("");
+      }
+
       setLoader(false);
 
       setTimeout(() => {
@@ -100,32 +122,70 @@ const CreateProject = () => {
       }, 3000);
     } catch (e) {
       setLoader(false);
-      setError(e?.response?.data?.error);
+      setError(e?.response?.data?.error || t("An error occurred."));
+      // Clear any previous success messages
+      setMessage("");
     }
   };
 
+  // Edit an existing project and upload new files
   const handleEditProject = async () => {
     if (!name) {
-      alert("Please fill in the project name.");
+      alert(t("Please fill in the project name."));
       return;
     }
 
     setLoader(true);
+    // Clear previous messages
+    setError("");
+    setMessage("");
 
     const formData = new FormData();
     formData.append("project_name", name);
 
-    // Only append the file if a new file is selected
-    if (fileSelected) {
-      formData.append("file", fileSelected);
-    }
-
     try {
-      const response = await axios_instance.post(
+      // Update the project name
+      await axios_instance.post(
         `/api/customgpt/projects/update/${projectId}/`,
         formData
       );
-      setMessage(response?.data?.message);
+
+      // Upload new files if any
+      if (fileSelected.length > 0) {
+        const uploadPromises = fileSelected.map((file) => {
+          const fileData = new FormData();
+          fileData.append("file", file);
+
+          return axios_instance
+            .post(`/api/customgpt/projects/update/${projectId}/`, fileData)
+            .then(() => null) // Return null if successful
+            .catch((error) => {
+              console.error(`Failed to upload file ${file.name}:`, error);
+              return `${t("Failed to upload file")} ${file.name}: ${
+                error.response?.data?.error || error.message
+              }`;
+            });
+        });
+
+        const uploadResults = await Promise.all(uploadPromises);
+
+        // Filter out any errors
+        const uploadErrors = uploadResults.filter((result) => result !== null);
+        if (uploadErrors.length > 0) {
+          setError(uploadErrors.join("\n"));
+          // Clear any previous success messages
+          setMessage("");
+        } else {
+          setMessage(t("Project updated successfully."));
+          // Clear any previous errors
+          setError("");
+        }
+      } else {
+        setMessage(t("Project updated successfully."));
+        // Clear any previous errors
+        setError("");
+      }
+
       setLoader(false);
 
       setTimeout(() => {
@@ -133,10 +193,13 @@ const CreateProject = () => {
       }, 3000);
     } catch (e) {
       setLoader(false);
-      setError(e?.response?.data?.error);
+      setError(e?.response?.data?.error || t("An error occurred."));
+      // Clear any previous success messages
+      setMessage("");
     }
   };
 
+  // Handle form submission
   const handleSubmit = () => {
     if (edit) {
       handleEditProject();
@@ -150,13 +213,13 @@ const CreateProject = () => {
       <Sidebar className={styles.sidebar} />
       <div className={styles.main}>
         <PartialHeader
-          title={edit ? "Edit Project" : "Create Project"}
+          title={edit ? t("Edit Project") : t("Create Project")}
           className={styles.partial_header}
         />
         <div className={styles.content}>
           <div className={styles.top_container}>
             <h2 className={styles.heading}>
-              Name of the Project {edit && <GoPencil />}
+              {t("Name of the Project")} {edit && <GoPencil />}
             </h2>
 
             <input
@@ -169,75 +232,81 @@ const CreateProject = () => {
               className={styles.name_input}
             />
             <h2 style={{ marginTop: "1rem" }} className={styles.heading}>
-              Select a file to upload
+              {t("Select files to upload")}
             </h2>
             <FileUploader
               handleChange={handleChange}
               name="file"
-              multiple={false}
+              multiple={true}
               classes="drop_zone"
             >
               <div className={styles.drop_zone}>
                 <IoCloudUploadOutline size={50} color={"lightgrey"} />
                 <div className={styles.text_container}>
                   <h3>
-                    Drag and Drop file or{" "}
-                    <span className={styles.browse}>Browse</span>
+                    {t("Drag and Drop files or")}{" "}
+                    <span className={styles.browse}>{t("Browse")}</span>
                   </h3>
-                  <p>Supported formats: PDF, DOC, XLSX, SPREADSHEET, etc.</p>
+                  <p>
+                    {t("Supported formats: PDF, DOC, XLSX, SPREADSHEET, etc.")}
+                  </p>
                 </div>
               </div>
             </FileUploader>
           </div>
 
-          {/* Existing documents - disable editing */}
           <div className={styles.middle_container}>
-            {fileSelected && (
+            {fileSelected.length > 0 && (
               <>
-                <h3>New File:</h3>
-                <div className={styles.file_div}>
-                  <div className={styles.single_file}>
-                    <p>{fileSelected.name}</p>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                      }}
-                    >
-                      <p className={styles.file_type}>
-                        {fileSelected.name.split(".").pop()}
-                      </p>
-                      <button
-                        onClick={handleDeleteFile}
-                        className={styles.delete_btn}
+                <h3>{t("New Files:")}</h3>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: ".7rem",
+                  }}
+                  className={styles.file_div}
+                >
+                  {fileSelected.map((file, index) => (
+                    <div key={index} className={styles.single_file}>
+                      <p>{file.name}</p>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                        }}
                       >
-                        <AiOutlineDelete size={20} color="red" />
-                      </button>
+                        <p className={styles.file_type}>
+                          {file.name.split(".").pop()}
+                        </p>
+                        <button
+                          onClick={() => handleDeleteFile(index)}
+                          className={styles.delete_btn}
+                        >
+                          <AiOutlineDelete size={20} color="red" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
               </>
             )}
             {existingFiles?.length > 0 && (
               <div>
-                <h3>Existing Files:</h3>
+                <h3>{t("Existing Files:")}</h3>
                 <div
                   className={styles.file_div}
                   style={{ flexDirection: "column", gap: "6px" }}
                 >
-                  {existingFiles.map((file, index) => {
-                    // console.log(file);
-
-                    return (
-                      <div key={index} className={styles.single_file}>
-                        <p>{file.filename}</p>
-                        <p className={styles.file_type}>
-                          {file.filename.split(".").pop()}
-                        </p>
-                      </div>
-                    );
-                  })}
+                  {existingFiles.map((file, index) => (
+                    <div key={index} className={styles.single_file}>
+                      <p>{file.filename}</p>
+                      <p className={styles.file_type}>
+                        {file.filename.split(".").pop()}
+                      </p>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
@@ -248,10 +317,18 @@ const CreateProject = () => {
               className={styles.submit_btn}
               disabled={loader}
             >
-              {loader ? "Processing..." : edit ? "Save Changes" : "Submit"}
+              {loader
+                ? t("Processing...")
+                : edit
+                ? t("Save Changes")
+                : t("Submit")}
             </button>
             {loader && <div className={styles.loader} />}
-            {error && <h3 style={{ color: "#fa5757" }}>{error}</h3>}
+            {error && (
+              <h3 style={{ color: "#fa5757", whiteSpace: "pre-wrap" }}>
+                {error}
+              </h3>
+            )}
             {message && <h3 style={{ color: "#2bb673" }}>{message}</h3>}
           </div>
         </div>

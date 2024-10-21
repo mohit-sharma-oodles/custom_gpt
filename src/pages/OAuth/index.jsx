@@ -2,8 +2,10 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getUserDetails, initializeAuth } from "../../redux/authSlice";
+import { useTranslation } from "react-i18next";
 
 const OAuth = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
@@ -32,10 +34,10 @@ const OAuth = () => {
           // window.close();
         })
         .catch((error) => {
-          console.error("Error fetching user details:", error);
+          console.error(t("Error fetching user details:"), error);
         });
     }
-  }, [accessToken, refreshToken, dispatch]);
+  }, [accessToken, refreshToken, dispatch, navigate, t]);
 
   return (
     <div
@@ -46,9 +48,11 @@ const OAuth = () => {
         textAlign: "center",
       }}
     >
-      <p>Redirecting...</p>
+      <p>{t("Redirecting...")}</p>
       <p>
-        If you are not automatically redirected, please click the link below:
+        {t(
+          "If you are not automatically redirected, please click the link below:"
+        )}
       </p>
       <a
         onClick={() => navigate("/app/projects")}
@@ -58,7 +62,7 @@ const OAuth = () => {
           cursor: "pointer",
         }}
       >
-        Click here to proceed
+        {t("Click here to proceed")}
       </a>
     </div>
   );

@@ -24,37 +24,70 @@ import { RxFileText } from "react-icons/rx";
 import { HiOutlineTrash } from "react-icons/hi2";
 import { AiOutlineDelete } from "react-icons/ai";
 import logo_small from "../../assets/compnay_icon_small.svg";
+import { useTranslation } from "react-i18next";
 
 // Upload Modal
-const UploadDocumentModal = ({ isOpen, onClose, onUpload }) => {
-  const [fileSelected, setFileSelected] = useState(null);
+const UploadDocumentModal = ({
+  isOpen,
+  onClose,
+  onUploadSuccess,
+  projectId,
+}) => {
+  const { t } = useTranslation();
+  const [fileSelected, setFileSelected] = useState([]);
   const [uploadError, setUploadError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (file) => {
-    if (fileSelected) {
-      alert("You can only upload one file.");
-      return;
-    }
-    setFileSelected(file);
+  const handleChange = (files) => {
+    setFileSelected((prevFiles) => [...prevFiles, ...files]);
   };
 
-  const handleDeleteFile = () => {
-    setFileSelected(null);
+  const handleDeleteFile = (index) => {
+    setFileSelected((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
 
   const handleUploadDocument = async () => {
-    if (!fileSelected) {
-      alert("Please select a file to upload.");
+    if (fileSelected.length === 0) {
+      alert(t("Please select at least one file to upload."));
       return;
     }
-    setLoading(true); // Set loading to true before upload starts
+    setLoading(true);
+    setUploadError("");
+
     try {
-      await onUpload(fileSelected); // Assuming onUpload is an async function
+      // Upload files to the edit project API endpoint
+      const uploadPromises = fileSelected.map((file) => {
+        const fileData = new FormData();
+        fileData.append("file", file);
+
+        return axios_instance
+          .post(`/api/customgpt/projects/update/${projectId}/`, fileData)
+          .then(() => null)
+          .catch((error) => {
+            console.error(`Failed to upload file ${file.name}:`, error);
+            return `${t("Failed to upload file")} ${file.name}: ${
+              error.response?.data?.error || error.message
+            }`;
+          });
+      });
+
+      const uploadResults = await Promise.all(uploadPromises);
+
+      // Filter out any errors
+      const uploadErrors = uploadResults.filter((result) => result !== null);
+      if (uploadErrors.length > 0) {
+        setUploadError(uploadErrors.join("\n"));
+      } else {
+        // All files uploaded successfully
+        alert(t("Files uploaded successfully."));
+        onUploadSuccess(); // Call the success handler
+      }
     } catch (error) {
-      setUploadError("Failed to upload document. Please try again.");
+      console.error("Error uploading files:", error);
+      setUploadError(t("Failed to upload documents. Please try again."));
     } finally {
-      setLoading(false); // Reset loading state after upload finishes
+      setLoading(false);
+      setFileSelected([]);
     }
   };
 
@@ -64,7 +97,7 @@ const UploadDocumentModal = ({ isOpen, onClose, onUpload }) => {
     <div className={styles.modalOverlay}>
       <div className={styles.modalContainer}>
         <div className={styles.modalHeader}>
-          <h2 style={{ fontWeight: "500" }}>Upload Document</h2>
+          <h2 style={{ fontWeight: "500" }}>{t("Upload Documents")}</h2>
           <button onClick={onClose} className={styles.closeButton}>
             ×
           </button>
@@ -73,59 +106,81 @@ const UploadDocumentModal = ({ isOpen, onClose, onUpload }) => {
           <FileUploader
             handleChange={handleChange}
             name="file"
-            multiple={false}
+            multiple={true}
             classes="drop_zone"
           >
             <div className={styles.drop_zone}>
               <IoCloudUploadOutline size={50} color={"lightgrey"} />
               <div className={styles.text_container}>
                 <h3>
-                  Drag and Drop file or{" "}
-                  <span className={styles.browse}>Browse</span>
+                  {t("Drag and Drop files or")}{" "}
+                  <span className={styles.browse}>{t("Browse")}</span>
                 </h3>
-                <p>Supported formats: PDF, DOC, XLSX, SPREADSHEET, etc.</p>
+                <p>
+                  {t("Supported formats: PDF, DOC, XLSX, SPREADSHEET, etc.")}
+                </p>
               </div>
             </div>
           </FileUploader>
         </div>
-        {fileSelected && (
+        {fileSelected.length > 0 && (
           <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              width: "80%",
-            }}
+            style={{ width: "80%", maxHeight: "20%", overflow: "scroll" }}
+            className={styles.fileList}
           >
-            <p>{fileSelected.name.split(".").shift()}</p>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-              }}
-            >
-              <p
+            {fileSelected.map((file, index) => (
+              <div
+                key={index}
                 style={{
-                  width: "fit-content",
-                  backgroundColor: "aquamarine",
-                  padding: "5px 10px",
-                  borderRadius: "4px",
-                  textAlign: "center",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  width: "100%",
+                  marginBottom: "0.5rem",
                 }}
               >
-                {fileSelected.name.split(".").pop()}
-              </p>
-              <button onClick={handleDeleteFile} className={styles.delete_btn}>
-                <AiOutlineDelete size={20} color="red" />
-              </button>
-            </div>
+                <p>
+                  {file.name.split(".").shift().length > 25
+                    ? `${file.name.split(".").shift().slice(0, 22)}...`
+                    : file.name.split(".").shift()}
+                </p>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                  }}
+                >
+                  <p
+                    style={{
+                      width: "fit-content",
+                      backgroundColor: "aquamarine",
+                      padding: "5px 10px",
+                      borderRadius: "4px",
+                      textAlign: "center",
+                    }}
+                  >
+                    {file.name.split(".").pop()}
+                  </p>
+                  <button
+                    onClick={() => handleDeleteFile(index)}
+                    className={styles.delete_btn}
+                  >
+                    <AiOutlineDelete size={20} color="red" />
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
-        {uploadError && <p className={styles.error}>{uploadError}</p>}
+        {uploadError && (
+          <p className={styles.error} style={{ whiteSpace: "pre-wrap" }}>
+            {uploadError}
+          </p>
+        )}
 
         <div className={styles.loaderContainer}>
-          {loading && <div className={styles.loader}></div>} {/* Loader */}
+          {loading && <div className={styles.loader}></div>}
         </div>
 
         <button
@@ -133,14 +188,15 @@ const UploadDocumentModal = ({ isOpen, onClose, onUpload }) => {
           onClick={handleUploadDocument}
           disabled={loading}
         >
-          {loading ? "Uploading..." : "Upload"}
+          {loading ? t("Uploading...") : t("Upload")}
         </button>
       </div>
     </div>
   );
 };
-// Upload Modal
+
 const ViewProject = () => {
+  const { t } = useTranslation();
   const { projectId } = useParams();
   const [projectData, setProjectData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -169,8 +225,6 @@ const ViewProject = () => {
 
   const messageEndRef = useRef(null);
 
-  // console.log(projectData?.project[0]?.embeded_code);
-
   useEffect(() => {
     const fetchProjectData = async () => {
       try {
@@ -184,9 +238,7 @@ const ViewProject = () => {
 
         const projectData = projectDataResponse.data;
         setProjectData(projectData);
-        // console.log(projectData.project[0]);
 
-        console.log(projectSettingsResponse.data.result.data);
         setAvatar(projectSettingsResponse.data.result.data.chatbot_avatar);
         setNoAnswerMessage(
           projectSettingsResponse.data.result.data.no_answer_message
@@ -194,7 +246,6 @@ const ViewProject = () => {
         setBackgroundImage(
           projectSettingsResponse.data.result.data.chatbot_background
         );
-        // console.log(backgroundImage);
         setPlaceholderPrompt(
           projectSettingsResponse.data.result.data.default_prompt
         );
@@ -203,7 +254,7 @@ const ViewProject = () => {
         );
         setLoading(false);
       } catch (error) {
-        setError("Failed to load project data. Please try again later.");
+        setError(t("Failed to load project data. Please try again later."));
         setLoading(false);
       }
     };
@@ -212,7 +263,6 @@ const ViewProject = () => {
   }, []);
 
   useEffect(() => {
-    // Ensure that projectData is loaded and has the necessary information
     if (projectData && projectData.project[0]?.session_id) {
       const fetchMessages = async () => {
         try {
@@ -258,10 +308,14 @@ const ViewProject = () => {
       await axios_instance.delete(
         `/api/customgpt/projects/${projectId}/page/delete/${documentToDelete}/`
       );
-      document.location.reload(); // Reload the page or re-fetch the project data
+      // Reload the project data after deletion
+      const response = await axios_instance.get(
+        `/api/customgpt/projects/${projectId}/pages/`
+      );
+      setProjectData(response.data);
       setModalOpen(false); // Close modal after successful deletion
     } catch (err) {
-      setError("Failed to delete document. Please try again later.");
+      setError(t("Failed to delete document. Please try again later."));
       setModalOpen(false); // Close modal even on failure
     }
   };
@@ -279,14 +333,18 @@ const ViewProject = () => {
       );
       setLoading(false);
       setUploadModalOpen(false);
-      document.location.reload(); // Refresh to show the new file
+      // Reload the project data after upload
+      const projectDataResponse = await axios_instance.get(
+        `/api/customgpt/projects/${projectId}/pages/`
+      );
+      setProjectData(projectDataResponse.data);
     } catch (e) {
       setLoading(false);
-      setError("Failed to upload document. Please try again later.");
+      setError(t("Failed to upload document. Please try again later."));
     }
   };
 
-  // document table
+  // Document table
   const renderDocuments = () => {
     if (projectData && projectData.project[0]?.documents.length > 0) {
       // Filter documents based on the search query
@@ -295,17 +353,17 @@ const ViewProject = () => {
       );
 
       if (filteredDocuments.length === 0) {
-        return <p>No documents match your search.</p>;
+        return <p>{t("No documents match your search.")}</p>;
       }
 
       return (
         <table className={styles.documentTable}>
           <thead>
             <tr>
-              <th>S.No</th>
-              <th>Filename</th>
-              <th>Uploaded On</th>
-              <th>Actions</th>
+              <th>{t("S.No")}</th>
+              <th>{t("Filename")}</th>
+              <th>{t("Uploaded On")}</th>
+              <th>{t("Actions")}</th>
             </tr>
           </thead>
           <tbody>
@@ -351,7 +409,6 @@ const ViewProject = () => {
                     <HiOutlineTrash
                       size={16}
                       style={{ verticalAlign: "middle", cursor: "pointer" }}
-                      // onClick={() => handleDeleteDocument(doc.page_id)}
                       onClick={() => {
                         setModalOpen(true); // Open modal
                         setDocumentToDelete(doc.page_id);
@@ -365,11 +422,11 @@ const ViewProject = () => {
         </table>
       );
     }
-    return <p>No documents found.</p>;
+    return <p>{t("No documents found.")}</p>;
   };
-  // document table
+  // Document table
 
-  //chatbot
+  // Chatbot
   const handleShareChat = () => {
     setShareChatModal(true);
   };
@@ -402,7 +459,7 @@ const ViewProject = () => {
       console.log(e);
       const errorMessage = {
         type: "server",
-        content: "Error fetching response.",
+        content: t("Error fetching response."),
       };
       setMessages((prevMessages) => [...prevMessages, errorMessage]);
     } finally {
@@ -429,19 +486,19 @@ const ViewProject = () => {
             <PartialHeader
               setDeployModal={setDeployModal}
               setDefaultOpen={setDefaultOpen}
-              title={projectData?.project[0]?.project_name || "Project"}
+              title={projectData?.project[0]?.project_name || t("Project")}
             />
             <div className={styles.bottom}>
               {/* Project Files */}
               <div className={styles.project_files_container}>
                 <div className={styles.top}>
                   <div className={styles.left}>
-                    <h3>All Documents</h3>
+                    <h3>{t("All Documents")}</h3>
                     <div className={styles.input_container}>
                       <HiMiniMagnifyingGlass />
                       <input
                         type="text"
-                        placeholder="Search"
+                        placeholder={t("Search")}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                       />
@@ -455,13 +512,13 @@ const ViewProject = () => {
                         setDefaultOpen("deploy");
                       }}
                     >
-                      <IoRocketOutline size={18} /> Deploy
+                      <IoRocketOutline size={18} /> {t("Deploy")}
                     </button>
                     <button
                       className={`${styles.button} ${styles.upload}`}
                       onClick={() => setUploadModalOpen(true)}
                     >
-                      <GoUpload size={18} /> Upload
+                      <GoUpload size={18} /> {t("Upload")}
                     </button>
                   </div>
                 </div>
@@ -483,14 +540,12 @@ const ViewProject = () => {
                     backgroundImage: `url(${
                       backgroundImage === "" ? "" : backgroundImage
                     })`,
-                    // backgroundColor: "transparent",
                     backgroundSize: "cover",
                     backgroundPosition: "center",
-                    // scale: "1.5",
                   }}
                   className={styles.headerContainer}
                 >
-                  <p className={styles.heading}>AI Chat</p>
+                  <p className={styles.heading}>{t("AI Chat")}</p>
                   <GoShareAndroid
                     size={20}
                     color="#ae407a"
@@ -503,9 +558,8 @@ const ViewProject = () => {
                   <div className={styles.messagesContainer}>
                     <div className={styles.messageList}>
                       {messages.map((message, index) => {
-                        // console.log(backgroundImage);
                         return (
-                          <>
+                          <React.Fragment key={index}>
                             {message.type === "server" && (
                               <img
                                 src={avatar ? avatar : logo_small}
@@ -519,7 +573,6 @@ const ViewProject = () => {
                               />
                             )}
                             <div
-                              key={index}
                               className={
                                 message.type === "user"
                                   ? styles.userMessage
@@ -542,7 +595,7 @@ const ViewProject = () => {
                                 message.url &&
                                 message.title && (
                                   <div style={{ marginTop: "10px" }}>
-                                    &#9432; Related Documents: <br />
+                                    &#9432; {t("Related Documents")}: <br />
                                     <a
                                       style={{ color: "black" }}
                                       href={message.url}
@@ -554,10 +607,9 @@ const ViewProject = () => {
                                   </div>
                                 )}
                             </div>
-                          </>
+                          </React.Fragment>
                         );
                       })}
-                      {/* TODO: Need to change the laoder css here and everywhere else as well. */}
                       {messageloading && <div className={styles.textloader} />}{" "}
                       <div ref={messageEndRef} />
                     </div>
@@ -602,7 +654,6 @@ const ViewProject = () => {
                     position: "fixed",
                     bottom: "0",
                     left: "0",
-                    // zIndex: 9999,
                   }}
                 />
               </div>
@@ -622,7 +673,20 @@ const ViewProject = () => {
         onClose={() => {
           setDeployModal(false);
           if (changesMade) {
-            document.location.reload();
+            // Reload the project data if changes were made
+            const fetchProjectData = async () => {
+              try {
+                const projectDataResponse = await axios_instance.get(
+                  `/api/customgpt/projects/${projectId}/pages/`
+                );
+                setProjectData(projectDataResponse.data);
+              } catch (error) {
+                setError(
+                  t("Failed to reload project data. Please try again later.")
+                );
+              }
+            };
+            fetchProjectData();
           }
         }}
         embedCode={projectData?.project[0]?.embeded_code}
@@ -641,14 +705,33 @@ const ViewProject = () => {
       />
       <UploadDocumentModal
         isOpen={uploadModalOpen}
-        onClose={() => setUploadModalOpen(false)}
-        onUpload={handleUploadDocument}
+        onClose={() => {
+          setUploadModalOpen(false);
+        }}
+        onUploadSuccess={() => {
+          setUploadModalOpen(false);
+          // Reload the project data after successful upload
+          const fetchProjectData = async () => {
+            try {
+              const projectDataResponse = await axios_instance.get(
+                `/api/customgpt/projects/${projectId}/pages/`
+              );
+              setProjectData(projectDataResponse.data);
+            } catch (error) {
+              setError(
+                t("Failed to reload project data. Please try again later.")
+              );
+            }
+          };
+          fetchProjectData();
+        }}
+        projectId={projectId}
       />
       <DeleteConfirmationModal
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
         onConfirm={handleDeleteDocument}
-        title={"Document"}
+        title={t("Document")}
       />
     </div>
   );

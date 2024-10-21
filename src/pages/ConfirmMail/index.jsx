@@ -6,8 +6,10 @@ import {
   initializeAuth,
   resendConfirmationEmail,
 } from "../../redux/authSlice";
+import { useTranslation } from "react-i18next";
 
 const ConfirmEmail = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -64,7 +66,7 @@ const ConfirmEmail = () => {
     if (email) {
       dispatch(resendConfirmationEmail({ email }))
         .then((response) => {
-          setFeedback(response.payload.message);
+          setFeedback(response.payload.message || response.payload.error);
         })
         .catch((e) => {
           // console.log(e);
@@ -100,7 +102,7 @@ const ConfirmEmail = () => {
             }}
             onClick={handleResendEmail}
           >
-            Resend Confirmation Email
+            {t("Resend Confirmation Email")}
           </span>
         </>
       )}

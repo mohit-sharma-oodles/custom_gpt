@@ -15,9 +15,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { axios_instance } from "../../Axios/axiosInstance";
 import { useNavigate } from "react-router-dom";
 
+import { useTranslation } from "react-i18next";
+
 const Profile = ({ setShowProfile }) => {
   const dispatch = useDispatch();
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+
+  const { t } = useTranslation();
 
   const [firstName, setFirstName] = useState(user.first_name);
   const [lastName, setLastName] = useState(user.last_name);
@@ -138,13 +142,6 @@ const Profile = ({ setShowProfile }) => {
         setSelectedImage(file);
         setProfilePicture(URL.createObjectURL(file));
         setHasChanges(true);
-        // try{
-        //   const formData = new FormData();
-        //   formData.append("first_name", firstName);
-        //   dispatch(updateUserDetails())
-        // }catch{
-
-        // }
       }
     } catch (error) {
       console.error("Error handling image change:", error);
@@ -162,28 +159,28 @@ const Profile = ({ setShowProfile }) => {
 
   const handleSavePassword = async () => {
     if (!oldPassword || !password) {
-      alert("Please enter both your old and new password before saving.");
+      alert(t("Please enter both your old and new password before saving."));
       return;
     }
     try {
-      const response = await axios_instance.post("change-password/", {
+      const response = await axios_instance.post("/api/change-password/", {
         current_password: oldPassword,
         new_password: password,
       });
       console.log(response.data);
-      alert("Password updated successfully!");
+      alert(t("Password updated successfully!"));
       setIsEditingPassword(false);
       setOldPassword("");
       setPassword("");
     } catch (error) {
       console.error("Error updating password:", error);
-      alert("Failed to update password.");
+      alert(t("Failed to update password."));
     }
   };
   const handleCancel = async () => {
     // Show confirmation dialog
     const confirmCancel = window.confirm(
-      "You are going to cancel your subscription. Do you want to continue?"
+      t("You are going to cancel your subscription. Do you want to continue?")
     );
 
     if (confirmCancel) {
@@ -194,7 +191,7 @@ const Profile = ({ setShowProfile }) => {
 
         if (response.data.message === "Subscription cancelled successfully") {
           // Alert success message
-          alert("Subscription cancelled successfully");
+          alert(t("Subscription cancelled successfully"));
 
           // Reload the page to reflect changes
           window.location.reload();
@@ -203,7 +200,7 @@ const Profile = ({ setShowProfile }) => {
         console.error("Error cancelling subscription:", error);
         alert(
           error.response?.data?.error ||
-            "An error occurred while cancelling the subscription."
+            t("An error occurred while cancelling the subscription.")
         );
       }
     } else {
@@ -225,11 +222,11 @@ const Profile = ({ setShowProfile }) => {
             <div className={styles.profileImageContainer}>
               <img
                 src={defaultUser}
-                alt="User"
+                alt={t("User")}
                 className={styles.profileImage}
               />
             </div>
-            <h2>Profile</h2>
+            <h2>{t("Profile")}</h2>
           </div>
           <IoCloseSharp
             className={styles.closeIcon}
@@ -242,7 +239,7 @@ const Profile = ({ setShowProfile }) => {
               <div>
                 <img
                   src={profilePicture}
-                  alt="User"
+                  alt={t("User")}
                   style={{ marginRight: 0 }}
                 />
                 {/* <label htmlFor="upload-button" className={styles.uploadButton}>
@@ -260,43 +257,77 @@ const Profile = ({ setShowProfile }) => {
                 <p className={styles.name}>
                   {user.first_name} {user.last_name}
                 </p>
-                <p className={styles.joinDate}>Joined on {user.date_joined}</p>
+                <p className={styles.joinDate}>
+                  {t("Joined on")} {user.date_joined}
+                </p>
               </div>
             </div>
             <div className={styles.subscribedPlanInfo}>
               <div className={styles.left_side}>
                 <div className={styles.left_side_wrapper}>
-                  {user.current_subscription_plan && (
+                  {/* {user.current_subscription_plan ||
+                    (user.is_enterprise && (
+                      <>
+                        <img
+                          src={crown}
+                          style={{ height: "20px", width: "20px" }}
+                          alt={t("Crown")}
+                        />
+                        <p style={{ fontWeight: "500", fontSize: "20px" }}>
+                          {user.current_subscription_plan
+                            ? user.current_subscription_plan
+                            : user.is_enterprise
+                            ? "Enterprise"
+                            : ""}
+                        </p>
+                        {user.subscription_status === "Cancelled" && (
+                          <p style={{ fontWeight: "300", fontSize: "10px" }}>
+                            {t("(cancelled)")}
+                          </p>
+                        )}
+                      </>
+                    ))}
+                  {user.days_left === null && (
+                    <h2>{t("No current active plan.")}</h2>
+                  )} */}
+                  {user.current_subscription_plan || user.is_enterprise ? (
                     <>
                       <img
                         src={crown}
                         style={{ height: "20px", width: "20px" }}
-                        alt="Crown"
+                        alt={t("Crown")}
                       />
                       <p style={{ fontWeight: "500", fontSize: "20px" }}>
-                        {user.current_subscription_plan}
+                        {user.current_subscription_plan || "Enterprise"}
+                        {user.subscription_status === "Cancelled" && (
+                          <span style={{ fontWeight: "300", fontSize: "10px" }}>
+                            {" "}
+                            {t("(Cancelled)")}
+                          </span>
+                        )}
                       </p>
-                      {user.subscription_status === "Cancelled" && (
-                        <p style={{ fontWeight: "300", fontSize: "10px" }}>
-                          (cancelled)
-                        </p>
-                      )}
                     </>
+                  ) : (
+                    <h2>{t("No current active plan.")}</h2>
                   )}
-                  {user.days_left === null && <h2>No current active plan.</h2>}
+
+                  {user.days_left === null && (
+                    <h2>{t("No current active plan.")}</h2>
+                  )}
                 </div>
                 {user.days_left && (
                   <>
                     <ProgressBar
                       completed={user.days_left}
-                      maxCompleted={30}
+                      maxCompleted={user.total_subscription_days}
                       labelColor={"transparent"}
                       bgColor={"#ae407a"}
                       height="14px"
                       animateOnRender={true}
                     />
                     <div style={{ marginTop: "12px" }}>
-                      {user.days_left} /30 Days
+                      {user.days_left} / {user.total_subscription_days}
+                      {t("Days")}
                     </div>
                   </>
                 )}
@@ -307,24 +338,24 @@ const Profile = ({ setShowProfile }) => {
                   className={styles.upgrade_plan}
                 >
                   {user.subscription_status === "active" && user.days_left > 0
-                    ? "Upgrade Plan"
-                    : "Buy Plan"}
+                    ? t("Upgrade Plan")
+                    : t("Buy Plan")}
                 </span>
 
                 {user.subscription_status === "active" && user.days_left && (
                   <span onClick={handleCancel} className={styles.cancel_plan}>
-                    Cancel Plan
+                    {t("Cancel Plan")}
                   </span>
                 )}
               </div>
             </div>
           </div>
           <div className={styles.personalInfo}>
-            <h3>Personal Information</h3>
+            <h3>{t("Personal Information")}</h3>
             <div className={styles.infoGrid}>
               <div>
                 <span className={styles.label}>
-                  First Name{" "}
+                  {t("First Name")}{" "}
                   <FaPencilAlt
                     className={styles.pencilIcon}
                     onClick={() => handleEditClick(firstNameRef, "firstName")}
@@ -350,7 +381,7 @@ const Profile = ({ setShowProfile }) => {
               </div>
               <div>
                 <span className={styles.label}>
-                  Last Name{" "}
+                  {t("Last Name")}{" "}
                   <FaPencilAlt
                     className={styles.pencilIcon}
                     onClick={() => handleEditClick(lastNameRef, "lastName")}
@@ -371,12 +402,12 @@ const Profile = ({ setShowProfile }) => {
                 </span>
               </div>
               <div>
-                <span className={styles.label}>Email Address</span>
+                <span className={styles.label}>{t("Email Address")}</span>
                 <span>{user.email}</span>
               </div>
               <div>
                 <span className={styles.label}>
-                  Phone Number{" "}
+                  {t("Phone Number")}{" "}
                   <FaPencilAlt
                     className={styles.pencilIcon}
                     onClick={() =>
@@ -419,14 +450,20 @@ const Profile = ({ setShowProfile }) => {
                 className={styles.updateButton}
                 onClick={handleUpdateDetails}
               >
-                Update Details
+                {t("Update Details")}
               </span>
             )}
           </div>
 
           <div className={styles.passwordChangeSection}>
-            <h3>Change Password</h3>
-            <div style={{ display: "flex", gap: "1rem", marginBottom: "2rem" }}>
+            <h3>{t("Change Password")}</h3>
+            <div
+              style={{
+                display: "flex",
+                gap: "1rem",
+                marginBottom: "2rem",
+              }}
+            >
               <div
                 style={{
                   display: "flex",
@@ -435,7 +472,7 @@ const Profile = ({ setShowProfile }) => {
                 }}
               >
                 <span className={styles.label}>
-                  Old Password
+                  {t("Old Password")}
                   <FaPencilAlt
                     className={styles.pencilIcon}
                     onClick={() => setIsEditingPassword(true)}
@@ -464,9 +501,15 @@ const Profile = ({ setShowProfile }) => {
                   )}
                 </span>
               </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 0,
+                }}
+              >
                 <span className={styles.label}>
-                  New Password
+                  {t("New Password")}
                   <FaPencilAlt
                     className={styles.pencilIcon}
                     onClick={() => setIsEditingPassword(true)}
@@ -501,61 +544,62 @@ const Profile = ({ setShowProfile }) => {
                 className={styles.saveButton}
                 onClick={handleSavePassword}
               >
-                Save New Password
+                {t("Save New Password")}
               </button>
             )}
           </div>
-
-          <div className={styles.paymentContainer}>
-            <h2 className={styles.heading}>Payment history</h2>
-            <div className={styles.table_container}>
-              <table className={styles.paymentTable}>
-                <thead>
-                  <tr>
-                    <th>S.no</th>
-                    <th>Transaction ID</th>
-                    <th>Payment Date and Time</th>
-                    <th>Payment Mode</th>
-                    <th> Receipt</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paymentData.length > 0 ? (
-                    paymentData.map((payment, index) => (
-                      <tr
-                        key={
-                          payment.transaction_id === null
-                            ? "transaction id null"
-                            : payment.transaction_id
-                        }
-                      >
-                        <td>{index + 1}</td>
-                        <td>
-                          #
-                          {payment.transaction_id === null
-                            ? "transaction id null"
-                            : payment.transaction_id}
-                        </td>
-                        <td>{payment.payment_date}</td>
-                        <td>{payment.payment_method}</td>
-                        <td>
-                          <a href={payment.invoice_url} download>
-                            <FiDownloadCloud /> Download
-                          </a>
+          {!user.is_enterprise && (
+            <div className={styles.paymentContainer}>
+              <h2 className={styles.heading}>{t("Payment history")}</h2>
+              <div className={styles.table_container}>
+                <table className={styles.paymentTable}>
+                  <thead>
+                    <tr>
+                      <th>{t("S.no")}</th>
+                      <th>{t("Transaction ID")}</th>
+                      <th>{t("Payment Date and Time")}</th>
+                      <th>{t("Payment Mode")}</th>
+                      <th>{t("Receipt")}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paymentData.length > 0 ? (
+                      paymentData.map((payment, index) => (
+                        <tr
+                          key={
+                            payment.transaction_id === null
+                              ? "transaction id null"
+                              : payment.transaction_id
+                          }
+                        >
+                          <td>{index + 1}</td>
+                          <td>
+                            #
+                            {payment.transaction_id === null
+                              ? t("transaction id null")
+                              : payment.transaction_id}
+                          </td>
+                          <td>{payment.payment_date}</td>
+                          <td>{payment.payment_method}</td>
+                          <td>
+                            <a href={payment.invoice_url} download>
+                              <FiDownloadCloud /> {t("Download")}
+                            </a>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="5" style={{ textAlign: "center" }}>
+                          {t("No prior transaction data available.")}
                         </td>
                       </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="5" style={{ textAlign: "center" }}>
-                        No prior transaction data available.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
@@ -563,35 +607,3 @@ const Profile = ({ setShowProfile }) => {
 };
 
 export default Profile;
-
-const handleCancel = async () => {
-  // Show confirmation dialog
-  const confirmCancel = window.confirm(
-    "You are going to cancel your subscription. Do you want to continue?"
-  );
-
-  if (confirmCancel) {
-    try {
-      const response = await axios_instance.post(
-        "/subscriptions/cancel-subscription/"
-      );
-
-      if (response.data.message === "Subscription cancelled successfully") {
-        // Alert success message
-        alert("Subscription cancelled successfully");
-
-        // Reload the page to reflect changes
-        window.location.reload();
-      }
-    } catch (error) {
-      console.error("Error cancelling subscription:", error);
-      alert(
-        error.response?.data?.error ||
-          "An error occurred while cancelling the subscription."
-      );
-    }
-  } else {
-    // If user cancels, do nothing (or close modal, etc.)
-    console.log("Subscription cancellation was aborted.");
-  }
-};

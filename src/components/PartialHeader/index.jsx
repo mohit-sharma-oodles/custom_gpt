@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 const ProfileModal = ({ onClose, setShowProfile, setShowProfileModal }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const [user, setUser] = useState({});
   const [subscription, setSubscription] = useState("");
   // const { user } = useSelector((state) => state.rootReducer.auth);
@@ -62,7 +63,7 @@ const ProfileModal = ({ onClose, setShowProfile, setShowProfileModal }) => {
             borderRadius: "50%",
           }}
           src={user?.profile_picture || default_icon}
-          alt="User"
+          alt={t("User")}
         />
         <div>
           <p className={styles.name}>{user?.first_name}</p>
@@ -71,7 +72,7 @@ const ProfileModal = ({ onClose, setShowProfile, setShowProfileModal }) => {
               <img
                 src={crown}
                 style={{ height: "16px", width: "16px" }}
-                alt="Crown"
+                alt={t("Crown")}
               />
             )}
             {user.current_subscription_plan}
@@ -85,11 +86,11 @@ const ProfileModal = ({ onClose, setShowProfile, setShowProfileModal }) => {
       <div className={styles.button_container}>
         <button onClick={() => setShowProfile(true)}>
           <FaRegUserCircle />
-          Profile
+          {t("Profile")}
         </button>
         <button className={styles.signOut} onClick={handleLogout}>
           <PiSignOutBold color="red" />
-          Sign Out
+          {t("Sign Out")}
         </button>
       </div>
     </div>
@@ -105,6 +106,17 @@ const PartialHeader = ({
 
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState(i18n.language);
+
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
+  };
+
+  const changeLanguage = (language) => {
+    i18n.changeLanguage(language);
+    setSelectedLanguage(language);
+  };
 
   const handleProfileImageClick = () => {
     setShowProfileModal((prev) => !prev);
@@ -133,20 +145,22 @@ const PartialHeader = ({
       </h1>
 
       <div className={styles.right_Side_container}>
-        <Link
-          to={"/subscription"}
-          style={{ textDecoration: "none", color: "inherit" }}
-        >
-          <span className={`clickable ${styles.subscription_container}`}>
-            <img
-              src={crown}
-              style={{ width: "24px", height: "24px" }}
-              alt="Crown"
-            />
-            {t("Subscriptions")}
-          </span>
-        </Link>
-        <span className="clickable">
+        {!user?.is_enterprise && (
+          <Link
+            to={"/subscription"}
+            style={{ textDecoration: "none", color: "inherit" }}
+          >
+            <span className={`clickable ${styles.subscription_container}`}>
+              <img
+                src={crown}
+                style={{ width: "24px", height: "24px" }}
+                alt="Crown"
+              />
+              {t("Subscriptions")}
+            </span>
+          </Link>
+        )}
+        {/* <span className="clickable">
           <IoLanguage
             size={24}
             color="grey"
@@ -156,7 +170,38 @@ const PartialHeader = ({
               i18n.changeLanguage(newLanguage);
             }}
           />
-        </span>
+        </span> */}
+        <div className={styles.language_selector} onClick={toggleModal}>
+          <span className="clickable">
+            <IoLanguage
+              size={24}
+              color="grey"
+              style={{ marginBottom: "-7px" }}
+            />
+          </span>
+
+          {isModalOpen && (
+            <div className={styles.language_modal}>
+              <label style={{ display: "flex", gap: "1rem" }}>
+                <input
+                  type="checkbox"
+                  checked={selectedLanguage === "en"}
+                  onChange={() => changeLanguage("en")}
+                />
+                English
+              </label>
+              <br />
+              <label style={{ display: "flex", gap: "1rem" }}>
+                <input
+                  type="checkbox"
+                  checked={selectedLanguage === "nl"}
+                  onChange={() => changeLanguage("nl")}
+                />
+                Dutch
+              </label>
+            </div>
+          )}
+        </div>
         <div
           className={styles.profile_img_wrapper}
           onClick={handleProfileImageClick}

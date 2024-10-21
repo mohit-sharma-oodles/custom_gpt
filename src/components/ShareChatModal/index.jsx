@@ -1,12 +1,15 @@
 import React, { useEffect } from "react";
 import styles from "./index.module.scss";
 
-//assets
+// assets
 import { BsChatDots } from "react-icons/bs";
 import { FiLink } from "react-icons/fi";
 import placeholder_img from "../../assets/temp_share_chat.png";
+import { useTranslation } from "react-i18next";
 
 const ShareChatModal = ({ isOpen, onClose, projectId, session_id }) => {
+  const { t } = useTranslation();
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -25,10 +28,10 @@ const ShareChatModal = ({ isOpen, onClose, projectId, session_id }) => {
     navigator.clipboard
       .writeText(dynamicLink)
       .then(() => {
-        alert("Link copied to clipboard!");
+        alert(t("Link copied to clipboard!"));
       })
       .catch((err) => {
-        console.error("Failed to copy the link: ", err);
+        console.error(t("Failed to copy the link"), err);
       });
   };
 
@@ -37,13 +40,14 @@ const ShareChatModal = ({ isOpen, onClose, projectId, session_id }) => {
   const handleOverlayClick = (e) => {
     e.stopPropagation();
   };
+
   return (
     <div className={styles.modalOverlay} onClick={handleOverlayClick}>
       <div className={styles.modalContent}>
         <header className={styles.header}>
           <div className={styles.left}>
             <BsChatDots size={20} />
-            <p>Share Chat </p>
+            <p>{t("Share Chat")}</p>
           </div>
           <button className={styles.modalClose} onClick={onClose}>
             &times;
@@ -54,12 +58,15 @@ const ShareChatModal = ({ isOpen, onClose, projectId, session_id }) => {
             src={placeholder_img}
             width={"90%"}
             style={{ display: "block", margin: "0 auto" }}
+            alt={t("Chat Preview")}
           />
         </div>
         <div className={styles.shareSection}>
-          <p>You can copy the link to share the chat with someone else.</p>
+          <p>
+            {t("You can copy the link to share the chat with someone else.")}
+          </p>
           <button className={styles.link_btn} onClick={copyLinkToClipboard}>
-            <FiLink /> Copy Link
+            <FiLink /> {t("Copy Link")}
           </button>
         </div>
       </div>

@@ -16,6 +16,7 @@ import { axios_instance } from "../../Axios/axiosInstance";
 const ProfileModal = ({ onClose, setShowProfile, setShowProfileModal }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const [user, setUser] = useState({});
   const [subscription, setSubscription] = useState("");
 
@@ -63,7 +64,7 @@ const ProfileModal = ({ onClose, setShowProfile, setShowProfileModal }) => {
             borderRadius: "50%",
           }}
           src={user?.profile_picture || default_icon}
-          alt="User"
+          alt={t("User")}
         />
         <div>
           <p className={styles.name}>{user?.first_name}</p>
@@ -72,7 +73,7 @@ const ProfileModal = ({ onClose, setShowProfile, setShowProfileModal }) => {
               <img
                 src={crown}
                 style={{ height: "16px", width: "16px" }}
-                alt="Crown"
+                alt={t("Crown")}
               />
             )}
             {subscription}
@@ -86,11 +87,11 @@ const ProfileModal = ({ onClose, setShowProfile, setShowProfileModal }) => {
       <div className={styles.button_container}>
         <button onClick={() => setShowProfile(true)}>
           <FaRegUserCircle />
-          Profile
+          {t("Profile")}
         </button>
         <button className={styles.signOut} onClick={handleLogout}>
           <PiSignOutBold color="red" />
-          Sign Out
+          {t("Sign Out")}
         </button>
       </div>
     </div>
@@ -102,6 +103,19 @@ const Header = ({ onLoginClick, onSignupClick }) => {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState(i18n.language);
+
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
+  };
+
+  const changeLanguage = (language) => {
+    i18n.changeLanguage(language);
+    setSelectedLanguage(language);
+  };
+
+  // console.log(user.is_enterprise);
 
   const { isAuthenticated } = useSelector((state) => state.rootReducer.auth);
 
@@ -122,19 +136,21 @@ const Header = ({ onLoginClick, onSignupClick }) => {
           </div>
         </Link>
         <div className={styles.right_side_Wrapper}>
-          <Link
-            to={isAuthenticated ? "app/subscription" : "/subscription"}
-            style={{ textDecoration: "none", color: "inherit" }}
-          >
-            <span className={`clickable ${styles.subscription_container}`}>
-              <img
-                src={crown}
-                style={{ width: "24px", height: "24px" }}
-                alt="Crown"
-              />
-              {t("Subscriptions")}
-            </span>
-          </Link>
+          {!user?.is_enterprise && (
+            <Link
+              to={isAuthenticated ? "app/subscription" : "/subscription"}
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
+              <span className={`clickable ${styles.subscription_container}`}>
+                <img
+                  src={crown}
+                  style={{ width: "24px", height: "24px" }}
+                  alt="Crown"
+                />
+                {t("Subscriptions")}
+              </span>
+            </Link>
+          )}
           <Link to="/faq" style={{ textDecoration: "none", color: "inherit" }}>
             <span className="clickable">{t("FAQ")}</span>
           </Link>
@@ -144,19 +160,39 @@ const Header = ({ onLoginClick, onSignupClick }) => {
           >
             <span className="clickable">{t("Contact Us")}</span>
           </Link>
-          <span
-            className="clickable"
-            onClick={() => {
-              const newLanguage = i18n.language === "en" ? "nl" : "en";
-              i18n.changeLanguage(newLanguage);
-            }}
-          >
-            <IoLanguage
-              size={24}
-              color="grey"
-              style={{ marginBottom: "-7px" }}
-            />
-          </span>
+
+          <div className={styles.language_selector} onClick={toggleModal}>
+            <span className="clickable">
+              <IoLanguage
+                size={24}
+                color="grey"
+                style={{ marginBottom: "-7px" }}
+              />
+            </span>
+
+            {isModalOpen && (
+              <div className={styles.language_modal}>
+                <label style={{ display: "flex", gap: "1rem" }}>
+                  <input
+                    type="checkbox"
+                    checked={selectedLanguage === "en"}
+                    onChange={() => changeLanguage("en")}
+                  />
+                  English
+                </label>
+                <br />
+                <label style={{ display: "flex", gap: "1rem" }}>
+                  <input
+                    type="checkbox"
+                    checked={selectedLanguage === "nl"}
+                    onChange={() => changeLanguage("nl")}
+                  />
+                  Dutch
+                </label>
+              </div>
+            )}
+          </div>
+
           <span className={styles.auth_btn_contnainer}>
             {!isAuthenticated ? (
               <>

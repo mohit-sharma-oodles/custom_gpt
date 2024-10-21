@@ -11,6 +11,9 @@ import { IoEyeOutline } from "react-icons/io5";
 import { FaRegEdit } from "react-icons/fa";
 import { HiOutlineTrash } from "react-icons/hi2";
 import { LuFolderOpen } from "react-icons/lu";
+import { GoDatabase } from "react-icons/go";
+import { IoFileTrayStackedOutline } from "react-icons/io5";
+import { IoChatbubbleEllipsesOutline } from "react-icons/io5";
 
 // Components
 import Sidebar from "../../components/Sidebar";
@@ -131,6 +134,14 @@ const Projects = () => {
                   */}
                 </div>
                 <div className={styles.top_right_side}>
+                  {projects.length > 0 && (
+                    <p>
+                      {t("Total Projects Left")}:{" "}
+                      {projects[0].total_project -
+                        projects[0].current_project_count}
+                    </p>
+                  )}
+
                   <Link
                     to={"/app/create-project"}
                     style={{ textDecoration: "none", color: "inherit" }}
@@ -139,6 +150,65 @@ const Projects = () => {
                       <MdAddCircleOutline /> {t("Create Project")}
                     </span>
                   </Link>
+                </div>
+              </div>
+            </div>
+            <p className={styles.stats_heading}>
+              {user?.first_name}'s Profile Analytics
+            </p>
+            <div className={styles.stats_container}>
+              <div className={styles.stats}>
+                <div className={styles.stats_left}>
+                  <div className={styles.top}>
+                    {projects[0]?.current_project_count} of{" "}
+                    {projects[0]?.total_project}
+                  </div>
+                  <div className={styles.bottom}>Total Projects</div>
+                </div>
+                <div
+                  className={styles.stats_right}
+                  style={{
+                    backgroundColor: "#77CDFF",
+                  }}
+                >
+                  <IoFileTrayStackedOutline size={20} color="#091057" />
+                </div>
+              </div>
+              <div className={styles.stats}>
+                <div className={styles.stats_left}>
+                  <div className={styles.top}>
+                    {projects[0]?.current_queries_count} of{" "}
+                    {projects[0]?.total_queries}
+                  </div>
+                  <div className={styles.bottom}>Total Queries</div>
+                </div>
+                <div
+                  className={styles.stats_right}
+                  style={{
+                    backgroundColor: "rgb(211,208,250,0.8)",
+                  }}
+                >
+                  <IoChatbubbleEllipsesOutline
+                    size={20}
+                    color="rgb(129, 61, 205)"
+                  />
+                </div>
+              </div>
+              <div className={styles.stats}>
+                <div className={styles.stats_left}>
+                  <div className={styles.top}>
+                    {projects[0]?.current_word_count} of{" "}
+                    {projects[0]?.total_word_count}
+                  </div>
+                  <div className={styles.bottom}>Total Words</div>
+                </div>
+                <div
+                  className={styles.stats_right}
+                  style={{
+                    backgroundColor: "#D3EE98",
+                  }}
+                >
+                  <GoDatabase size={20} color="#347928" />
                 </div>
               </div>
             </div>
@@ -202,7 +272,7 @@ const Projects = () => {
                                   fontStyle: "italic",
                                 }}
                               >
-                                No documents found
+                                {t("No documents found")}
                               </p>
                             )}
                           </td>

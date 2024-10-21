@@ -231,7 +231,7 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
                   className={styles.login_btn}
                   disabled={status === "loading"}
                 >
-                  {status === `${t("Loading")}`
+                  {status === `loading`
                     ? `${t("Logging In")}...`
                     : `${t("Log In")}`}
                 </button>
