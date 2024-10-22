@@ -14,7 +14,7 @@ const CancelPayment = () => {
           return prevTime - 1;
         } else {
           clearInterval(timer);
-          navigate("/app/projects");
+          navigate("/app/subscription");
           return 0;
         }
       });

@@ -290,7 +290,17 @@ const Profile = ({ setShowProfile }) => {
                   {user.days_left === null && (
                     <h2>{t("No current active plan.")}</h2>
                   )} */}
-                  {user.current_subscription_plan || user.is_enterprise ? (
+                  {user.subscription_status === "trialing" ? (
+                    <p style={{ fontWeight: "500", fontSize: "20px" }}>
+                      Trial ({user.current_subscription_plan})
+                      {user.subscription_status === "Cancelled" && (
+                        <span style={{ fontWeight: "300", fontSize: "10px" }}>
+                          {" "}
+                          {t("(Cancelled)")}
+                        </span>
+                      )}
+                    </p>
+                  ) : user.current_subscription_plan || user.is_enterprise ? (
                     <>
                       <img
                         src={crown}
@@ -311,9 +321,9 @@ const Profile = ({ setShowProfile }) => {
                     <h2>{t("No current active plan.")}</h2>
                   )}
 
-                  {user.days_left === null && (
+                  {/* {user.days_left === null && (
                     <h2>{t("No current active plan.")}</h2>
-                  )}
+                  )} */}
                 </div>
                 {user.days_left && (
                   <>

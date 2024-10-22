@@ -6,6 +6,7 @@ import { axios_instance } from "../../Axios/axiosInstance";
 import { loadStripe } from "@stripe/stripe-js";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import i18next from "i18next";
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
@@ -173,12 +174,14 @@ const SubscriptionTile = ({
 };
 
 const Subscriptions = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const [plans, setPlans] = useState([]);
   const [error, setError] = useState("");
   const [currentActivePlanPrice, setCurrentActivePlanPrice] = useState(null);
   const [isAlreadySubscribed, setIsAlreadySubscribed] = useState(false);
+
+  const language_code = localStorage.getItem("i18nextLng");
 
   useEffect(() => {
     const getUser = async () => {
@@ -196,7 +199,7 @@ const Subscriptions = () => {
   useEffect(() => {
     const getPlans = () => {
       axios_instance
-        .get("/api/products")
+        .get(`/api/products?lang=${language_code}`)
         .then((response) => {
           setPlans(response?.data);
           response?.data?.forEach((plan) => {
@@ -212,7 +215,7 @@ const Subscriptions = () => {
     };
 
     getPlans();
-  }, []);
+  }, [language_code]);
 
   return (
     <div className={`${styles.container} contain_center`}>

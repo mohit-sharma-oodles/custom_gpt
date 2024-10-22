@@ -4,7 +4,13 @@ import { useTranslation } from "react-i18next";
 
 // assets
 import logo from "../../assets/company_logo.svg";
-import { FaFacebookF, FaLinkedinIn, FaTwitter } from "react-icons/fa";
+import {
+  FaFacebookF,
+  FaLinkedinIn,
+  FaTwitter,
+  FaInstagram,
+  FaTiktok,
+} from "react-icons/fa";
 
 const Footer = () => {
   const { t } = useTranslation();
@@ -20,30 +26,76 @@ const Footer = () => {
           {t(". All Rights Reserved.")}
         </p>
         <div className={styles.company_logos}>
-          <FaFacebookF
-            color="#ae407a"
-            style={{
-              border: "1px solid #ae407a",
-              padding: "8px",
-              borderRadius: "50%",
-            }}
-          />
-          <FaLinkedinIn
-            color="#ae407a"
-            style={{
-              border: "1px solid #ae407a",
-              padding: "8px",
-              borderRadius: "50%",
-            }}
-          />
-          <FaTwitter
-            color="#ae407a"
-            style={{
-              border: "1px solid #ae407a",
-              padding: "8px",
-              borderRadius: "50%",
-            }}
-          />
+          <a
+            href="https://www.facebook.com/primautomation"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaFacebookF
+              color="#ae407a"
+              style={{
+                border: "1px solid #ae407a",
+                padding: "8px",
+                borderRadius: "50%",
+              }}
+            />
+          </a>
+          <a
+            href="https://linkedin.com/company/primautomation"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaLinkedinIn
+              color="#ae407a"
+              style={{
+                border: "1px solid #ae407a",
+                padding: "8px",
+                borderRadius: "50%",
+              }}
+            />
+          </a>
+          <a
+            href="https://x.com/primautomation"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaTwitter
+              color="#ae407a"
+              style={{
+                border: "1px solid #ae407a",
+                padding: "8px",
+                borderRadius: "50%",
+              }}
+            />
+          </a>
+          <a
+            href="https://www.instagram.com/primautomation"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaInstagram
+              color="#ae407a"
+              style={{
+                border: "1px solid #ae407a",
+                padding: "8px",
+                borderRadius: "50%",
+              }}
+            />
+          </a>
+          <a
+            href="https://www.tiktok.com/@primautomation"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaTiktok
+              color="#ae407a"
+              style={{
+                border: "1px solid #ae407a",
+                padding: "8px",
+                borderRadius: "50%",
+              }}
+            />
+          </a>
         </div>
       </div>
     </div>
