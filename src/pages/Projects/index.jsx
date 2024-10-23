@@ -41,7 +41,8 @@ const Projects = () => {
       const response = await axios_instance.get(
         "/api/customgpt/projects/get_all_pages/"
       );
-      const projectsFromResponse = response?.data?.projects || [];
+      const projectsFromResponse = response?.data?.projects || response.data;
+      // console.log(projectsFromResponse);
       setProjects(projectsFromResponse);
     } catch (error) {
       console.log(error);
@@ -156,12 +157,13 @@ const Projects = () => {
             <p className={styles.stats_heading}>
               {user?.first_name}'s Profile Analytics
             </p>
-            <div className={styles.stats_container}>
+            {/* <div className={styles.stats_container}>
               <div className={styles.stats}>
                 <div className={styles.stats_left}>
                   <div className={styles.top}>
-                    {projects[0]?.current_project_count} of{" "}
-                    {projects[0]?.total_project}
+                    {projects[0]?.current_project_count ||
+                      projects.current_project_count}{" "}
+                    of {projects[0]?.total_project || projects.total_project}
                   </div>
                   <div className={styles.bottom}>Total Projects</div>
                 </div>
@@ -177,8 +179,9 @@ const Projects = () => {
               <div className={styles.stats}>
                 <div className={styles.stats_left}>
                   <div className={styles.top}>
-                    {projects[0]?.current_queries_count} of{" "}
-                    {projects[0]?.total_queries}
+                    {projects[0]?.current_queries_count ||
+                      projects.current_queries_count}{" "}
+                    of {projects[0]?.total_queries ?? projects.total_queries}
                   </div>
                   <div className={styles.bottom}>Total Queries</div>
                 </div>
@@ -197,8 +200,70 @@ const Projects = () => {
               <div className={styles.stats}>
                 <div className={styles.stats_left}>
                   <div className={styles.top}>
-                    {projects[0]?.current_word_count} of{" "}
-                    {projects[0]?.total_word_count}
+                    {projects[0]?.current_word_count ||
+                      projects.current_word_count}{" "}
+                    of{" "}
+                    {projects[0]?.total_word_count || projects.total_word_count}
+                  </div>
+                  <div className={styles.bottom}>Total Words</div>
+                </div>
+                <div
+                  className={styles.stats_right}
+                  style={{
+                    backgroundColor: "#D3EE98",
+                  }}
+                >
+                  <GoDatabase size={20} color="#347928" />
+                </div>
+              </div>
+            </div> */}
+            <div className={styles.stats_container}>
+              <div className={styles.stats}>
+                <div className={styles.stats_left}>
+                  <div className={styles.top}>
+                    {projects[0]?.current_project_count ??
+                      projects.current_project_count}{" "}
+                    of {projects[0]?.total_project ?? projects.total_project}
+                  </div>
+                  <div className={styles.bottom}>Total Projects</div>
+                </div>
+                <div
+                  className={styles.stats_right}
+                  style={{
+                    backgroundColor: "#77CDFF",
+                  }}
+                >
+                  <IoFileTrayStackedOutline size={20} color="#091057" />
+                </div>
+              </div>
+              <div className={styles.stats}>
+                <div className={styles.stats_left}>
+                  <div className={styles.top}>
+                    {projects[0]?.current_queries_count ??
+                      projects.current_queries_count}{" "}
+                    of {projects[0]?.total_queries ?? projects.total_queries}
+                  </div>
+                  <div className={styles.bottom}>Total Queries</div>
+                </div>
+                <div
+                  className={styles.stats_right}
+                  style={{
+                    backgroundColor: "rgb(211,208,250,0.8)",
+                  }}
+                >
+                  <IoChatbubbleEllipsesOutline
+                    size={20}
+                    color="rgb(129, 61, 205)"
+                  />
+                </div>
+              </div>
+              <div className={styles.stats}>
+                <div className={styles.stats_left}>
+                  <div className={styles.top}>
+                    {projects[0]?.current_word_count ??
+                      projects.current_word_count}{" "}
+                    of{" "}
+                    {projects[0]?.total_word_count ?? projects.total_word_count}
                   </div>
                   <div className={styles.bottom}>Total Words</div>
                 </div>
@@ -212,6 +277,7 @@ const Projects = () => {
                 </div>
               </div>
             </div>
+
             <div className={styles.tableWrapper}>
               <div className={styles.tableContainer}>
                 <table className={styles.table}>

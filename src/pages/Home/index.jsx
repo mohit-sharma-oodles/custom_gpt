@@ -150,7 +150,7 @@ const Home = (props) => {
         <div className={`${styles.feature_boxes} `}>
           <FeatureBox
             color={"#AE407A"}
-            heading={t("Privacy eerst")}
+            heading={t("Privacy First")}
             text={t(
               "We never store your files unless you choose to see them in the comments. By default, your chatbot is private."
             )}
@@ -266,7 +266,7 @@ const Home = (props) => {
               <SiOpenai color="#32b4a2" />
             </h3>
             <p>
-              {t("Build your own Primadeta Automation")} <br />{" "}
+              {t("Build your own Primautomation")} <br />{" "}
               {t("chatbot based on your own content in")} <br /> {t("minutes.")}
             </p>
           </div>

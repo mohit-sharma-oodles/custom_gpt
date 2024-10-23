@@ -21,7 +21,7 @@ const Footer = () => {
         <p>
           <span>2024</span>{" "}
           <a style={{ color: "#ae407a" }} href="https://primautomation.com/">
-            Primautomations.com
+            Primautomation.com
           </a>
           {t(". All Rights Reserved.")}
         </p>
