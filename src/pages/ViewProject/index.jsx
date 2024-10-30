@@ -690,6 +690,9 @@ const ViewProject = () => {
           }
         }}
         embedCode={projectData?.project[0]?.embeded_code}
+        liveChatCode={projectData?.project[0]?.live_chat_code}
+        WebsiteCopilotCode={projectData?.project[0]?.website_coplilot}
+        SGECode={projectData?.project[0]?.search_generative_experience}
         projectId={projectId}
         defaultOpen={defaultOpen}
         changesMade={changesMade}

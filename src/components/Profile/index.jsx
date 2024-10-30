@@ -352,7 +352,9 @@ const Profile = ({ setShowProfile }) => {
                     : t("Buy Plan")}
                 </span>
 
-                {user.subscription_status === "active" && user.days_left && (
+                {(user.subscription_status === "trialing" ||
+                  (user.subscription_status === "active" &&
+                    user.days_left)) && (
                   <span onClick={handleCancel} className={styles.cancel_plan}>
                     {t("Cancel Plan")}
                   </span>

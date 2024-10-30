@@ -43,6 +43,7 @@ import ReactFlowArea from "../../components/ReactFlowArea";
 import { useLocation } from "react-router-dom";
 import Footer from "../../components/Footer";
 import { axios_instance } from "../../Axios/axiosInstance";
+import { toast } from "react-toastify";
 
 const sizes = [20, 30, 40, 50, 60];
 const FeatureBox = ({ color, heading, text }) => {
@@ -84,6 +85,13 @@ const Home = (props) => {
   const { openLoginModal, closeLoginModal, openSignupModal, closeSignupModal } =
     useOutletContext();
 
+  useEffect(() => {
+    const message = localStorage.getItem("toastMessage");
+    if (message) {
+      toast.error(message);
+      localStorage.removeItem("toastMessage"); // Clean up after showing the toast
+    }
+  }, []);
   useEffect(() => {
     const user = async () => {
       try {

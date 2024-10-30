@@ -12,6 +12,7 @@ import Profile from "../Profile";
 import { axios_instance } from "../../Axios/axiosInstance";
 import { GoPencil } from "react-icons/go";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 const ProfileModal = ({ onClose, setShowProfile, setShowProfileModal }) => {
   const navigate = useNavigate();
@@ -51,6 +52,7 @@ const ProfileModal = ({ onClose, setShowProfile, setShowProfileModal }) => {
 
   const handleLogout = () => {
     dispatch(logoutUser());
+    toast.success("Logged out successfully");
     navigate("/");
     onClose();
   };

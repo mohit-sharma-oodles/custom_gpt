@@ -12,6 +12,7 @@ import left_banner from "../../assets/login_banner.svg";
 import logo from "../../assets/company_logo_white.svg";
 import tryItOut from "../../assets/tryItOut.svg";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 const Login = ({ isOpen, onClose, onSignupClick }) => {
   const { t } = useTranslation();
@@ -47,6 +48,8 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
       dispatch(loginUser({ email, password }))
         .then((loginAction) => {
           if (loginAction.meta.requestStatus === "fulfilled") {
+            toast.success("Login successful");
+
             return dispatch(getUserDetails());
           } else {
             // Handle login failure

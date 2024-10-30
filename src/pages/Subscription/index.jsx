@@ -195,7 +195,6 @@ const Subscriptions = () => {
     };
     getUser();
   }, []);
-
   useEffect(() => {
     const getPlans = () => {
       axios_instance

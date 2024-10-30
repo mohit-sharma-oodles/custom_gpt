@@ -1,6 +1,7 @@
 import axios from "axios";
 // import { toast } from "sonner";
 import { baseURL } from "./axiosInstance";
+import { toast } from "react-toastify";
 
 async function updateToken(retries = 3) {
   try {
@@ -9,7 +10,7 @@ async function updateToken(retries = 3) {
       refresh: localStorage.getItem("refreshToken"),
     });
     localStorage.setItem("accessToken", response.data.access);
-    localStorage.setItem("refreshToken", response.data.refresh);
+    localStorage.setItem("refreshTokenj", response.data.refresh);
   } catch (error) {
     if (retries > 0) {
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -22,8 +23,12 @@ async function updateToken(retries = 3) {
 
       setTimeout(() => {
         window.location.href = "/";
+        localStorage.setItem(
+          "toastMessage",
+          "Session timed out. Please log in again."
+        );
       }, 4000);
-      throw error; // Re-throw the error if all retries have failed
+      throw error;
     }
   }
 }
