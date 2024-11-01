@@ -222,6 +222,9 @@ const ViewProject = () => {
   const [backgroundImage, setBackgroundImage] = useState("");
   const [noAnswerMessage, setNoAnswerMessage] = useState("");
   const [showCitations, setShowCitations] = useState("");
+  const [reCaptcha, setReCaptcha] = useState(false);
+  const [chatbot_model, setChatbot_model] = useState("");
+  const [selectedLanguage, setSelectedLanguage] = useState();
 
   const messageEndRef = useRef(null);
 
@@ -235,10 +238,20 @@ const ViewProject = () => {
               `/api/customgpt/projects/update/settings/${projectId}`
             ),
           ]);
-
+        console.log(projectSettingsResponse.data.result.data);
         const projectData = projectDataResponse.data;
         setProjectData(projectData);
 
+        setReCaptcha(
+          projectSettingsResponse.data.result.data
+            .enable_recaptcha_for_public_chatbots
+        );
+        setSelectedLanguage(
+          projectSettingsResponse.data.result.data.chatbot_msg_lang
+        );
+        setChatbot_model(
+          projectSettingsResponse.data.result.data.chatbot_model
+        );
         setAvatar(projectSettingsResponse.data.result.data.chatbot_avatar);
         setNoAnswerMessage(
           projectSettingsResponse.data.result.data.no_answer_message
@@ -705,6 +718,12 @@ const ViewProject = () => {
         setBackgroundImage={setBackgroundImage}
         noAnswerMessage={noAnswerMessage}
         setNoAnswerMessage={setNoAnswerMessage}
+        chatbot_model={chatbot_model}
+        setChatbot_model={setChatbot_model}
+        reCaptcha={reCaptcha}
+        setReCaptcha={setReCaptcha}
+        selectedLanguage={selectedLanguage}
+        setSelectedLanguage={setSelectedLanguage}
       />
       <UploadDocumentModal
         isOpen={uploadModalOpen}

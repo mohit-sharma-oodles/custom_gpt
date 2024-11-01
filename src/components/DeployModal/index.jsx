@@ -14,6 +14,101 @@ import { SiLivechat } from "react-icons/si";
 import { GoCopilot } from "react-icons/go";
 import { RiAiGenerate } from "react-icons/ri";
 
+const languages = [
+  { code: "sq", name: "Albanian" },
+  { code: "ar", name: "Arabic" },
+  { code: "hy", name: "Armenian" },
+  { code: "az", name: "Azerbaijani" },
+  { code: "ba", name: "Bashkir" },
+  { code: "eu", name: "Basque" },
+  { code: "be", name: "Belarusian" },
+  { code: "bn", name: "Bengali" },
+  { code: "bh", name: "Bihari" },
+  { code: "bs", name: "Bosnian" },
+  { code: "pt-BR", name: "Portuguese (Brazil)" },
+  { code: "bg", name: "Bulgarian" },
+  { code: "yue", name: "Cantonese" },
+  { code: "ca", name: "Catalan" },
+  { code: "hne", name: "Chhattisgarhi" },
+  { code: "hr", name: "Croatian" },
+  { code: "cs", name: "Czech" },
+  { code: "da", name: "Danish" },
+  { code: "doi", name: "Dogri" },
+  { code: "nl", name: "Dutch" },
+  { code: "en", name: "English" },
+  { code: "et", name: "Estonian" },
+  { code: "fo", name: "Faroese" },
+  { code: "fi", name: "Finnish" },
+  { code: "fr", name: "French" },
+  { code: "gl", name: "Galician" },
+  { code: "ka", name: "Georgian" },
+  { code: "de", name: "German" },
+  { code: "el", name: "Greek" },
+  { code: "gu", name: "Gujarati" },
+  { code: "hry", name: "Haryanvi" },
+  { code: "he", name: "Hebrew" },
+  { code: "hi", name: "Hindi" },
+  { code: "hu", name: "Hungarian" },
+  { code: "id", name: "Indonesian" },
+  { code: "ga", name: "Irish" },
+  { code: "it", name: "Italian" },
+  { code: "ja", name: "Japanese" },
+  { code: "jv", name: "Javanese" },
+  { code: "kn", name: "Kannada" },
+  { code: "ks", name: "Kashmiri" },
+  { code: "kk", name: "Kazakh" },
+  { code: "kok", name: "Konkani" },
+  { code: "ko", name: "Korean" },
+  { code: "ky", name: "Kyrgyz" },
+  { code: "lv", name: "Latvian" },
+  { code: "lt", name: "Lithuanian" },
+  { code: "mk", name: "Macedonian" },
+  { code: "mai", name: "Maithili" },
+  { code: "ms", name: "Malay" },
+  { code: "mt", name: "Maltese" },
+  { code: "cmn", name: "Mandarin" },
+  { code: "mr", name: "Marathi" },
+  { code: "mwr", name: "Marwari" },
+  { code: "nan", name: "Min Nan" },
+  { code: "mo", name: "Moldavian" },
+  { code: "mn", name: "Mongolian" },
+  { code: "me", name: "Montenegrin" },
+  { code: "ne", name: "Nepali" },
+  { code: "no", name: "Norwegian" },
+  { code: "or", name: "Odia" },
+  { code: "ps", name: "Pashto" },
+  { code: "fa", name: "Persian" },
+  { code: "pl", name: "Polish" },
+  { code: "pt", name: "Portuguese" },
+  { code: "pa", name: "Punjabi" },
+  { code: "raj", name: "Rajasthani" },
+  { code: "ro", name: "Romanian" },
+  { code: "ru", name: "Russian" },
+  { code: "sa", name: "Sanskrit" },
+  { code: "sat", name: "Santali" },
+  { code: "sr", name: "Serbian" },
+  { code: "sd", name: "Sindhi" },
+  { code: "si", name: "Sinhala" },
+  { code: "sk", name: "Slovak" },
+  { code: "sl", name: "Slovenian" },
+  { code: "es", name: "Spanish" },
+  { code: "sw", name: "Swahili" },
+  { code: "sv", name: "Swedish" },
+  { code: "tg", name: "Tajik" },
+  { code: "ta", name: "Tamil" },
+  { code: "tt", name: "Tatar" },
+  { code: "te", name: "Telugu" },
+  { code: "th", name: "Thai" },
+  { code: "tr", name: "Turkish" },
+  { code: "tk", name: "Turkmen" },
+  { code: "uk", name: "Ukrainian" },
+  { code: "ur", name: "Urdu" },
+  { code: "uz", name: "Uzbek" },
+  { code: "vi", name: "Vietnamese" },
+  { code: "cy", name: "Welsh" },
+  { code: "wuu", name: "Wu Chinese" },
+];
+
 const DeployModal = ({
   changesMade,
   isOpen,
@@ -33,6 +128,12 @@ const DeployModal = ({
   setBackgroundImage,
   noAnswerMessage,
   setNoAnswerMessage,
+  chatbot_model,
+  setChatbot_model,
+  reCaptcha,
+  setReCaptcha,
+  selectedLanguage,
+  setSelectedLanguage,
 }) => {
   const [activeTab, setActiveTab] = useState(defaultOpen);
   const [loading, setLoading] = useState(false);
@@ -132,7 +233,12 @@ const DeployModal = ({
       if (noAnswerMessage) {
         formData.append("no_answer_message", noAnswerMessage);
       }
+      // if (chatbot_model) {
+      //   formData.append("chatbot_model", chatbot_model);
+      // }
       formData.append("response_source", responseSource);
+      formData.append("chatbot_msg_lang", selectedLanguage);
+      formData.append("enable_recaptcha_for_public_chatbots", reCaptcha);
 
       const response = await axios_instance.post(
         `/api/customgpt/projects/update/settings/${projectId}/`,
@@ -385,6 +491,30 @@ const DeployModal = ({
                       onChange={(e) => setPlaceholderPrompt(e.target.value)}
                     />
                   </div>
+                  <div className={styles.input_wrapper}>
+                    <label
+                      htmlFor="languageOption"
+                      style={{
+                        fontSize: "16px",
+                        fontWeight: 400,
+                        // display: "flex",
+                        // alignItems: "center",
+                        // flexGrow: 0,
+                      }}
+                    >
+                      Agent Language :
+                    </label>
+                    <select
+                      value={selectedLanguage}
+                      onChange={(e) => setSelectedLanguage(e.target.value)}
+                    >
+                      {languages.map((language) => (
+                        <option key={language.code} value={language.code}>
+                          {language.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                   {/* <div style={{ display: "flex", gap: "16px" }}>
                     <label htmlFor="chatbot_name">Chatbot Name:</label>
                     <input
@@ -555,6 +685,37 @@ const DeployModal = ({
                     />
                   </div>
                   {/* I dont know message */}
+                  {/* GPT Model Choice */}
+                  <div className={styles.input_wrapper}>
+                    <label
+                      htmlFor="citationOption"
+                      style={{
+                        fontSize: "16px",
+                        fontWeight: 400,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "5px",
+                      }}
+                    >
+                      Select your GPT Model :
+                    </label>
+                    <select
+                      id="chatbot_model"
+                      value={setChatbot_model}
+                      onChange={(e) => setChatbot_model(e.target.value)}
+                    >
+                      <option value="gpt-4-o">GPT 4o</option>
+                      <option value="gpt-4-turbo">GPT 4 Turbo</option>
+                      <option value="gpt-4">GPT 4</option>
+                      <option value="gpt-4o-mini">GPT 4o Mini</option>
+                      <option value="claude-3-sonnet">Claude 3 Sonnet</option>
+                      <option value="claude-3.5-sonnet">
+                        Claude 3.5 Sonnet
+                      </option>
+                      <option value="fast_response">Fast Response</option>
+                    </select>
+                  </div>
+                  {/* GPT Model Choice */}
                 </div>
               </div>
               <div className={styles.buttons}>
@@ -610,8 +771,8 @@ const DeployModal = ({
                     </label>
                     <select
                       id="responseOption"
-                      value={responseSource}
-                      onChange={(e) => setResponseSource(e.target.value)}
+                      value={reCaptcha}
+                      onChange={(e) => setReCaptcha(e.target.value)}
                     >
                       <option value="true">Enable</option>
                       <option value="false">Disable</option>
