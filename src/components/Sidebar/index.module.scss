@@ -1,6 +1,6 @@
 @import "../../index.scss";
 
-.left_side {
+.sidebar_left_side {
   box-sizing: border-box;
   background-color: #f6f7f9;
   display: flex;
@@ -15,9 +15,9 @@
   // left: 0;
   justify-content: stretch;
 
-  .top {
+  .sidebar_top {
     img {
-      scale: 0.7;
+      scale: 0.3;
     }
   }
   .left_middle {

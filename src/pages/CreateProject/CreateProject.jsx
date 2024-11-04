@@ -15,6 +15,12 @@ import Sidebar from "../../components/Sidebar";
 import { FileUploader } from "react-drag-drop-files";
 import { axios_instance } from "../../Axios/axiosInstance";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
+import { GrReturn } from "react-icons/gr";
+
+const MAX_FILE_SIZE = 2; // 100MB
+const MAX_TOTAL_SIZE = 1024 * 1024 * 8; // 1GB in bytes
+const MAX_FILES = 3;
 
 const CreateProject = () => {
   const { t } = useTranslation();
@@ -54,8 +60,50 @@ const CreateProject = () => {
   }, [edit, projectId, t]);
 
   // Handle file selection
+  // const handleChange = (files) => {
+  //   if (files.length > MAX_FILES) {
+  //     toast.warn(`Cannot upload more than ${MAX_FILES} files.`);
+  //     return;
+  //   } else {
+  //     console.log(files);
+  //     setFileSelected((prevFiles) => [...prevFiles, ...files]);
+  //   }
+  // };
   const handleChange = (files) => {
-    setFileSelected((prevFiles) => [...prevFiles, ...files]);
+    const newFiles = [];
+    let totalFiles = fileSelected.length;
+    let totalSize = fileSelected.reduce((acc, file) => acc + file.size, 0);
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+
+      if (totalFiles >= MAX_FILES) {
+        toast.warn(`Cannot upload more than ${MAX_FILES} files.`);
+        break;
+      }
+
+      if (file.size > MAX_FILE_SIZE * 1024 * 1024) {
+        toast.warn(
+          `File ${file.name} exceeds the maximum allowed size of ${MAX_FILE_SIZE}MB.`
+        );
+        continue;
+      }
+
+      if (totalSize + file.size > MAX_TOTAL_SIZE) {
+        toast.warn(
+          `Total file size cannot exceed ${MAX_TOTAL_SIZE / (1024 * 1024)} MB.`
+        );
+        break;
+      }
+
+      newFiles.push(file);
+      totalFiles++;
+      totalSize += file.size;
+    }
+
+    if (newFiles.length > 0) {
+      setFileSelected((prevFiles) => [...prevFiles, ...newFiles]);
+    }
   };
 
   // Delete a selected file
@@ -208,6 +256,20 @@ const CreateProject = () => {
     }
   };
 
+  const handleSizeFunction = (files) => {
+    console.log(files);
+    toast.warn(`File size cannot exceed ${MAX_FILE_SIZE}MB limit.`);
+  };
+  const fileValidator = (file) => {
+    if (file.size > MAX_FILE_SIZE * 1024 * 1024) {
+      toast.warn(
+        `File ${file.name} exceeds the maximum allowed size of ${MAX_FILE_SIZE}MB.`
+      );
+      return false;
+    }
+    return true;
+  };
+
   return (
     <div className={styles.container}>
       <Sidebar className={styles.sidebar} />
@@ -239,6 +301,9 @@ const CreateProject = () => {
               name="file"
               multiple={true}
               classes="drop_zone"
+              // maxSize={MAX_FILE_SIZE}
+              // onSizeError={handleSizeFunction}
+              validator={fileValidator}
             >
               <div className={styles.drop_zone}>
                 <IoCloudUploadOutline size={50} color={"lightgrey"} />
@@ -249,6 +314,11 @@ const CreateProject = () => {
                   </h3>
                   <p>
                     {t("Supported formats: PDF, DOC, XLSX, SPREADSHEET, etc.")}
+                  </p>
+                  <p>
+                    {t(
+                      "Maximum file size: 100MB. Maximum total size: 1GB. Maximum 50 files per batch."
+                    )}
                   </p>
                 </div>
               </div>

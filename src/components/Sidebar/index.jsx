@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 // assets
 import logo from "../../assets/company_logo.svg";
-
 //icons
 import { FiFolderMinus } from "react-icons/fi";
 import { AiOutlineQuestionCircle } from "react-icons/ai";
@@ -13,9 +12,9 @@ import { MdOutlineMail, MdOutlineCopyright } from "react-icons/md";
 const Sidebar = () => {
   return (
     <div style={{ backgroundColor: "#f6f7f9" }}>
-      <div className={styles.left_side}>
-        <div className={styles.top}>
-          <img src={logo} alt="Primadeta" />
+      <div className={styles.sidebar_left_side}>
+        <div className={styles.sidebar_top}>
+          <img src={logo} alt="Primautomations" />
         </div>
         <div className={styles.left_middle}>
           <div className={styles.left_menu}>
