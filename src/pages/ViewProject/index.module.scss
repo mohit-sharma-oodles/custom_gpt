@@ -332,7 +332,7 @@
     padding: 2rem;
     border-radius: 8px;
     width: 30%;
-    height: 70%;
+    height: 80%;
     position: relative;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     display: flex;
@@ -366,7 +366,7 @@
       text-align: center;
       gap: 1rem;
       cursor: pointer;
-      min-height: 100%;
+      min-height: 80%;
       margin-bottom: auto;
 
       .text_container {

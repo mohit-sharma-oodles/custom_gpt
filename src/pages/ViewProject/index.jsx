@@ -25,6 +25,11 @@ import { HiOutlineTrash } from "react-icons/hi2";
 import { AiOutlineDelete } from "react-icons/ai";
 import logo_small from "../../assets/compnay_icon_small.svg";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
+
+const MAX_FILE_SIZE = 2; // 100MB
+const MAX_TOTAL_SIZE = 1024 * 1024 * 8; // 1GB in bytes
+const MAX_FILES = 50;
 
 // Upload Modal
 const UploadDocumentModal = ({
@@ -38,10 +43,45 @@ const UploadDocumentModal = ({
   const [uploadError, setUploadError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // const handleChange = (files) => {
+  //   setFileSelected((prevFiles) => [...prevFiles, ...files]);
+  // };
   const handleChange = (files) => {
-    setFileSelected((prevFiles) => [...prevFiles, ...files]);
-  };
+    const newFiles = [];
+    let totalFiles = fileSelected.length;
+    let totalSize = fileSelected.reduce((acc, file) => acc + file.size, 0);
 
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+
+      if (totalFiles >= MAX_FILES) {
+        toast.warn(`Cannot upload more than ${MAX_FILES} files.`);
+        break;
+      }
+
+      if (file.size > MAX_FILE_SIZE * 1024 * 1024) {
+        toast.warn(
+          `File ${file.name} exceeds the maximum allowed size of ${MAX_FILE_SIZE}MB.`
+        );
+        continue;
+      }
+
+      if (totalSize + file.size > MAX_TOTAL_SIZE) {
+        toast.warn(
+          `Total file size cannot exceed ${MAX_TOTAL_SIZE / (1024 * 1024)} MB.`
+        );
+        break;
+      }
+
+      newFiles.push(file);
+      totalFiles++;
+      totalSize += file.size;
+    }
+
+    if (newFiles.length > 0) {
+      setFileSelected((prevFiles) => [...prevFiles, ...newFiles]);
+    }
+  };
   const handleDeleteFile = (index) => {
     setFileSelected((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
@@ -102,7 +142,7 @@ const UploadDocumentModal = ({
             ×
           </button>
         </div>
-        <div style={{ height: "70%", marginBottom: "auto" }}>
+        <div style={{ height: "50%", marginBottom: "1rem" }}>
           <FileUploader
             handleChange={handleChange}
             name="file"
@@ -225,6 +265,7 @@ const ViewProject = () => {
   const [reCaptcha, setReCaptcha] = useState(false);
   const [chatbot_model, setChatbot_model] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState();
+  const [enableCitations, setEnableCitations] = useState();
 
   const messageEndRef = useRef(null);
 
@@ -242,6 +283,9 @@ const ViewProject = () => {
         const projectData = projectDataResponse.data;
         setProjectData(projectData);
 
+        setEnableCitations(
+          projectSettingsResponse.data.result.data.enable_citations
+        );
         setReCaptcha(
           projectSettingsResponse.data.result.data
             .enable_recaptcha_for_public_chatbots
@@ -604,7 +648,8 @@ const ViewProject = () => {
                               )}
 
                               {/* If both url and title are available, render them as a link */}
-                              {message.type === "server" &&
+                              {enableCitations !== 0 &&
+                                message.type === "server" &&
                                 message.url &&
                                 message.title && (
                                   <div style={{ marginTop: "10px" }}>
@@ -724,6 +769,8 @@ const ViewProject = () => {
         setReCaptcha={setReCaptcha}
         selectedLanguage={selectedLanguage}
         setSelectedLanguage={setSelectedLanguage}
+        enableCitations={enableCitations}
+        setEnableCitations={setEnableCitations}
       />
       <UploadDocumentModal
         isOpen={uploadModalOpen}

@@ -134,6 +134,8 @@ const DeployModal = ({
   setReCaptcha,
   selectedLanguage,
   setSelectedLanguage,
+  enableCitations,
+  setEnableCitations,
 }) => {
   const [activeTab, setActiveTab] = useState(defaultOpen);
   const [loading, setLoading] = useState(false);
@@ -236,6 +238,7 @@ const DeployModal = ({
       // if (chatbot_model) {
       //   formData.append("chatbot_model", chatbot_model);
       // }
+      formData.append("enable_citations", enableCitations);
       formData.append("response_source", responseSource);
       formData.append("chatbot_msg_lang", selectedLanguage);
       formData.append("enable_recaptcha_for_public_chatbots", reCaptcha);
@@ -657,11 +660,17 @@ const DeployModal = ({
                     </label>
                     <select
                       id="citationOption"
-                      value={responseSource}
-                      onChange={(e) => setResponseSource(e.target.value)}
+                      value={enableCitations}
+                      onChange={(e) => setEnableCitations(e.target.value)}
                     >
-                      <option value="3">Show citations</option>
-                      <option value="0">Don't show citations</option>
+                      <option value="0">Don't display citations</option>
+                      <option value="1">After agent's response</option>
+                      <option value="2">
+                        Numbered refrences inside agent's response
+                      </option>
+                      <option value="3">
+                        After the agent's response + Numbered refrences{" "}
+                      </option>
                     </select>
                   </div>
                   {/* I dont know message */}
@@ -750,8 +759,10 @@ const DeployModal = ({
                   >
                     Anti Hallucination :
                     <select>
-                      <option value="true">True</option>
-                      <option value="false">False</option>
+                      <option value="true">Enable</option>
+                      <option value="false" disabled>
+                        Disable
+                      </option>
                     </select>
                   </label>
 
@@ -807,14 +818,7 @@ const DeployModal = ({
                       </abbr>{" "}
                       :
                     </label>
-                    <select
-                      id="citationOption"
-                      value={responseSource}
-                      onChange={(e) => setResponseSource(e.target.value)}
-                    >
-                      <option value="3">Show citations</option>
-                      <option value="0">Don't show citations</option>
-                    </select>
+                    <textarea />
                   </div>
                 </div>
               </div>
