@@ -6,13 +6,18 @@ import { axios_instance } from "../../Axios/axiosInstance";
 import { IoRocketOutline } from "react-icons/io5";
 import { AiOutlineCode } from "react-icons/ai";
 import { GrCopy } from "react-icons/gr";
-import { MdOutlineEmail, MdShare } from "react-icons/md";
+import {
+  MdOutlineEmail,
+  MdShare,
+  MdOutlineIntegrationInstructions,
+} from "react-icons/md";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import { TbMoodEdit } from "react-icons/tb";
 import { HiOutlineCog6Tooth } from "react-icons/hi2";
 import { SiLivechat } from "react-icons/si";
 import { GoCopilot } from "react-icons/go";
 import { RiAiGenerate } from "react-icons/ri";
+import { toast } from "react-toastify";
 
 const languages = [
   { code: "sq", name: "Albanian" },
@@ -118,6 +123,7 @@ const DeployModal = ({
   WebsiteCopilotCode,
   SGECode,
   projectId,
+  projectKey,
   defaultOpen = "deploy",
   setChangesMade,
   placeholderPrompt,
@@ -187,6 +193,13 @@ const DeployModal = ({
     } catch (err) {
       alert("Failed to copy share link.");
     }
+  };
+
+  const copyToClipboardIntegrations = (text) => {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => toast.success("Copied to clipboard!"))
+      .catch((err) => toast.error("Failed to copy text"));
   };
 
   // const copyLinkToClipboard = () => {
@@ -321,6 +334,20 @@ const DeployModal = ({
             >
               Security Settings
             </p>
+            {/*  */}
+            <MdOutlineIntegrationInstructions
+              style={{ marginLeft: "20px" }}
+              size={20}
+            />
+            <p
+              onClick={() => setActiveTab("integrations")}
+              style={{
+                cursor: "pointer",
+                fontWeight: activeTab === "integrations" ? "bold" : "normal",
+              }}
+            >
+              Integrations
+            </p>
           </div>
           <button className={styles.modalClose} onClick={onClose}>
             &times;
@@ -339,7 +366,7 @@ const DeployModal = ({
                 </p>
                 <p style={{ fontSize: "14px", fontWeight: 400 }}>
                   Copy the following code and paste it into your site’s{" "}
-                  {"< body >"} section, where you want to include the features..
+                  {"<body>"} section, where you want to include the features.
                 </p>
                 <p style={{ marginTop: "12px", marginBottom: "12px" }}>
                   <AiOutlineCode /> Embed
@@ -349,11 +376,6 @@ const DeployModal = ({
                   the webpages and FAQ Section. Keeps user engaged with page
                   content along with answering all their queries.
                 </p>
-                {/* <p style={{ fontSize: "14px", fontWeight: 400 }}>
-                  Copy the following code and paste it in your site’s{" "}
-                  <code>&lt;body&gt;</code> section, where you want to use your
-                  chatbot.
-                </p> */}
                 <textarea readOnly value={embedCode} />
                 <p style={{ marginTop: "12px", marginBottom: "12px" }}>
                   <SiLivechat /> Live Chat
@@ -362,7 +384,7 @@ const DeployModal = ({
                   Agent will open when user clicks on icon in the corner of the
                   screen. It is most effective for general inquiries, quick
                   customer support, or pre-sales questions while browsing the
-                  site.{" "}
+                  site.
                 </p>
                 <textarea readOnly value={liveChatCode} />
                 {/*  */}
@@ -373,7 +395,7 @@ const DeployModal = ({
                   Button to open agent which can be placed anywhere on the
                   webpage. It provides a balance between visibility and user
                   control over the interaction, allowing for deep dives into
-                  conversations when the user is ready.{" "}
+                  conversations when the user is ready.
                 </p>
                 <textarea readOnly value={WebsiteCopilotCode} />
                 {/*  */}
@@ -385,7 +407,7 @@ const DeployModal = ({
                   Generative Experience — a new way to search your website with
                   Generative AI. This gives your users much better responses
                   than classic search, as your agent is able to provide quality
-                  and digested responses, together with sources.{" "}
+                  and digested responses, together with sources.
                 </p>
                 <textarea readOnly value={SGECode} />
                 {/*  */}
@@ -395,28 +417,17 @@ const DeployModal = ({
                 </p>
                 <p style={{ fontSize: "14px", fontWeight: 400 }}>
                   Please copy the following link and share it with your
-                  colleagues so they can use this chatbot.{" "}
+                  colleagues so they can use this chatbot.
                 </p>
                 <textarea
                   readOnly
                   value={`https://chattodata.com/app/project/${projectId}/chat`}
                 />
 
-                {/* <p style={{ marginTop: "12px", marginBottom: "12px" }}>
-                  <MdShare /> Share your chatbot
-                </p> */}
-                {/* <p style={{ fontSize: "14px", fontWeight: 400 }}>
-                  Please copy the following link and share it with your
-                  colleagues so they can use this chatbot.{" "}
-                </p>
-                <textarea
-                  readOnly
-                  value={`https://customgpt-f.oodleslab.com/app/project/${projectId}/chat`}
-                /> */}
                 <div className={styles.buttons}>
                   <button onClick={copyToClipboard}>
                     <GrCopy />
-                    Copy Embeding Link
+                    Copy Embedding Link
                   </button>
                   <button>
                     <MdOutlineEmail />
@@ -442,7 +453,7 @@ const DeployModal = ({
                   website and brand.
                 </p>
                 <div className={styles.input__Container}>
-                  <div style={{ display: "flex", gap: "16px" }}>
+                  <div className={styles.input_wrapper}>
                     <label htmlFor="avatar">Chatbot Avatar:</label>
                     <input
                       type="file"
@@ -452,12 +463,12 @@ const DeployModal = ({
                       onChange={(e) => setAvatar(e.target.files[0])}
                     />
                   </div>
-                  <div style={{ display: "flex", gap: "16px" }}>
-                    <label htmlFor="avatar">Chatbot Background:</label>
+                  <div className={styles.input_wrapper}>
+                    <label htmlFor="background">Chatbot Background:</label>
                     <input
                       type="file"
                       name="background"
-                      id="backgound"
+                      id="background"
                       accept="image/*"
                       onChange={(e) => {
                         setBackgroundImage(e.target.files[0]);
@@ -474,40 +485,38 @@ const DeployModal = ({
                       }}
                     />
                   </div>
-                  {/* Placeholder Prompt */}
+                  {/* I don't know message */}
                   <div className={styles.input_wrapper}>
                     <label
-                      htmlFor="responseOption"
-                      style={{
-                        fontSize: "16px",
-                        fontWeight: 400,
-                        // display: "flex",
-                        // alignItems: "center",
-                        // flexGrow: 0,
-                      }}
+                      style={{ width: "12%" }}
+                      className={styles.label}
+                      htmlFor="noAnswerMessage"
                     >
-                      Placeholder Prompt :
+                      I don't know message:
                     </label>
                     <input
                       type="text"
+                      id="noAnswerMessage"
+                      placeholder={noAnswerMessage}
+                      onChange={(e) => setNoAnswerMessage(e.target.value)}
+                    />
+                  </div>
+                  {/* Placeholder Prompt */}
+                  <div className={styles.input_wrapper}>
+                    <label htmlFor="placeholderPrompt">
+                      Placeholder Prompt:
+                    </label>
+                    <input
+                      type="text"
+                      id="placeholderPrompt"
                       placeholder={placeholderPrompt}
                       onChange={(e) => setPlaceholderPrompt(e.target.value)}
                     />
                   </div>
                   <div className={styles.input_wrapper}>
-                    <label
-                      htmlFor="languageOption"
-                      style={{
-                        fontSize: "16px",
-                        fontWeight: 400,
-                        // display: "flex",
-                        // alignItems: "center",
-                        // flexGrow: 0,
-                      }}
-                    >
-                      Agent Language :
-                    </label>
+                    <label htmlFor="languageOption">Agent Language:</label>
                     <select
+                      id="languageOption"
                       value={selectedLanguage}
                       onChange={(e) => setSelectedLanguage(e.target.value)}
                     >
@@ -518,36 +527,6 @@ const DeployModal = ({
                       ))}
                     </select>
                   </div>
-                  {/* <div style={{ display: "flex", gap: "16px" }}>
-                    <label htmlFor="chatbot_name">Chatbot Name:</label>
-                    <input
-                      type="text"
-                      placeholder="Please Enter a Name"
-                      id="chatbot_name"
-                      value={chatbotName}
-                      onChange={(e) => setChatbotName(e.target.value)}
-                    />
-                  </div> */}
-                  {/* <div style={{ display: "flex", gap: "16px" }}>
-                    <label htmlFor="chatbot_name">Loading Indicator</label>
-                    <input
-                      type="text"
-                      placeholder="Please Enter a Name"
-                      id="chatbot_name"
-                      value={loadingIndicatorText}
-                      onChange={(e) => setLoadingIndicatorText(e.target.value)}
-                    />
-                  </div> */}
-                  {/* <div style={{ display: "flex", gap: "16px" }}>
-                    <label htmlFor="chatbot_name">Place Holder Prompt:</label>
-                    <input
-                      type="text"
-                      placeholder={placeholderPrompt}
-                      id="placeholder_prompt"
-                      // value={placeholderPrompt}
-                      onChange={(e) => setPlaceholderPrompt(e.target.value)}
-                    />
-                  </div> */}
                 </div>
               </div>
               <div className={styles.buttons}>
@@ -568,55 +547,37 @@ const DeployModal = ({
                   Customize your agent behavior to control its personality
                   traits and role to fit your use case.
                 </p>
-                <div className={styles.personaSettings__Area}>
+                <div
+                  className={
+                    (styles.personaSettings__Area, styles.input__Container)
+                  }
+                >
                   {/* Persona */}
-                  <label
-                    htmlFor="persona"
-                    style={{
-                      fontSize: "16px",
-                      fontWeight: 400,
-                      // display: "flex",
-                      // alignItems: "center",
-                      // flexGrow: 0,
-                    }}
-                  >
-                    Agent Persona:
+                  <div className={styles.input_wrapper}>
+                    <label
+                      style={{ width: "12%" }}
+                      className={styles.label}
+                      htmlFor="persona"
+                    >
+                      Agent Persona:
+                    </label>
                     <textarea
-                      name=""
-                      value={persona}
-                      placeholder="Please describe your agent's peronality."
-                      onChange={(e) => setPersona(e.target.value)}
+                      style={{ width: "20%" }}
                       id="persona"
+                      value={persona}
+                      placeholder="Please describe your agent's personality."
+                      onChange={(e) => setPersona(e.target.value)}
                     ></textarea>
-                  </label>
+                  </div>
 
                   {/* Response option */}
                   <div className={styles.input_wrapper}>
                     <label
+                      style={{ width: "12%" }}
+                      className={styles.label}
                       htmlFor="responseOption"
-                      style={{
-                        fontSize: "16px",
-                        fontWeight: 400,
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "5px",
-                      }}
                     >
-                      Response Source{" "}
-                      <abbr
-                        style={{
-                          textDecoration: "none",
-                          cursor: "pointer",
-                          display: "inline-flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                        title="You can alter the source of responses."
-                      >
-                        {" "}
-                        <IoIosInformationCircleOutline />{" "}
-                      </abbr>{" "}
-                      :
+                      Response Source:
                     </label>
                     <select
                       id="responseOption"
@@ -630,33 +591,14 @@ const DeployModal = ({
                     </select>
                   </div>
 
-                  {/*  */}
+                  {/* Citation Option */}
                   <div className={styles.input_wrapper}>
                     <label
+                      style={{ width: "12%" }}
+                      className={styles.label}
                       htmlFor="citationOption"
-                      style={{
-                        fontSize: "16px",
-                        fontWeight: 400,
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "5px",
-                      }}
                     >
-                      Show Citations{" "}
-                      <abbr
-                        style={{
-                          textDecoration: "none",
-                          cursor: "pointer",
-                          display: "inline-flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                        title="You can choose whether to show the source of outcome or not."
-                      >
-                        {" "}
-                        <IoIosInformationCircleOutline />{" "}
-                      </abbr>{" "}
-                      :
+                      Show Citations:
                     </label>
                     <select
                       id="citationOption"
@@ -666,51 +608,26 @@ const DeployModal = ({
                       <option value="0">Don't display citations</option>
                       <option value="1">After agent's response</option>
                       <option value="2">
-                        Numbered refrences inside agent's response
+                        Numbered references inside agent's response
                       </option>
                       <option value="3">
-                        After the agent's response + Numbered refrences{" "}
+                        After the agent's response + Numbered references
                       </option>
                     </select>
                   </div>
-                  {/* I dont know message */}
-                  <div className={styles.input_wrapper}>
-                    <label
-                      htmlFor="idontknowmessage"
-                      style={{
-                        fontSize: "16px",
-                        fontWeight: 400,
-                        whiteSpace: "nowrap",
-                        // flexGrow: 0,
-                      }}
-                    >
-                      I don't know message :
-                    </label>
-                    <input
-                      type="text"
-                      id="idontknowmessage"
-                      placeholder={noAnswerMessage}
-                      onChange={(e) => setNoAnswerMessage(e.target.value)}
-                    />
-                  </div>
-                  {/* I dont know message */}
+
                   {/* GPT Model Choice */}
                   <div className={styles.input_wrapper}>
                     <label
-                      htmlFor="citationOption"
-                      style={{
-                        fontSize: "16px",
-                        fontWeight: 400,
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "5px",
-                      }}
+                      style={{ width: "12%" }}
+                      className={styles.label}
+                      htmlFor="chatbot_model"
                     >
-                      Select your GPT Model :
+                      Select your GPT Model:
                     </label>
                     <select
                       id="chatbot_model"
-                      value={setChatbot_model}
+                      value={chatbot_model}
                       onChange={(e) => setChatbot_model(e.target.value)}
                     >
                       <option value="gpt-4-o">GPT 4o</option>
@@ -724,7 +641,6 @@ const DeployModal = ({
                       <option value="fast_response">Fast Response</option>
                     </select>
                   </div>
-                  {/* GPT Model Choice */}
                 </div>
               </div>
               <div className={styles.buttons}>
@@ -745,43 +661,34 @@ const DeployModal = ({
                   Customize your agent behavior to control its personality
                   traits and role to fit your use case.
                 </p>
-                <div className={styles.personaSettings__Area}>
-                  {/* Persona */}
-                  <label
-                    htmlFor="persona"
-                    style={{
-                      fontSize: "16px",
-                      fontWeight: 400,
-                      // display: "flex",
-                      // alignItems: "center",
-                      // flexGrow: 0,
-                    }}
-                  >
-                    Anti Hallucination :
-                    <select>
+                <div
+                  className={
+                    (styles.personaSettings__Area, styles.input__Container)
+                  }
+                >
+                  {/* Anti Hallucination */}
+                  <div className={styles.input_wrapper}>
+                    <label style={{ width: "11%" }} htmlFor="antiHallucination">
+                      Anti Hallucination:
+                    </label>
+                    <select
+                      id="antiHallucination"
+                      // value={antiHallucination}
+                      // onChange={(e) => setAntiHallucination(e.target.value)}
+                    >
                       <option value="true">Enable</option>
                       <option value="false" disabled>
                         Disable
                       </option>
                     </select>
-                  </label>
-
-                  {/* Response option */}
+                  </div>
+                  {/* reCAPTCHA */}
                   <div className={styles.input_wrapper}>
-                    <label
-                      htmlFor="responseOption"
-                      style={{
-                        fontSize: "16px",
-                        fontWeight: 400,
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "5px",
-                      }}
-                    >
-                      ReCaptcha :
+                    <label style={{ width: "11%" }} htmlFor="reCaptcha">
+                      reCAPTCHA:
                     </label>
                     <select
-                      id="responseOption"
+                      id="reCaptcha"
                       value={reCaptcha}
                       onChange={(e) => setReCaptcha(e.target.value)}
                     >
@@ -789,36 +696,20 @@ const DeployModal = ({
                       <option value="false">Disable</option>
                     </select>
                   </div>
-
-                  {/*  */}
+                  {/* Whitelisted Domains */}
                   <div className={styles.input_wrapper}>
                     <label
-                      htmlFor="citationOption"
-                      style={{
-                        fontSize: "16px",
-                        fontWeight: 400,
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "5px",
-                      }}
+                      style={{ width: "11%" }}
+                      htmlFor="whitelistedDomains"
                     >
-                      Whitelisted Domains{" "}
-                      <abbr
-                        style={{
-                          textDecoration: "none",
-                          cursor: "pointer",
-                          display: "inline-flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                        title="You can choose whether to show the source of outcome or not."
-                      >
-                        {" "}
-                        <IoIosInformationCircleOutline />{" "}
-                      </abbr>{" "}
-                      :
+                      Whitelisted Domains:
                     </label>
-                    <textarea />
+                    <textarea
+                      style={{ width: "20%" }}
+                      id="whitelistedDomains"
+                      // value={whitelistedDomains}
+                      // onChange={(e) => setWhitelistedDomains(e.target.value)}
+                    />
                   </div>
                 </div>
               </div>
@@ -828,6 +719,139 @@ const DeployModal = ({
                 </button>
               </div>
             </>
+          )}
+          {activeTab === "integrations" && (
+            <div className={styles.integrations_container}>
+              <h2>Wordpress Integrations Steps</h2>
+
+              <div className={styles.steps_container}>
+                {/* Step 1 */}
+                <div className={styles.step}>
+                  <div className={styles.text}>
+                    <h3 className={styles.title}>
+                      Step 1: Go to your WordPress Website
+                    </h3>
+                    <p>
+                      Go to your WordPress Website and make sure you’re logged
+                      in as an administrator.
+                    </p>
+                  </div>
+                </div>
+                {/* Step 2 */}
+                <div className={styles.step}>
+                  <div className={styles.text}>
+                    <h3 className={styles.title}>Step 2: Go to Plugins Page</h3>
+                    <p>
+                      On the left sidebar find Plugins and click on Add New.
+                    </p>
+                  </div>
+                  <img
+                    className={styles.img}
+                    src="https://app.customgpt.ai/assets/imgs/integrations/tutorials/wordpress/1.jpg"
+                    alt=""
+                  />
+                </div>
+                {/* Step 3 */}
+                <div className={styles.step}>
+                  <div className={styles.text}>
+                    <h3 className={styles.title}>
+                      Step 3: Search for CustomGPT.ai plugin
+                    </h3>
+                    <p>Type “CustomGPT” in the search bar.</p>
+                  </div>
+                  <img
+                    className={styles.img}
+                    src="https://app.customgpt.ai/assets/imgs/integrations/tutorials/wordpress/2.jpg"
+                    alt=""
+                  />
+                </div>
+                {/* Step 4 */}
+                <div className={styles.step}>
+                  <div className={styles.text}>
+                    <h3 className={styles.title}>
+                      Step 4: Activate the Plugin
+                    </h3>
+                    <p>Once installation is complete, click on Activate.</p>
+                  </div>
+                  <img
+                    className={styles.img}
+                    src="https://app.customgpt.ai/assets/imgs/integrations/tutorials/wordpress/3.jpg"
+                    alt=""
+                  />
+                </div>
+                {/* Step 5 */}
+                <div className={styles.step}>
+                  <div className={styles.text}>
+                    <h3 className={styles.title}>Step 5: Open the Plugin</h3>
+                    <p>
+                      Once the plugin is activated, go to the left sidebar,
+                      navigate to Settings and select CustomGPT.ai
+                    </p>
+                  </div>
+                  <img
+                    className={styles.img}
+                    src="https://app.customgpt.ai/assets/imgs/integrations/tutorials/wordpress/4.jpg"
+                    alt=""
+                  />
+                </div>
+                {/* Step 6 */}
+                <div className={styles.step}>
+                  <div className={styles.text}>
+                    <h3 className={styles.title}>
+                      Step 6: Enter Project Details
+                    </h3>
+                    <p style={{ marginBottom: "1rem" }}>
+                      Enter these two values:
+                    </p>
+                    <div style={{ marginBottom: "0.7rem" }}>
+                      <label htmlFor="projectId">Project ID:</label>
+                      <input
+                        style={{ marginLeft: "29px" }}
+                        disabled
+                        type="text"
+                        id="projectId"
+                        value={projectId}
+                      />
+                      <button
+                        className={styles.copyButton}
+                        onClick={() => copyToClipboardIntegrations(projectId)}
+                      >
+                        Copy
+                      </button>
+                    </div>
+                    <div>
+                      <label htmlFor="projectKey">Project Key:</label>
+                      <input
+                        style={{ marginLeft: "16px" }}
+                        disabled
+                        type="text"
+                        id="projectKey"
+                        value={projectKey}
+                      />
+                      <button
+                        className={styles.copyButton}
+                        onClick={() => copyToClipboardIntegrations(projectKey)}
+                      >
+                        Copy
+                      </button>
+                    </div>
+                  </div>
+                  <img
+                    className={styles.img}
+                    src="https://app.customgpt.ai/assets/imgs/integrations/tutorials/wordpress/5.jpg"
+                    alt=""
+                  />
+                </div>
+                {/* Step 7 */}
+                <div className={styles.step}>
+                  <div className={styles.text}>
+                    <h3 className={styles.title}>
+                      Step 6: After you’re done, click Save Changes.
+                    </h3>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </div>

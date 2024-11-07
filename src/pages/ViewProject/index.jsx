@@ -281,6 +281,7 @@ const ViewProject = () => {
           ]);
         console.log(projectSettingsResponse.data.result.data);
         const projectData = projectDataResponse.data;
+        // console.log(projectData);
         setProjectData(projectData);
 
         setEnableCitations(
@@ -752,6 +753,7 @@ const ViewProject = () => {
         WebsiteCopilotCode={projectData?.project[0]?.website_coplilot}
         SGECode={projectData?.project[0]?.search_generative_experience}
         projectId={projectId}
+        projectKey={projectData?.project[0]?.project_key}
         defaultOpen={defaultOpen}
         changesMade={changesMade}
         setChangesMade={setChangesMade}

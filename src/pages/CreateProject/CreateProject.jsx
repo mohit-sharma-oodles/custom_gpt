@@ -18,9 +18,9 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { GrReturn } from "react-icons/gr";
 
-const MAX_FILE_SIZE = 2; // 100MB
-const MAX_TOTAL_SIZE = 1024 * 1024 * 8; // 1GB in bytes
-const MAX_FILES = 3;
+const MAX_FILE_SIZE = 100; // 100MB
+const MAX_TOTAL_SIZE = 1024 * 1024 * 1024; // 1GB in bytes
+const MAX_FILES = 50;
 
 const CreateProject = () => {
   const { t } = useTranslation();
@@ -317,7 +317,7 @@ const CreateProject = () => {
                   </p>
                   <p>
                     {t(
-                      "Maximum file size: 100MB. Maximum total size: 1GB. Maximum 50 files per batch."
+                      `Maximum file size: ${MAX_FILE_SIZE}MB. Maximum total size: 1GB. Maximum ${MAX_FILESc} files per batch.`
                     )}
                   </p>
                 </div>
