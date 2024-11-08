@@ -317,7 +317,7 @@ const CreateProject = () => {
                   </p>
                   <p>
                     {t(
-                      `Maximum file size: ${MAX_FILE_SIZE}MB. Maximum total size: 1GB. Maximum ${MAX_FILESc} files per batch.`
+                      `Maximum file size: ${MAX_FILE_SIZE}MB. Maximum total size: 1GB. Maximum ${MAX_FILES} files per batch.`
                     )}
                   </p>
                 </div>

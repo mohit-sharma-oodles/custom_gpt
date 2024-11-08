@@ -11,7 +11,7 @@ import {
   MdShare,
   MdOutlineIntegrationInstructions,
 } from "react-icons/md";
-import { IoIosInformationCircleOutline } from "react-icons/io";
+import { IoIosInformationCircleOutline, IoLogoWordpress } from "react-icons/io";
 import { TbMoodEdit } from "react-icons/tb";
 import { HiOutlineCog6Tooth } from "react-icons/hi2";
 import { SiLivechat } from "react-icons/si";
@@ -142,6 +142,10 @@ const DeployModal = ({
   setSelectedLanguage,
   enableCitations,
   setEnableCitations,
+  chatbotBubbleColor,
+  setChatbotBubbleColor,
+  toolbarColor,
+  setToolbarColor,
 }) => {
   const [activeTab, setActiveTab] = useState(defaultOpen);
   const [loading, setLoading] = useState(false);
@@ -247,6 +251,12 @@ const DeployModal = ({
       }
       if (noAnswerMessage) {
         formData.append("no_answer_message", noAnswerMessage);
+      }
+      if (chatbotBubbleColor) {
+        formData.append("chatbot_color", chatbotBubbleColor);
+      }
+      if (toolbarColor) {
+        formData.append("chatbot_toolbar_color", toolbarColor);
       }
       // if (chatbot_model) {
       //   formData.append("chatbot_model", chatbot_model);
@@ -527,6 +537,32 @@ const DeployModal = ({
                       ))}
                     </select>
                   </div>
+                  {/* Chatbot bubble color */}
+                  <div className={styles.input_wrapper}>
+                    <label htmlFor="chatbot_bubble_color">
+                      Chatbot Bubble Color:
+                    </label>
+
+                    <input
+                      id="chatbot_bubble_color"
+                      value={chatbotBubbleColor}
+                      onChange={(e) => setChatbotBubbleColor(e.target.value)}
+                      type="color"
+                    />
+                  </div>
+                  {/* Chatbot toolbar color */}
+                  <div className={styles.input_wrapper}>
+                    <label htmlFor="chatbot_toolbar_color">
+                      Chatbot Toolbar Color:
+                    </label>
+
+                    <input
+                      id="chatbot_toolbar_color"
+                      value={toolbarColor}
+                      onChange={(e) => setToolbarColor(e.target.value)}
+                      type="color"
+                    />
+                  </div>
                 </div>
               </div>
               <div className={styles.buttons}>
@@ -722,7 +758,9 @@ const DeployModal = ({
           )}
           {activeTab === "integrations" && (
             <div className={styles.integrations_container}>
-              <h2>Wordpress Integrations Steps</h2>
+              <h2 style={{ display: "flex", alignItems: "center" }}>
+                <IoLogoWordpress /> Wordpress Integrations Steps
+              </h2>
 
               <div className={styles.steps_container}>
                 {/* Step 1 */}
@@ -846,7 +884,7 @@ const DeployModal = ({
                 <div className={styles.step}>
                   <div className={styles.text}>
                     <h3 className={styles.title}>
-                      Step 6: After you’re done, click Save Changes.
+                      Step 7: After you’re done, click Save Changes.
                     </h3>
                   </div>
                 </div>

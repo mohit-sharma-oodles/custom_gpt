@@ -266,6 +266,8 @@ const ViewProject = () => {
   const [chatbot_model, setChatbot_model] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState();
   const [enableCitations, setEnableCitations] = useState();
+  const [chatbotBubbleColor, setChatbotBubbleColor] = useState("");
+  const [toolbarColor, setToolbarColor] = useState("");
 
   const messageEndRef = useRef(null);
 
@@ -282,8 +284,14 @@ const ViewProject = () => {
         console.log(projectSettingsResponse.data.result.data);
         const projectData = projectDataResponse.data;
         // console.log(projectData);
-        setProjectData(projectData);
 
+        setProjectData(projectData);
+        setToolbarColor(
+          projectSettingsResponse.data.result.data.chatbot_toolbar_color
+        );
+        setChatbotBubbleColor(
+          projectSettingsResponse.data.result.data.chatbot_color
+        );
         setEnableCitations(
           projectSettingsResponse.data.result.data.enable_citations
         );
@@ -595,9 +603,10 @@ const ViewProject = () => {
               >
                 <div
                   style={{
-                    backgroundImage: `url(${
-                      backgroundImage === "" ? "" : backgroundImage
-                    })`,
+                    // backgroundImage: `url(${
+                    //   backgroundImage === "" ? "" : backgroundImage
+                    // })`,
+                    backgroundColor: `${toolbarColor}`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                   }}
@@ -607,7 +616,7 @@ const ViewProject = () => {
                   <GoShareAndroid
                     size={20}
                     color="#ae407a"
-                    style={{ cursor: "pointer" }}
+                    style={{ cursor: "pointer", marginRight: "1rem" }}
                     onClick={handleShareChat}
                   />
                 </div>
@@ -635,6 +644,11 @@ const ViewProject = () => {
                                 message.type === "user"
                                   ? styles.userMessage
                                   : styles.serverMessage
+                              }
+                              style={
+                                message.type === "user"
+                                  ? { backgroundColor: chatbotBubbleColor }
+                                  : {}
                               }
                             >
                               {/* Render Markdown for server messages, plain text for user messages */}
@@ -773,6 +787,10 @@ const ViewProject = () => {
         setSelectedLanguage={setSelectedLanguage}
         enableCitations={enableCitations}
         setEnableCitations={setEnableCitations}
+        chatbotBubbleColor={chatbotBubbleColor}
+        setChatbotBubbleColor={setChatbotBubbleColor}
+        toolbarColor={toolbarColor}
+        setToolbarColor={setToolbarColor}
       />
       <UploadDocumentModal
         isOpen={uploadModalOpen}
