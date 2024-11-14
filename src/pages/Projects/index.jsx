@@ -223,9 +223,10 @@ const Projects = () => {
                   <div className={styles.top}>
                     {projects[0]?.current_project_count ??
                       projects.current_project_count}{" "}
-                    of {projects[0]?.total_project ?? projects.total_project}
+                    {t("of")}{" "}
+                    {projects[0]?.total_project ?? projects.total_project}
                   </div>
-                  <div className={styles.bottom}>Total Projects</div>
+                  <div className={styles.bottom}>{t("Total Projects")}</div>
                 </div>
                 <div
                   className={styles.stats_right}
@@ -241,9 +242,10 @@ const Projects = () => {
                   <div className={styles.top}>
                     {projects[0]?.current_queries_count ??
                       projects.current_queries_count}{" "}
-                    of {projects[0]?.total_queries ?? projects.total_queries}
+                    {t("of")}{" "}
+                    {projects[0]?.total_queries ?? projects.total_queries}
                   </div>
-                  <div className={styles.bottom}>Total Queries</div>
+                  <div className={styles.bottom}>{t("Total Queries")}</div>
                 </div>
                 <div
                   className={styles.stats_right}
@@ -262,10 +264,10 @@ const Projects = () => {
                   <div className={styles.top}>
                     {projects[0]?.current_word_count ??
                       projects.current_word_count}{" "}
-                    of{" "}
+                    {t("of")}{" "}
                     {projects[0]?.total_word_count ?? projects.total_word_count}
                   </div>
-                  <div className={styles.bottom}>Total Words</div>
+                  <div className={styles.bottom}>{t("Total Words")}</div>
                 </div>
                 <div
                   className={styles.stats_right}
@@ -316,12 +318,17 @@ const Projects = () => {
                                         display: "flex",
                                         alignItems: "center",
                                         gap: "5px",
-                                        whiteSpace: "nowrap",
+                                        whiteSpace: "normal",
                                         overflow: "hidden",
                                         textOverflow: "ellipsis",
+                                        textAlign: "left",
+                                        maxWidth: "50ch",
                                       }}
                                     >
-                                      <RxFileText color="#ae407a" />
+                                      <RxFileText
+                                        color="#ae407a"
+                                        style={{ flexShrink: 0 }}
+                                      />
                                       {doc.filename.split(".").shift()}
                                     </p>
                                   </>

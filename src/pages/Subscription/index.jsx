@@ -203,7 +203,7 @@ const Subscriptions = () => {
           setPlans(response?.data);
           response?.data?.forEach((plan) => {
             if (plan?.is_subscribed && plan?.active_price?.amount) {
-              setCurrentActivePlanPrice(plan?.active_price?.amount);
+              setCurrentActivePlanPrice(parseInt(plan?.active_price?.amount));
               setIsAlreadySubscribed(plan?.is_subscribed);
             }
           });

@@ -38,7 +38,7 @@ const Sidebar = () => {
 
         <div className={styles.footer}>
           <MdOutlineCopyright />
-          Primadeta. Copyright 2024
+          Primautomations. Copyright 2024
         </div>
       </div>
     </div>

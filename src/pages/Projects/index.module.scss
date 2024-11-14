@@ -282,3 +282,31 @@
     transform: rotate(1turn);
   }
 }
+
+.project_name_cell {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60ch;
+}
+
+@media (max-width: 1024px) {
+  .project_name_cell {
+    max-width: 50ch;
+  }
+}
+
+@media (max-width: 768px) {
+  .project_name_cell {
+    max-width: 40ch;
+  }
+}
+
+@media (max-width: 480px) {
+  .project_name_cell {
+    max-width: 30ch;
+  }
+}

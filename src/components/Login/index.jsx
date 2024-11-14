@@ -91,7 +91,7 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
       });
       alert(response.data.message);
     } catch (error) {
-      console.log(error);
+      toast.error(error.response.data.email[0]);
     }
   };
 

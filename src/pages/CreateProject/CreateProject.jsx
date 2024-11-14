@@ -363,7 +363,7 @@ const CreateProject = () => {
               </>
             )}
             {existingFiles?.length > 0 && (
-              <div>
+              <div className={styles.existing_files_container}>
                 <h3>{t("Existing Files:")}</h3>
                 <div
                   className={styles.file_div}

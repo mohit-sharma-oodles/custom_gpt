@@ -134,7 +134,7 @@ const PartialHeader = ({
     <div className={styles.container}>
       <h1 style={{ textTransform: "capitalize" }}>
         {t(title)}
-        {isProjectEditPath && (
+        {/* {isProjectEditPath && (
           <GoPencil
             size={20}
             style={{ marginLeft: "10px", cursor: "pointer" }}
@@ -143,7 +143,7 @@ const PartialHeader = ({
               setDefaultOpen("customise");
             }}
           />
-        )}
+        )} */}
       </h1>
 
       <div className={styles.right_Side_container}>

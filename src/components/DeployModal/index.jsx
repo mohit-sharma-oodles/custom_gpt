@@ -18,6 +18,7 @@ import { SiLivechat } from "react-icons/si";
 import { GoCopilot } from "react-icons/go";
 import { RiAiGenerate } from "react-icons/ri";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 const languages = [
   { code: "sq", name: "Albanian" },
@@ -146,7 +147,9 @@ const DeployModal = ({
   setChatbotBubbleColor,
   toolbarColor,
   setToolbarColor,
+  persona_instructions,
 }) => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(defaultOpen);
   const [loading, setLoading] = useState(false);
 
@@ -156,7 +159,7 @@ const DeployModal = ({
   const [loadingIndicatorText, setLoadingIndicatorText] = useState("");
 
   // Agent Settings
-  const [persona, setPersona] = useState("");
+  const [persona, setPersona] = useState(persona_instructions);
 
   // Customisation
 
@@ -202,7 +205,7 @@ const DeployModal = ({
   const copyToClipboardIntegrations = (text) => {
     navigator.clipboard
       .writeText(text)
-      .then(() => toast.success("Copied to clipboard!"))
+      .then(() => toast.success(t("Copied to clipboard!")))
       .catch((err) => toast.error("Failed to copy text"));
   };
 
@@ -309,9 +312,8 @@ const DeployModal = ({
                 fontWeight: activeTab === "deploy" ? "bold" : "normal",
               }}
             >
-              Deploy
+              {t("tabs.deploy")}
             </p>
-            {/*  */}
             <TbMoodEdit style={{ marginLeft: "20px" }} size={20} />
             <p
               onClick={() => setActiveTab("customise")}
@@ -320,9 +322,8 @@ const DeployModal = ({
                 fontWeight: activeTab === "customise" ? "bold" : "normal",
               }}
             >
-              Customise
+              {t("tabs.customise")}
             </p>
-            {/*  */}
             <HiOutlineCog6Tooth style={{ marginLeft: "20px" }} size={20} />
             <p
               onClick={() => setActiveTab("settings")}
@@ -331,9 +332,8 @@ const DeployModal = ({
                 fontWeight: activeTab === "settings" ? "bold" : "normal",
               }}
             >
-              Agent Settings
+              {t("tabs.agentSettings")}
             </p>
-            {/*  */}
             <HiOutlineCog6Tooth style={{ marginLeft: "20px" }} size={20} />
             <p
               onClick={() => setActiveTab("security")}
@@ -342,9 +342,8 @@ const DeployModal = ({
                 fontWeight: activeTab === "security" ? "bold" : "normal",
               }}
             >
-              Security Settings
+              {t("tabs.securitySettings")}
             </p>
-            {/*  */}
             <MdOutlineIntegrationInstructions
               style={{ marginLeft: "20px" }}
               size={20}
@@ -356,7 +355,7 @@ const DeployModal = ({
                 fontWeight: activeTab === "integrations" ? "bold" : "normal",
               }}
             >
-              Integrations
+              {t("tabs.integrations")}
             </p>
           </div>
           <button className={styles.modalClose} onClick={onClose}>
@@ -368,66 +367,48 @@ const DeployModal = ({
             <>
               <div className={styles.top}>
                 <IoIosInformationCircleOutline />
-                <h2>Your Project</h2>
+                <h2>{t("headers.yourProject")}</h2>
               </div>
               <div className={styles.bottom}>
                 <p>
-                  <GrCopy /> Copy and Paste
+                  <GrCopy /> {t("messages.copyAndPaste")}
                 </p>
                 <p style={{ fontSize: "14px", fontWeight: 400 }}>
-                  Copy the following code and paste it into your site’s{" "}
-                  {"<body>"} section, where you want to include the features.
+                  {t("messages.copyFollowingCode")}
                 </p>
                 <p style={{ marginTop: "12px", marginBottom: "12px" }}>
-                  <AiOutlineCode /> Embed
+                  <AiOutlineCode /> {t("messages.embed")}
                 </p>
                 <p style={{ fontSize: "14px", fontWeight: 400 }}>
-                  Place your chatbot inside your webpage and it is ideal for all
-                  the webpages and FAQ Section. Keeps user engaged with page
-                  content along with answering all their queries.
+                  {t("messages.placeYourChatbot")}
                 </p>
                 <textarea readOnly value={embedCode} />
                 <p style={{ marginTop: "12px", marginBottom: "12px" }}>
-                  <SiLivechat /> Live Chat
+                  <SiLivechat /> {t("messages.liveChat")}
                 </p>
                 <p style={{ fontSize: "14px", fontWeight: 400 }}>
-                  Agent will open when user clicks on icon in the corner of the
-                  screen. It is most effective for general inquiries, quick
-                  customer support, or pre-sales questions while browsing the
-                  site.
+                  {t("messages.agentWillOpen")}
                 </p>
                 <textarea readOnly value={liveChatCode} />
-                {/*  */}
                 <p style={{ marginTop: "12px", marginBottom: "12px" }}>
-                  <GoCopilot /> Website Copilot
+                  <GoCopilot /> {t("messages.websiteCopilot")}
                 </p>
                 <p style={{ fontSize: "14px", fontWeight: 400 }}>
-                  Button to open agent which can be placed anywhere on the
-                  webpage. It provides a balance between visibility and user
-                  control over the interaction, allowing for deep dives into
-                  conversations when the user is ready.
+                  {t("messages.buttonToOpenAgent")}
                 </p>
                 <textarea readOnly value={WebsiteCopilotCode} />
-                {/*  */}
                 <p style={{ marginTop: "12px", marginBottom: "12px" }}>
-                  <RiAiGenerate /> Search Generative Experience
+                  <RiAiGenerate /> {t("messages.searchGenerativeExperience")}
                 </p>
                 <p style={{ fontSize: "14px", fontWeight: 400 }}>
-                  Embed agent on your search results page to get Search
-                  Generative Experience — a new way to search your website with
-                  Generative AI. This gives your users much better responses
-                  than classic search, as your agent is able to provide quality
-                  and digested responses, together with sources.
+                  {t("messages.embedAgentOnSearchResults")}
                 </p>
                 <textarea readOnly value={SGECode} />
-                {/*  */}
-
                 <p style={{ marginTop: "12px", marginBottom: "12px" }}>
-                  <MdShare /> Share your chatbot
+                  <MdShare /> {t("messages.shareYourChatbot")}
                 </p>
                 <p style={{ fontSize: "14px", fontWeight: 400 }}>
-                  Please copy the following link and share it with your
-                  colleagues so they can use this chatbot.
+                  {t("messages.copyShareLinkMessage")}
                 </p>
                 <textarea
                   readOnly
@@ -437,15 +418,15 @@ const DeployModal = ({
                 <div className={styles.buttons}>
                   <button onClick={copyToClipboard}>
                     <GrCopy />
-                    Copy Embedding Link
+                    {t("buttons.copyEmbeddingLink")}
                   </button>
                   <button>
                     <MdOutlineEmail />
-                    Email Link
+                    {t("buttons.emailLink")}
                   </button>
                   <button onClick={handleShreLinkCopy}>
                     <MdShare />
-                    Copy Share Link
+                    {t("buttons.copyShareLink")}
                   </button>
                 </div>
               </div>
@@ -455,16 +436,13 @@ const DeployModal = ({
             <>
               <div className={styles.top}>
                 <IoIosInformationCircleOutline />
-                <h2>Customise Your Project</h2>
+                <h2>{t("headers.customizeYourProject")}</h2>
               </div>
               <div className={styles.bottom}>
-                <p>
-                  Customize the appearance of your chatbot to better fit your
-                  website and brand.
-                </p>
+                <p>{t("messages.customizeAppearance")}</p>
                 <div className={styles.input__Container}>
                   <div className={styles.input_wrapper}>
-                    <label htmlFor="avatar">Chatbot Avatar:</label>
+                    <label htmlFor="avatar">{t("labels.chatbotAvatar")}</label>
                     <input
                       type="file"
                       name="avatar"
@@ -474,7 +452,9 @@ const DeployModal = ({
                     />
                   </div>
                   <div className={styles.input_wrapper}>
-                    <label htmlFor="background">Chatbot Background:</label>
+                    <label htmlFor="background">
+                      {t("labels.chatbotBackground")}
+                    </label>
                     <input
                       type="file"
                       name="background"
@@ -482,27 +462,12 @@ const DeployModal = ({
                       accept="image/*"
                       onChange={(e) => {
                         setBackgroundImage(e.target.files[0]);
-                        console.log(backgroundImage);
-                      }}
-                    />
-                    <div
-                      style={{
-                        backgroundImage: `url(${backgroundImage})`,
-                        width: "30px",
-                        height: "30px",
-                        borderRadius: "50%",
-                        objectFit: "contain",
                       }}
                     />
                   </div>
-                  {/* I don't know message */}
                   <div className={styles.input_wrapper}>
-                    <label
-                      style={{ width: "12%" }}
-                      className={styles.label}
-                      htmlFor="noAnswerMessage"
-                    >
-                      I don't know message:
+                    <label className={styles.label} htmlFor="noAnswerMessage">
+                      {t("labels.iDontKnowMessage")}
                     </label>
                     <input
                       type="text"
@@ -511,10 +476,9 @@ const DeployModal = ({
                       onChange={(e) => setNoAnswerMessage(e.target.value)}
                     />
                   </div>
-                  {/* Placeholder Prompt */}
                   <div className={styles.input_wrapper}>
                     <label htmlFor="placeholderPrompt">
-                      Placeholder Prompt:
+                      {t("labels.placeholderPrompt")}
                     </label>
                     <input
                       type="text"
@@ -524,7 +488,9 @@ const DeployModal = ({
                     />
                   </div>
                   <div className={styles.input_wrapper}>
-                    <label htmlFor="languageOption">Agent Language:</label>
+                    <label htmlFor="languageOption">
+                      {t("labels.agentLanguage")}
+                    </label>
                     <select
                       id="languageOption"
                       value={selectedLanguage}
@@ -537,10 +503,9 @@ const DeployModal = ({
                       ))}
                     </select>
                   </div>
-                  {/* Chatbot bubble color */}
                   <div className={styles.input_wrapper}>
                     <label htmlFor="chatbot_bubble_color">
-                      Chatbot Bubble Color:
+                      {t("labels.chatbotBubbleColor")}
                     </label>
 
                     <input
@@ -550,10 +515,9 @@ const DeployModal = ({
                       type="color"
                     />
                   </div>
-                  {/* Chatbot toolbar color */}
                   <div className={styles.input_wrapper}>
                     <label htmlFor="chatbot_toolbar_color">
-                      Chatbot Toolbar Color:
+                      {t("labels.chatbotToolbarColor")}
                     </label>
 
                     <input
@@ -567,7 +531,7 @@ const DeployModal = ({
               </div>
               <div className={styles.buttons}>
                 <button onClick={handleSaveSettings} disabled={loading}>
-                  {loading ? "Saving..." : "Save Settings"}
+                  {loading ? t("buttons.saving") : t("buttons.saveSettings")}
                 </button>
               </div>
             </>
@@ -576,90 +540,69 @@ const DeployModal = ({
             <>
               <div className={styles.top}>
                 <IoIosInformationCircleOutline />
-                <h2>Customize your agent</h2>
+                <h2>{t("headers.customizeYourAgent")}</h2>
               </div>
               <div className={styles.bottom}>
-                <p>
-                  Customize your agent behavior to control its personality
-                  traits and role to fit your use case.
-                </p>
-                <div
-                  className={
-                    (styles.personaSettings__Area, styles.input__Container)
-                  }
-                >
-                  {/* Persona */}
+                <p>{t("messages.customizeAgentBehavior")}</p>
+                <div className={styles.input__Container}>
                   <div className={styles.input_wrapper}>
-                    <label
-                      style={{ width: "12%" }}
-                      className={styles.label}
-                      htmlFor="persona"
-                    >
-                      Agent Persona:
+                    <label className={styles.label} htmlFor="persona">
+                      {t("labels.agentPersona")}
                     </label>
                     <textarea
                       style={{ width: "20%" }}
                       id="persona"
                       value={persona}
-                      placeholder="Please describe your agent's personality."
+                      placeholder={persona_instructions}
                       onChange={(e) => setPersona(e.target.value)}
                     ></textarea>
                   </div>
 
-                  {/* Response option */}
                   <div className={styles.input_wrapper}>
-                    <label
-                      style={{ width: "12%" }}
-                      className={styles.label}
-                      htmlFor="responseOption"
-                    >
-                      Response Source:
+                    <label className={styles.label} htmlFor="responseOption">
+                      {t("labels.responseSource")}
                     </label>
                     <select
                       id="responseOption"
                       value={responseSource}
                       onChange={(e) => setResponseSource(e.target.value)}
                     >
-                      <option value="own_content">My Content</option>
+                      <option value="own_content">
+                        {t("options.myContent")}
+                      </option>
                       <option value="openai_content">
-                        My Content + General Knowledge
+                        {t("options.myContentPlusGeneralKnowledge")}
                       </option>
                     </select>
                   </div>
 
-                  {/* Citation Option */}
                   <div className={styles.input_wrapper}>
-                    <label
-                      style={{ width: "12%" }}
-                      className={styles.label}
-                      htmlFor="citationOption"
-                    >
-                      Show Citations:
+                    <label className={styles.label} htmlFor="citationOption">
+                      {t("labels.showCitations")}
                     </label>
                     <select
                       id="citationOption"
                       value={enableCitations}
                       onChange={(e) => setEnableCitations(e.target.value)}
                     >
-                      <option value="0">Don't display citations</option>
-                      <option value="1">After agent's response</option>
+                      <option value="0">
+                        {t("options.dontDisplayCitations")}
+                      </option>
+                      <option value="1">
+                        {t("options.afterAgentsResponse")}
+                      </option>
                       <option value="2">
-                        Numbered references inside agent's response
+                        {t("options.numberedReferencesInside")}
                       </option>
                       <option value="3">
-                        After the agent's response + Numbered references
+                        {t("options.afterResponsePlusNumbered")}
                       </option>
                     </select>
                   </div>
 
-                  {/* GPT Model Choice */}
                   <div className={styles.input_wrapper}>
-                    <label
-                      style={{ width: "12%" }}
-                      className={styles.label}
-                      htmlFor="chatbot_model"
-                    >
-                      Select your GPT Model:
+                    <label className={styles.label} htmlFor="chatbot_model">
+                      {t("labels.selectYourGPTModel")}
                     </label>
                     <select
                       id="chatbot_model"
@@ -681,7 +624,7 @@ const DeployModal = ({
               </div>
               <div className={styles.buttons}>
                 <button onClick={handleSaveSettings} disabled={loading}>
-                  {loading ? "Saving..." : "Save Settings"}
+                  {loading ? t("buttons.saving") : t("buttons.saveSettings")}
                 </button>
               </div>
             </>
@@ -690,55 +633,43 @@ const DeployModal = ({
             <>
               <div className={styles.top}>
                 <IoIosInformationCircleOutline />
-                <h2>Customize your agent settings</h2>
+                <h2>{t("headers.customizeYourAgentSettings")}</h2>
               </div>
               <div className={styles.bottom}>
-                <p>
-                  Customize your agent behavior to control its personality
-                  traits and role to fit your use case.
-                </p>
-                <div
-                  className={
-                    (styles.personaSettings__Area, styles.input__Container)
-                  }
-                >
+                <p>{t("messages.customizeAgentBehavior")}</p>
+                <div className={styles.input__Container}>
                   {/* Anti Hallucination */}
                   <div className={styles.input_wrapper}>
-                    <label style={{ width: "11%" }} htmlFor="antiHallucination">
-                      Anti Hallucination:
+                    <label htmlFor="antiHallucination">
+                      {t("labels.antiHallucination")}
                     </label>
                     <select
                       id="antiHallucination"
                       // value={antiHallucination}
                       // onChange={(e) => setAntiHallucination(e.target.value)}
                     >
-                      <option value="true">Enable</option>
+                      <option value="true">{t("options.enable")}</option>
                       <option value="false" disabled>
-                        Disable
+                        {t("options.disable")}
                       </option>
                     </select>
                   </div>
                   {/* reCAPTCHA */}
                   <div className={styles.input_wrapper}>
-                    <label style={{ width: "11%" }} htmlFor="reCaptcha">
-                      reCAPTCHA:
-                    </label>
+                    <label htmlFor="reCaptcha">{t("labels.reCaptcha")}</label>
                     <select
                       id="reCaptcha"
                       value={reCaptcha}
                       onChange={(e) => setReCaptcha(e.target.value)}
                     >
-                      <option value="true">Enable</option>
-                      <option value="false">Disable</option>
+                      <option value="true">{t("options.enable")}</option>
+                      <option value="false">{t("options.disable")}</option>
                     </select>
                   </div>
                   {/* Whitelisted Domains */}
                   <div className={styles.input_wrapper}>
-                    <label
-                      style={{ width: "11%" }}
-                      htmlFor="whitelistedDomains"
-                    >
-                      Whitelisted Domains:
+                    <label htmlFor="whitelistedDomains">
+                      {t("labels.whitelistedDomains")}
                     </label>
                     <textarea
                       style={{ width: "20%" }}
@@ -751,7 +682,7 @@ const DeployModal = ({
               </div>
               <div className={styles.buttons}>
                 <button onClick={handleSaveSettings} disabled={loading}>
-                  {loading ? "Saving..." : "Save Settings"}
+                  {loading ? t("buttons.saving") : t("buttons.saveSettings")}
                 </button>
               </div>
             </>
@@ -759,29 +690,22 @@ const DeployModal = ({
           {activeTab === "integrations" && (
             <div className={styles.integrations_container}>
               <h2 style={{ display: "flex", alignItems: "center" }}>
-                <IoLogoWordpress /> Wordpress Integrations Steps
+                <IoLogoWordpress /> {t("headers.wordpressIntegrationSteps")}
               </h2>
 
               <div className={styles.steps_container}>
                 {/* Step 1 */}
                 <div className={styles.step}>
                   <div className={styles.text}>
-                    <h3 className={styles.title}>
-                      Step 1: Go to your WordPress Website
-                    </h3>
-                    <p>
-                      Go to your WordPress Website and make sure you’re logged
-                      in as an administrator.
-                    </p>
+                    <h3 className={styles.title}>{t("steps.step1Title")}</h3>
+                    <p>{t("steps.step1Description")}</p>
                   </div>
                 </div>
                 {/* Step 2 */}
                 <div className={styles.step}>
                   <div className={styles.text}>
-                    <h3 className={styles.title}>Step 2: Go to Plugins Page</h3>
-                    <p>
-                      On the left sidebar find Plugins and click on Add New.
-                    </p>
+                    <h3 className={styles.title}>{t("steps.step2Title")}</h3>
+                    <p>{t("steps.step2Description")}</p>
                   </div>
                   <img
                     className={styles.img}
@@ -792,10 +716,8 @@ const DeployModal = ({
                 {/* Step 3 */}
                 <div className={styles.step}>
                   <div className={styles.text}>
-                    <h3 className={styles.title}>
-                      Step 3: Search for CustomGPT.ai plugin
-                    </h3>
-                    <p>Type “CustomGPT” in the search bar.</p>
+                    <h3 className={styles.title}>{t("steps.step3Title")}</h3>
+                    <p>{t("steps.step3Description")}</p>
                   </div>
                   <img
                     className={styles.img}
@@ -806,10 +728,8 @@ const DeployModal = ({
                 {/* Step 4 */}
                 <div className={styles.step}>
                   <div className={styles.text}>
-                    <h3 className={styles.title}>
-                      Step 4: Activate the Plugin
-                    </h3>
-                    <p>Once installation is complete, click on Activate.</p>
+                    <h3 className={styles.title}>{t("steps.step4Title")}</h3>
+                    <p>{t("steps.step4Description")}</p>
                   </div>
                   <img
                     className={styles.img}
@@ -820,11 +740,8 @@ const DeployModal = ({
                 {/* Step 5 */}
                 <div className={styles.step}>
                   <div className={styles.text}>
-                    <h3 className={styles.title}>Step 5: Open the Plugin</h3>
-                    <p>
-                      Once the plugin is activated, go to the left sidebar,
-                      navigate to Settings and select CustomGPT.ai
-                    </p>
+                    <h3 className={styles.title}>{t("steps.step5Title")}</h3>
+                    <p>{t("steps.step5Description")}</p>
                   </div>
                   <img
                     className={styles.img}
@@ -835,14 +752,12 @@ const DeployModal = ({
                 {/* Step 6 */}
                 <div className={styles.step}>
                   <div className={styles.text}>
-                    <h3 className={styles.title}>
-                      Step 6: Enter Project Details
-                    </h3>
+                    <h3 className={styles.title}>{t("steps.step6Title")}</h3>
                     <p style={{ marginBottom: "1rem" }}>
-                      Enter these two values:
+                      {t("steps.step6Description")}
                     </p>
                     <div style={{ marginBottom: "0.7rem" }}>
-                      <label htmlFor="projectId">Project ID:</label>
+                      <label htmlFor="projectId">{t("labels.projectID")}</label>
                       <input
                         style={{ marginLeft: "29px" }}
                         disabled
@@ -854,11 +769,13 @@ const DeployModal = ({
                         className={styles.copyButton}
                         onClick={() => copyToClipboardIntegrations(projectId)}
                       >
-                        Copy
+                        {t("buttons.copy")}
                       </button>
                     </div>
                     <div>
-                      <label htmlFor="projectKey">Project Key:</label>
+                      <label htmlFor="projectKey">
+                        {t("labels.projectKey")}
+                      </label>
                       <input
                         style={{ marginLeft: "16px" }}
                         disabled
@@ -870,7 +787,7 @@ const DeployModal = ({
                         className={styles.copyButton}
                         onClick={() => copyToClipboardIntegrations(projectKey)}
                       >
-                        Copy
+                        {t("buttons.copy")}
                       </button>
                     </div>
                   </div>
@@ -883,11 +800,18 @@ const DeployModal = ({
                 {/* Step 7 */}
                 <div className={styles.step}>
                   <div className={styles.text}>
-                    <h3 className={styles.title}>
-                      Step 7: After you’re done, click Save Changes.
-                    </h3>
+                    <h3 className={styles.title}>{t("steps.step7Title")}</h3>
+                    <p>{t("steps.step7Description")}</p>
                   </div>
+                  <img
+                    className={styles.img}
+                    src="https://app.customgpt.ai/assets/imgs/integrations/tutorials/wordpress/6.jpg"
+                    alt=""
+                  />
                 </div>
+                {/* Continue adding steps with translations */}
+                {/* ... */}
+                {/* Step with Project ID and Project Key */}
               </div>
             </div>
           )}
