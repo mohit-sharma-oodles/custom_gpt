@@ -2,8 +2,8 @@ import axios from "axios";
 import updateToken from "./utils";
 
 // const domain = "https://749d-125-63-73-50.ngrok-free.app";
+// const domain = "https://customgpt-b.chattodata.com";
 const domain = "https://customgpt-b.chattodata.com";
-// const domain = "https://chattodata.com";
 export const baseURL = `${domain}`;
 
 export const axios_instance = axios.create({
