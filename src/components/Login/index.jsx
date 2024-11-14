@@ -49,7 +49,6 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
         .then((loginAction) => {
           if (loginAction.meta.requestStatus === "fulfilled") {
             toast.success("Login successful");
-
             return dispatch(getUserDetails());
           } else {
             // Handle login failure
@@ -62,7 +61,7 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
         })
         .then((userDetailsAction) => {
           if (userDetailsAction.meta.requestStatus === "fulfilled") {
-            console.log(userDetailsAction.payload);
+            // console.log(userDetailsAction.payload);
           } else {
             console.error(
               "Failed to fetch user details:",

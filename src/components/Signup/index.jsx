@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./index.module.scss";
-import left_banner from "../../assets/signup_banner.svg";
 import { FaRegEye, FaRegEyeSlash, FaArrowLeft } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,6 +7,8 @@ import { signupUser } from "../../redux/authSlice";
 import logo from "../../assets/company_logo_white.svg";
 import tryItOut from "../../assets/tryItOut.svg";
 import { useTranslation } from "react-i18next";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Signup = ({ isOpen, onClose, onLoginClick }) => {
   const { t } = useTranslation();
@@ -28,22 +29,27 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isSigningUp, setIsSigningUp] = useState(false);
 
-  // Error handling state
-  const [errorMessage, setErrorMessage] = useState("");
-
   const { signupMessage, error } = useSelector(
     (state) => state.rootReducer.auth
   );
 
-  // Clear error message on input change
+  // Display toast notifications for signup messages and errors
+  useEffect(() => {
+    if (signupMessage) {
+      toast.success(signupMessage);
+    }
+    if (error) {
+      toast.error(error);
+    }
+  }, [signupMessage, error]);
+
+  // Handle input changes
   const handleInputChange = (setter) => (e) => {
     setter(e.target.value.trim());
-    setErrorMessage("");
   };
 
   const handleFileChange = (e) => {
     setProfileImage(e.target.files[0]);
-    setErrorMessage("");
   };
 
   const handleClose = () => {
@@ -53,11 +59,11 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
 
   const handleNext = () => {
     if (!firstName || !lastName || !mobileNumber) {
-      setErrorMessage(t("Please fill in all required fields."));
+      toast.error(t("Please fill in all required fields."));
       return;
     }
     if (mobileNumber.length < 9 || mobileNumber.length > 13) {
-      setErrorMessage(t("Mobile number must be between 9 and 13 digits."));
+      toast.error(t("Mobile number must be between 9 and 13 digits."));
       return;
     }
     setStep(2);
@@ -94,12 +100,12 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
 
     const passwordError = validatePassword(password);
     if (passwordError) {
-      setErrorMessage(passwordError);
+      toast.error(passwordError);
       return;
     }
 
     if (password !== confirmPassword) {
-      setErrorMessage(t("Passwords do not match"));
+      toast.error(t("Passwords do not match"));
       return;
     }
 
@@ -120,18 +126,15 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
       const signupAction = await dispatch(signupUser(formData)).unwrap();
 
       if (signupAction) {
-        console.log("Signup successful", signupAction);
+        // console.log("Signup successful", signupAction);
+        toast.success(t("Signup successful!"));
       }
     } catch (signupError) {
       const errors = signupError;
-      console.log(signupError, "statussssssssss");
 
       if (errors.status >= 500) {
-        console.log(errors.status);
-        setErrorMessage(t("Server error. Please try again later."));
-      }
-
-      if (errors) {
+        toast.error(t("Server error. Please try again later."));
+      } else if (errors) {
         let allErrors = [];
 
         for (const key in errors) {
@@ -140,8 +143,7 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
           }
         }
 
-        setErrorMessage(allErrors.join("\n"));
-        console.log(errorMessage);
+        toast.error(allErrors.join("\n"));
       }
     } finally {
       setIsSigningUp(false);
@@ -157,9 +159,8 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <div className={styles.left_side}>
-          {/* <img src={left_banner} alt={t("Pimadeta")} /> */}
           <div className={styles.container}>
-            <img src={logo} alt={t("PrimAutomation")} srcSet="" height={35} />
+            <img src={logo} alt={t("PrimAutomation")} height={35} />
             <div className={styles.text_container}>
               <h2>{t("Welcome back to Prima deta Automations.")}</h2>
               <p>
@@ -168,12 +169,7 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
                 )}
               </p>
             </div>
-            <img
-              src={tryItOut}
-              srcSet=""
-              className={styles.tryitout_image}
-              alt=""
-            />
+            <img src={tryItOut} className={styles.tryitout_image} alt="" />
           </div>
         </div>
         <div className={styles.right_side}>
@@ -257,9 +253,6 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
                       {t("Next")}
                     </button>
                   </div>
-                  {errorMessage && (
-                    <p className={styles.error_message}>{errorMessage}</p>
-                  )}
                 </>
               ) : (
                 <>
@@ -281,7 +274,7 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
                     <label htmlFor="password">{t("Password")}</label>
                     <div className={`${styles.input} ${styles.password_input}`}>
                       <input
-                        type={!viewPassword ? "password" : "text"}
+                        type={viewPassword ? "text" : "password"}
                         name="password"
                         id="password"
                         placeholder={t("Please enter your password")}
@@ -304,7 +297,7 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
                     </label>
                     <div className={`${styles.input} ${styles.password_input}`}>
                       <input
-                        type={!viewConfirmPassword ? "password" : "text"}
+                        type={viewConfirmPassword ? "text" : "password"}
                         name="confirmPassword"
                         id="confirmPassword"
                         placeholder={t("Please confirm your password")}
@@ -325,24 +318,12 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
                       </div>
                     </div>
                   </div>
-                  {signupMessage && (
-                    <h4
-                      className={styles.error_message}
-                      style={{ color: "black" }}
-                    >
-                      {signupMessage}
-                    </h4>
-                  )}
-                  {errorMessage && (
-                    <p className={styles.error_message}>{errorMessage}</p>
-                  )}
-
                   <div className={styles.button_container}>
                     <button type="submit" className={styles.login_btn}>
                       {isSigningUp ? t("Signing Up...") : t("Sign Up")}
                     </button>
                     <p>{t("or")}</p>
-                    <button type="button" className={`${styles.google_btn}`}>
+                    <button type="button" className={styles.google_btn}>
                       <FcGoogle size={24} />
                       <p>{t("Continue with Google")}</p>
                     </button>
@@ -359,6 +340,7 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
           </div>
         </div>
       </div>
+      {/* <ToastContainer /> */}
     </div>
   );
 };

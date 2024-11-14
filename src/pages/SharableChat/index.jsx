@@ -129,7 +129,9 @@ const SharableChat = () => {
               >
                 {message.type === "server" ? (
                   <>
-                    <ReactMarkdown>{message.content}</ReactMarkdown>
+                    <div className={styles.markdown_content}>
+                      <ReactMarkdown>{message.content}</ReactMarkdown>
+                    </div>
                     {message.url && message.title && (
                       <div style={{ marginTop: "10px" }}>
                         &#9432; Related Documents: <br />
