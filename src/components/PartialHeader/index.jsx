@@ -184,21 +184,19 @@ const PartialHeader = ({
 
           {isModalOpen && (
             <div className={styles.language_modal}>
-              <label style={{ display: "flex", gap: "1rem" }}>
-                <input
-                  type="checkbox"
-                  checked={selectedLanguage === "en"}
-                  onChange={() => changeLanguage("en")}
-                />
+              <label
+                onClick={() => changeLanguage("en")}
+                style={{ display: "flex", gap: "1rem" }}
+              >
+                <input type="checkbox" checked={selectedLanguage === "en"} />
                 English
               </label>
               <br />
-              <label style={{ display: "flex", gap: "1rem" }}>
-                <input
-                  type="checkbox"
-                  checked={selectedLanguage === "nl"}
-                  onChange={() => changeLanguage("nl")}
-                />
+              <label
+                onClick={() => changeLanguage("nl")}
+                style={{ display: "flex", gap: "1rem" }}
+              >
+                <input type="checkbox" checked={selectedLanguage === "nl"} />
                 Dutch
               </label>
             </div>

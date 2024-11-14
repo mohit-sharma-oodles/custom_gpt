@@ -10,7 +10,7 @@ async function updateToken(retries = 3) {
       refresh: localStorage.getItem("refreshToken"),
     });
     localStorage.setItem("accessToken", response.data.access);
-    localStorage.setItem("refreshTokenj", response.data.refresh);
+    localStorage.setItem("refreshToken", response.data.refresh);
   } catch (error) {
     if (retries > 0) {
       await new Promise((resolve) => setTimeout(resolve, 1000));

@@ -236,6 +236,14 @@
                 word-wrap: break-word;
               }
 
+              // .markdown_content {
+              //   word-wrap: break-word;
+              //   overflow-wrap: break-word;
+
+              //   max-width: 100%;
+              //   overflow: hidden;
+              // }
+
               .loader {
                 align-self: center;
                 color: $base-pink;
@@ -415,3 +423,9 @@
     }
   }
 }
+
+// pre {
+//   background-color: #f6f8fa;
+//   overflow-x: scroll;
+//   word-wrap: break-word;
+// }

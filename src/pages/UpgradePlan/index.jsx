@@ -25,16 +25,17 @@ const UpgradePlan = () => {
   const params = new URLSearchParams(location.search);
   const wannaBuy = params.get("id");
   const proratedPrice = params.get("p");
+  const language_code = localStorage.getItem("i18nextLng");
 
   useEffect(() => {
     const getPlans = () => {
       axios_instance
-        .get("/api/products")
+        .get(`/api/products?lang=${language_code}`)
         .then((response) => setPlans(response.data))
         .catch((error) => setError(error.toString()));
     };
     getPlans();
-  }, []);
+  }, [language_code]);
 
   useEffect(() => {
     const getSubscriptionID = () => {

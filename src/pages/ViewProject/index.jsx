@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import styles from "./index.module.scss";
 import ReactMarkdown from "react-markdown";
+// import ReactMarkdown from "react-markdown";
+// import remarkGfm from "remark-gfm";
 import { useParams } from "react-router-dom";
 import { axios_instance } from "../../Axios/axiosInstance";
 import Sidebar from "../../components/Sidebar";
@@ -28,7 +30,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 const MAX_FILE_SIZE = 2; // 100MB
-const MAX_TOTAL_SIZE = 1024 * 1024 * 8; // 1GB in bytes
+const MAX_TOTAL_SIZE = 1024 * 1024 * 1024; // 1GB in bytes
 const MAX_FILES = 50;
 
 // Upload Modal
@@ -40,12 +42,8 @@ const UploadDocumentModal = ({
 }) => {
   const { t } = useTranslation();
   const [fileSelected, setFileSelected] = useState([]);
-  const [uploadError, setUploadError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // const handleChange = (files) => {
-  //   setFileSelected((prevFiles) => [...prevFiles, ...files]);
-  // };
   const handleChange = (files) => {
     const newFiles = [];
     let totalFiles = fileSelected.length;
@@ -82,6 +80,7 @@ const UploadDocumentModal = ({
       setFileSelected((prevFiles) => [...prevFiles, ...newFiles]);
     }
   };
+
   const handleDeleteFile = (index) => {
     setFileSelected((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
@@ -92,7 +91,6 @@ const UploadDocumentModal = ({
       return;
     }
     setLoading(true);
-    setUploadError("");
 
     try {
       // Upload files to the edit project API endpoint
@@ -116,15 +114,18 @@ const UploadDocumentModal = ({
       // Filter out any errors
       const uploadErrors = uploadResults.filter((result) => result !== null);
       if (uploadErrors.length > 0) {
-        setUploadError(uploadErrors.join("\n"));
+        uploadErrors.forEach((error) => {
+          toast.error(error);
+        });
       } else {
         // All files uploaded successfully
-        alert(t("Files uploaded successfully."));
+        toast.success(t("Files uploaded successfully."));
         onUploadSuccess(); // Call the success handler
+        onClose(); // Close the modal
       }
     } catch (error) {
       console.error("Error uploading files:", error);
-      setUploadError(t("Failed to upload documents. Please try again."));
+      toast.error(t("Failed to upload documents. Please try again."));
     } finally {
       setLoading(false);
       setFileSelected([]);
@@ -165,7 +166,7 @@ const UploadDocumentModal = ({
         </div>
         {fileSelected.length > 0 && (
           <div
-            style={{ width: "80%", maxHeight: "20%", overflow: "scroll" }}
+            style={{ width: "80%", maxHeight: "20%", overflowY: "auto" }}
             className={styles.fileList}
           >
             {fileSelected.map((file, index) => (
@@ -211,12 +212,6 @@ const UploadDocumentModal = ({
               </div>
             ))}
           </div>
-        )}
-
-        {uploadError && (
-          <p className={styles.error} style={{ whiteSpace: "pre-wrap" }}>
-            {uploadError}
-          </p>
         )}
 
         <div className={styles.loaderContainer}>
@@ -268,6 +263,7 @@ const ViewProject = () => {
   const [enableCitations, setEnableCitations] = useState();
   const [chatbotBubbleColor, setChatbotBubbleColor] = useState("");
   const [toolbarColor, setToolbarColor] = useState("");
+  const [persona_instructions, setPersona_instructions] = useState("");
 
   const messageEndRef = useRef(null);
 
@@ -281,11 +277,17 @@ const ViewProject = () => {
               `/api/customgpt/projects/update/settings/${projectId}`
             ),
           ]);
-        console.log(projectSettingsResponse.data.result.data);
+        console.log(
+          "Project Settings",
+          projectSettingsResponse.data.result.data.persona_instructions
+        );
         const projectData = projectDataResponse.data;
         // console.log(projectData);
 
         setProjectData(projectData);
+        setPersona_instructions(
+          projectSettingsResponse.data.result.data.persona_instructions
+        );
         setToolbarColor(
           projectSettingsResponse.data.result.data.chatbot_toolbar_color
         );
@@ -654,9 +656,11 @@ const ViewProject = () => {
                               {/* Render Markdown for server messages, plain text for user messages */}
                               {message.type === "server" ? (
                                 <>
-                                  <ReactMarkdown>
-                                    {message.content}
-                                  </ReactMarkdown>
+                                  <div className={styles.markdown_content}>
+                                    <ReactMarkdown>
+                                      {message.content}
+                                    </ReactMarkdown>
+                                  </div>
                                 </>
                               ) : (
                                 <p>{message.content}</p>
@@ -791,7 +795,9 @@ const ViewProject = () => {
         setChatbotBubbleColor={setChatbotBubbleColor}
         toolbarColor={toolbarColor}
         setToolbarColor={setToolbarColor}
+        persona_instructions={persona_instructions}
       />
+
       <UploadDocumentModal
         isOpen={uploadModalOpen}
         onClose={() => {
