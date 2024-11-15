@@ -414,16 +414,15 @@ const DeployModal = ({
                   readOnly
                   value={`https://chattodata.com/app/project/${projectId}/chat`}
                 />
-
                 <div className={styles.buttons}>
                   <button onClick={copyToClipboard}>
                     <GrCopy />
                     {t("buttons.copyEmbeddingLink")}
                   </button>
-                  <button>
+                  {/* <button>
                     <MdOutlineEmail />
                     {t("buttons.emailLink")}
-                  </button>
+                  </button> */}
                   <button onClick={handleShreLinkCopy}>
                     <MdShare />
                     {t("buttons.copyShareLink")}

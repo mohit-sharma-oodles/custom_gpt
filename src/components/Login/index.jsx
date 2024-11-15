@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import styles from "./index.module.scss";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
-import left_banner from "../../assets/login_banner.svg";
 import logo from "../../assets/company_logo_white.svg";
 import tryItOut from "../../assets/tryItOut.svg";
 import { useTranslation } from "react-i18next";

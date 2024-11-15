@@ -22,6 +22,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { axios_instance } from "../../Axios/axiosInstance";
 import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 const Projects = () => {
   const { t } = useTranslation();
@@ -45,8 +46,9 @@ const Projects = () => {
       // console.log(projectsFromResponse);
       setProjects(projectsFromResponse);
     } catch (error) {
-      console.log(error);
-      setProjects([]); // Ensure projects is set to an empty array on error
+      // console.log(error);
+      toast.error(error.response.data.error);
+      setProjects(error.response.data); // Ensure projects is set to an empty array on error
     } finally {
       setLoader(false);
     }
