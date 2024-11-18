@@ -3,7 +3,7 @@ import styles from "./index.module.scss";
 import { useTranslation } from "react-i18next";
 
 // assets
-import logo from "../j../assets/company_logo.svg";
+import logo from "../../assets/company_logo.svg";
 import {
   FaFacebookF,
   FaLinkedinIn,
