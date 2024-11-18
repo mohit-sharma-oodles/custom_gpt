@@ -46,9 +46,11 @@ const Projects = () => {
         "/api/customgpt/projects/get_all_pages/"
       );
       const projectsFromResponse = response?.data?.projects || response.data;
-      setProjects(
-        Array.isArray(projectsFromResponse) ? projectsFromResponse : []
-      );
+      // setProjects(
+      //   Array.isArray(projectsFromResponse) ? projectsFromResponse : []
+      // );
+      setProjects(projectsFromResponse);
+      console.log(projects);
     } catch (error) {
       toast.error(error.response.data.error);
       setProjects([]); // Ensure projects is an empty array on error
