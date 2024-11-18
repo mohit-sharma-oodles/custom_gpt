@@ -7,6 +7,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import i18next from "i18next";
+import { toast } from "react-toastify";
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
@@ -62,7 +63,7 @@ const SubscriptionTile = ({
         error?.response?.data?.detail ===
         "Authentication credentials were not provided."
       ) {
-        alert("You are not logged in.");
+        toast.error("You are not logged in.");
       }
     } finally {
       setIsLoading(false);
@@ -163,6 +164,9 @@ const SubscriptionTile = ({
             user?.days_left === undefined ||
             user?.subscription_status === "Cancelled"
           ? t("Buy Now")
+          : user?.subscription_status === "trialing" &&
+            user.current_subscription_plan === heading
+          ? "Trialling"
           : current_active_plan_price > price
           ? t("Cannot Buy")
           : is_subscribed

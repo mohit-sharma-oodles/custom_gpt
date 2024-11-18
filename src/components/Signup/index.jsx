@@ -162,7 +162,7 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
           <div className={styles.container}>
             <img src={logo} alt={t("PrimAutomation")} height={35} />
             <div className={styles.text_container}>
-              <h2>{t("Welcome back to Prima deta Automations.")}</h2>
+              <h2>{t("Welcome back to Primautomations.")}</h2>
               <p>
                 {t(
                   "Your one stop solution for all document management and AI needs."

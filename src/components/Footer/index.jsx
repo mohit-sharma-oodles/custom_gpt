@@ -3,14 +3,14 @@ import styles from "./index.module.scss";
 import { useTranslation } from "react-i18next";
 
 // assets
-import logo from "../../assets/company_logo.svg";
+import logo from "../j../assets/company_logo.svg";
 import {
   FaFacebookF,
   FaLinkedinIn,
-  FaTwitter,
   FaInstagram,
   FaTiktok,
 } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 
 const Footer = () => {
   const { t } = useTranslation();
@@ -59,7 +59,7 @@ const Footer = () => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <FaTwitter
+            <FaXTwitter
               color="#ae407a"
               style={{
                 border: "1px solid #ae407a",

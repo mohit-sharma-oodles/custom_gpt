@@ -36,6 +36,9 @@ const Projects = () => {
   const [isModalOpen, setModalOpen] = useState(false); // For modal visibility
   const [projectToDelete, setProjectToDelete] = useState(null); // For storing the project ID to delete
 
+  useEffect(() => {
+    getAllProjects();
+  }, []);
   const getAllProjects = async () => {
     setLoader(true);
     try {
@@ -43,26 +46,31 @@ const Projects = () => {
         "/api/customgpt/projects/get_all_pages/"
       );
       const projectsFromResponse = response?.data?.projects || response.data;
-      // console.log(projectsFromResponse);
-      setProjects(projectsFromResponse);
+      setProjects(
+        Array.isArray(projectsFromResponse) ? projectsFromResponse : []
+      );
     } catch (error) {
-      // console.log(error);
       toast.error(error.response.data.error);
-      setProjects(error.response.data); // Ensure projects is set to an empty array on error
+      setProjects([]); // Ensure projects is an empty array on error
     } finally {
       setLoader(false);
     }
   };
 
-  useEffect(() => {
-    getAllProjects();
-  }, []);
-
   const filteredProjects = searchTerm
-    ? projects?.filter((project) =>
+    ? (Array.isArray(projects) ? projects : []).filter((project) =>
         project.project_name.toLowerCase().includes(searchTerm.toLowerCase())
       )
-    : projects;
+    : Array.isArray(projects)
+    ? projects
+    : [];
+
+  useEffect(() => {
+    if (searchTerm && filteredProjects.length === 0) {
+      toast.dismiss();
+      toast.error("No projects found for the given term.");
+    }
+  }, [searchTerm]);
 
   const handleEditClick = (projectID) => {
     navigate(`/app/create-project?edit=true&projectID=${projectID}`);

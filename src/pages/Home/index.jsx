@@ -128,9 +128,9 @@ const Home = (props) => {
             >
               {t("Get Started")}
             </button>
-            <button className={`${styles.cta_button} ${styles.watchDemo}`}>
+            {/* <button className={`${styles.cta_button} ${styles.watchDemo}`}>
               {t("Watch Demo")} <IoPlayOutline />{" "}
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
