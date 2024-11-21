@@ -50,9 +50,9 @@ const Projects = () => {
       //   Array.isArray(projectsFromResponse) ? projectsFromResponse : []
       // );
       setProjects(projectsFromResponse);
+      toast.error(projectsFromResponse.error);
       console.log(projects);
     } catch (error) {
-      toast.error(error.response.data.error);
       setProjects([]); // Ensure projects is an empty array on error
     } finally {
       setLoader(false);
