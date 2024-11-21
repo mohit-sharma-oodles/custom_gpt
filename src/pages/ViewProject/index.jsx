@@ -19,6 +19,7 @@ import {
   IoEyeOutline,
   IoCloudUploadOutline,
 } from "react-icons/io5";
+import { FiRefreshCw } from "react-icons/fi";
 import { TbSend2 } from "react-icons/tb";
 import { MdMicNone } from "react-icons/md";
 import { GoUpload, GoShareAndroid } from "react-icons/go";
@@ -247,6 +248,7 @@ const ViewProject = () => {
   const [defaultOpen, setDefaultOpen] = useState("deploy");
 
   // chatbot
+  const [sessionId, setSessionId] = useState("");
   const [prompt, setPrompt] = useState("");
   const [messages, setMessages] = useState([]);
   const [messageloading, setMessageLoading] = useState(false);
@@ -284,6 +286,7 @@ const ViewProject = () => {
         const projectData = projectDataResponse.data;
         // console.log(projectData);
 
+        setSessionId(projectData.project[0].session_id);
         setProjectData(projectData);
         setPersona_instructions(
           projectSettingsResponse.data.result.data.persona_instructions
@@ -510,7 +513,7 @@ const ViewProject = () => {
 
     try {
       const response = await axios_instance.post(
-        `/api/customgpt/projects/${projectId}/chat/${projectData.project[0].session_id}/`,
+        `/api/customgpt/projects/${projectId}/chat/${sessionId}/`,
         { prompt: prompt }
       );
 
@@ -540,6 +543,22 @@ const ViewProject = () => {
       messageEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages, messageloading]);
+
+  const handleChatRefresh = async () => {
+    try {
+      const response = await axios_instance.post(
+        `/api/customgpt/projects/delete_chat/${projectId}/${sessionId}/`
+      );
+      // console.log(response.data);
+      setSessionId(response.data.session_id);
+      setMessages([]);
+      toast.success("Messages have been deleted");
+    } catch (e) {
+      // console.log(e);
+      toast.error("Error while refreshing the chats");
+    }
+    setMessages([]);
+  };
 
   return (
     <div className={styles.container}>
@@ -615,12 +634,21 @@ const ViewProject = () => {
                   className={styles.headerContainer}
                 >
                   <p className={styles.heading}>{t("AI Chat")}</p>
-                  <GoShareAndroid
-                    size={20}
-                    color="#ae407a"
-                    style={{ cursor: "pointer", marginRight: "1rem" }}
-                    onClick={handleShareChat}
-                  />
+
+                  <div>
+                    <FiRefreshCw
+                      size={20}
+                      color="white"
+                      style={{ cursor: "pointer", marginRight: "1rem" }}
+                      onClick={handleChatRefresh}
+                    />
+                    <GoShareAndroid
+                      size={20}
+                      color="white"
+                      style={{ cursor: "pointer", marginRight: "1rem" }}
+                      onClick={handleShareChat}
+                    />
+                  </div>
                 </div>
                 <div className={styles.bottomContainer}>
                   {/* Message container */}
