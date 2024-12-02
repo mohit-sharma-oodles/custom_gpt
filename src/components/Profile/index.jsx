@@ -16,6 +16,7 @@ import { axios_instance } from "../../Axios/axiosInstance";
 import { useNavigate } from "react-router-dom";
 
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 const Profile = ({ setShowProfile }) => {
   const dispatch = useDispatch();
@@ -191,7 +192,7 @@ const Profile = ({ setShowProfile }) => {
 
         if (response.data.message === "Subscription cancelled successfully") {
           // Alert success message
-          alert(t("Subscription cancelled successfully"));
+          toast.success(t("Subscription cancelled successfully"));
 
           // Reload the page to reflect changes
           window.location.reload();
@@ -242,9 +243,9 @@ const Profile = ({ setShowProfile }) => {
                   alt={t("User")}
                   style={{ marginRight: 0 }}
                 />
-                {/* <label htmlFor="upload-button" className={styles.uploadButton}>
+                <label htmlFor="upload-button" className={styles.uploadButton}>
                   <FaCamera />
-                </label> */}
+                </label>
                 <input
                   type="file"
                   id="upload-button"

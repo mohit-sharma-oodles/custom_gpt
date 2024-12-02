@@ -127,7 +127,20 @@ const SubscriptionTile = ({
           {showCrown && (
             <img src={crown} style={{ height: "24px", width: "24px" }} />
           )}
-          <h3 className={styles.tile_heading}>{heading}</h3>
+          <h3 className={styles.tile_heading}>
+            {heading}{" "}
+            {user?.subscription_status === "trialing" &&
+              user.current_subscription_plan === heading && (
+                <p
+                  style={{
+                    fontSize: "12px",
+                    fontWeight: "500",
+                  }}
+                >
+                  "Trialling"
+                </p>
+              )}
+          </h3>
         </span>
         <p className={styles.tile_subheading}>{subHeading}</p>
         <h4 className={styles.tile_price}>
@@ -164,9 +177,6 @@ const SubscriptionTile = ({
             user?.days_left === undefined ||
             user?.subscription_status === "Cancelled"
           ? t("Buy Now")
-          : user?.subscription_status === "trialing" &&
-            user.current_subscription_plan === heading
-          ? "Trialling"
           : current_active_plan_price > price
           ? t("Cannot Buy")
           : is_subscribed

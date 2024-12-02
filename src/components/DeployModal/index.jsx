@@ -344,7 +344,7 @@ const DeployModal = ({
             >
               {t("tabs.securitySettings")}
             </p>
-            <MdOutlineIntegrationInstructions
+            {/* <MdOutlineIntegrationInstructions
               style={{ marginLeft: "20px" }}
               size={20}
             />
@@ -356,7 +356,7 @@ const DeployModal = ({
               }}
             >
               {t("tabs.integrations")}
-            </p>
+            </p> */}
           </div>
           <button className={styles.modalClose} onClick={onClose}>
             &times;
@@ -686,21 +686,19 @@ const DeployModal = ({
               </div>
             </>
           )}
-          {activeTab === "integrations" && (
+          {/* {activeTab === "integrations" && (
             <div className={styles.integrations_container}>
               <h2 style={{ display: "flex", alignItems: "center" }}>
                 <IoLogoWordpress /> {t("headers.wordpressIntegrationSteps")}
               </h2>
 
               <div className={styles.steps_container}>
-                {/* Step 1 */}
                 <div className={styles.step}>
                   <div className={styles.text}>
                     <h3 className={styles.title}>{t("steps.step1Title")}</h3>
                     <p>{t("steps.step1Description")}</p>
                   </div>
                 </div>
-                {/* Step 2 */}
                 <div className={styles.step}>
                   <div className={styles.text}>
                     <h3 className={styles.title}>{t("steps.step2Title")}</h3>
@@ -712,7 +710,6 @@ const DeployModal = ({
                     alt=""
                   />
                 </div>
-                {/* Step 3 */}
                 <div className={styles.step}>
                   <div className={styles.text}>
                     <h3 className={styles.title}>{t("steps.step3Title")}</h3>
@@ -724,7 +721,6 @@ const DeployModal = ({
                     alt=""
                   />
                 </div>
-                {/* Step 4 */}
                 <div className={styles.step}>
                   <div className={styles.text}>
                     <h3 className={styles.title}>{t("steps.step4Title")}</h3>
@@ -736,7 +732,6 @@ const DeployModal = ({
                     alt=""
                   />
                 </div>
-                {/* Step 5 */}
                 <div className={styles.step}>
                   <div className={styles.text}>
                     <h3 className={styles.title}>{t("steps.step5Title")}</h3>
@@ -748,7 +743,6 @@ const DeployModal = ({
                     alt=""
                   />
                 </div>
-                {/* Step 6 */}
                 <div className={styles.step}>
                   <div className={styles.text}>
                     <h3 className={styles.title}>{t("steps.step6Title")}</h3>
@@ -796,7 +790,6 @@ const DeployModal = ({
                     alt=""
                   />
                 </div>
-                {/* Step 7 */}
                 <div className={styles.step}>
                   <div className={styles.text}>
                     <h3 className={styles.title}>{t("steps.step7Title")}</h3>
@@ -807,13 +800,12 @@ const DeployModal = ({
                     src="https://app.customgpt.ai/assets/imgs/integrations/tutorials/wordpress/6.jpg"
                     alt=""
                   />
-                </div>
-                {/* Continue adding steps with translations */}
-                {/* ... */}
-                {/* Step with Project ID and Project Key */}
+                </div> 
+
               </div>
             </div>
           )}
+                */}
         </div>
       </div>
     </div>
