@@ -522,8 +522,9 @@ const ViewProject = () => {
       const serverResponse = {
         type: "server",
         content: openai_response,
-        url: url || null,
-        title: title || null,
+        citations: response.data.message.citation_list,
+        // url: url || null,
+        // title: title || null,
       };
       setMessages((prevMessages) => [...prevMessages, serverResponse]);
     } catch (e) {
@@ -694,23 +695,35 @@ const ViewProject = () => {
                                 <p>{message.content}</p>
                               )}
 
-                              {/* If both url and title are available, render them as a link */}
+                              {/* {console.log("message", message)} */}
                               {enableCitations !== 0 &&
                                 message.type === "server" &&
-                                message.url &&
-                                message.title && (
-                                  <div style={{ marginTop: "10px" }}>
+                                message?.citations?.length > 0 && (
+                                  <p>
                                     &#9432; {t("Related Documents")}: <br />
-                                    <a
-                                      style={{ color: "black" }}
-                                      href={message.url}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                    >
-                                      {message.title}
-                                    </a>
-                                  </div>
+                                  </p>
                                 )}
+
+                              {enableCitations !== 0 &&
+                                message.type === "server" &&
+                                message?.citations?.length > 0 &&
+                                message?.citations.map((citation, index) => {
+                                  return (
+                                    <div
+                                      key={index}
+                                      style={{ marginTop: "10px" }}
+                                    >
+                                      <a
+                                        style={{ color: "black" }}
+                                        href={citation.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                      >
+                                        {citation.title}
+                                      </a>
+                                    </div>
+                                  );
+                                })}
                             </div>
                           </React.Fragment>
                         );
@@ -729,7 +742,7 @@ const ViewProject = () => {
                   >
                     <div className={styles.inputContainer}>
                       <div className={styles.left_side}>
-                        <MdMicNone size={20} />
+                        {/* <MdMicNone size={20} /> */}
                         <input
                           type="text"
                           value={prompt}
