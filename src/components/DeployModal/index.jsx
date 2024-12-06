@@ -152,6 +152,7 @@ const DeployModal = ({
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(defaultOpen);
   const [loading, setLoading] = useState(false);
+  const [pagesIndexed, setPagesIndexed] = useState(0);
 
   // Customisation
   const [chatbotName, setChatbotName] = useState("");
@@ -175,6 +176,25 @@ const DeployModal = ({
       document.body.style.overflow = "unset";
     };
   }, [isOpen, defaultOpen]);
+
+  useEffect(() => {
+    if (isOpen) {
+      const getStats = async () => {
+        try {
+          const response = await axios_instance.get(
+            `/api/customgpt/stats/${projectId}/`
+          );
+          const { pages_indexed } = response.data.project_data;
+          console.log(pages_indexed);
+          setPagesIndexed(pages_indexed);
+        } catch (error) {
+          console.error("Error fetching stats:", error);
+          setPagesIndexed(0);
+        }
+      };
+      getStats();
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -363,74 +383,83 @@ const DeployModal = ({
           </button>
         </div>
         <div className={styles.modalBody}>
-          {activeTab === "deploy" && (
-            <>
-              <div className={styles.top}>
-                <IoIosInformationCircleOutline />
-                <h2>{t("headers.yourProject")}</h2>
-              </div>
-              <div className={styles.bottom}>
-                <p>
-                  <GrCopy /> {t("messages.copyAndPaste")}
-                </p>
-                <p style={{ fontSize: "14px", fontWeight: 400 }}>
-                  {t("messages.copyFollowingCode")}
-                </p>
-                <p style={{ marginTop: "12px", marginBottom: "12px" }}>
-                  <AiOutlineCode /> {t("messages.embed")}
-                </p>
-                <p style={{ fontSize: "14px", fontWeight: 400 }}>
-                  {t("messages.placeYourChatbot")}
-                </p>
-                <textarea readOnly value={embedCode} />
-                <p style={{ marginTop: "12px", marginBottom: "12px" }}>
-                  <SiLivechat /> {t("messages.liveChat")}
-                </p>
-                <p style={{ fontSize: "14px", fontWeight: 400 }}>
-                  {t("messages.agentWillOpen")}
-                </p>
-                <textarea readOnly value={liveChatCode} />
-                <p style={{ marginTop: "12px", marginBottom: "12px" }}>
-                  <GoCopilot /> {t("messages.websiteCopilot")}
-                </p>
-                <p style={{ fontSize: "14px", fontWeight: 400 }}>
-                  {t("messages.buttonToOpenAgent")}
-                </p>
-                <textarea readOnly value={WebsiteCopilotCode} />
-                <p style={{ marginTop: "12px", marginBottom: "12px" }}>
-                  <RiAiGenerate /> {t("messages.searchGenerativeExperience")}
-                </p>
-                <p style={{ fontSize: "14px", fontWeight: 400 }}>
-                  {t("messages.embedAgentOnSearchResults")}
-                </p>
-                <textarea readOnly value={SGECode} />
-                <p style={{ marginTop: "12px", marginBottom: "12px" }}>
-                  <MdShare /> {t("messages.shareYourChatbot")}
-                </p>
-                <p style={{ fontSize: "14px", fontWeight: 400 }}>
-                  {t("messages.copyShareLinkMessage")}
-                </p>
-                <textarea
-                  readOnly
-                  value={`https://chattodata.com/app/project/${projectId}/chat`}
-                />
-                <div className={styles.buttons}>
-                  <button onClick={copyToClipboard}>
-                    <GrCopy />
-                    {t("buttons.copyEmbeddingLink")}
-                  </button>
-                  {/* <button>
-                    <MdOutlineEmail />
-                    {t("buttons.emailLink")}
-                  </button> */}
-                  <button onClick={handleShreLinkCopy}>
-                    <MdShare />
-                    {t("buttons.copyShareLink")}
-                  </button>
+          {activeTab === "deploy" &&
+            (pagesIndexed > 0 ? (
+              <>
+                <div className={styles.top}>
+                  <IoIosInformationCircleOutline />
+                  <h2>{t("headers.yourProject")}</h2>
                 </div>
+                <div className={styles.bottom}>
+                  <p>
+                    <GrCopy /> {t("messages.copyAndPaste")}
+                  </p>
+                  <p style={{ fontSize: "14px", fontWeight: 400 }}>
+                    {t("messages.copyFollowingCode")}
+                  </p>
+                  <p style={{ marginTop: "12px", marginBottom: "12px" }}>
+                    <AiOutlineCode /> {t("messages.embed")}
+                  </p>
+                  <p style={{ fontSize: "14px", fontWeight: 400 }}>
+                    {t("messages.placeYourChatbot")}
+                  </p>
+                  <textarea readOnly value={embedCode} />
+                  <p style={{ marginTop: "12px", marginBottom: "12px" }}>
+                    <SiLivechat /> {t("messages.liveChat")}
+                  </p>
+                  <p style={{ fontSize: "14px", fontWeight: 400 }}>
+                    {t("messages.agentWillOpen")}
+                  </p>
+                  <textarea readOnly value={liveChatCode} />
+                  <p style={{ marginTop: "12px", marginBottom: "12px" }}>
+                    <GoCopilot /> {t("messages.websiteCopilot")}
+                  </p>
+                  <p style={{ fontSize: "14px", fontWeight: 400 }}>
+                    {t("messages.buttonToOpenAgent")}
+                  </p>
+                  <textarea readOnly value={WebsiteCopilotCode} />
+                  <p style={{ marginTop: "12px", marginBottom: "12px" }}>
+                    <RiAiGenerate /> {t("messages.searchGenerativeExperience")}
+                  </p>
+                  <p style={{ fontSize: "14px", fontWeight: 400 }}>
+                    {t("messages.embedAgentOnSearchResults")}
+                  </p>
+                  <textarea readOnly value={SGECode} />
+                  <p style={{ marginTop: "12px", marginBottom: "12px" }}>
+                    <MdShare /> {t("messages.shareYourChatbot")}
+                  </p>
+                  <p style={{ fontSize: "14px", fontWeight: 400 }}>
+                    {t("messages.copyShareLinkMessage")}
+                  </p>
+                  <textarea
+                    readOnly
+                    value={`https://chattodata.com/app/project/${projectId}/chat`}
+                  />
+                  <div className={styles.buttons}>
+                    <button onClick={copyToClipboard}>
+                      <GrCopy />
+                      {t("buttons.copyEmbeddingLink")}
+                    </button>
+                    <button onClick={handleShreLinkCopy}>
+                      <MdShare />
+                      {t("buttons.copyShareLink")}
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div
+                style={{
+                  height: "70vh",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <h1>Hold Up! We are indexing the files!</h1>
               </div>
-            </>
-          )}
+            ))}
+
           {activeTab === "customise" && (
             <>
               <div className={styles.top}>
