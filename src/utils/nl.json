@@ -253,9 +253,11 @@
   "Please fill in the project name.": "Vul alstublieft de projectnaam in.",
   "Failed to upload file": "Uploaden van bestand mislukt",
   "Project updated successfully.": "Project succesvol bijgewerkt.",
+  "Please wait a moment we are indexing the files!": "Even geduld aub, we zijn de bestanden aan het indexeren!",
   "An error occurred.": "Er is een fout opgetreden.",
   "Resend Confirmation Email": "Bevestigings-e-mail opnieuw sturen",
   "Copied to clipboard!": "Gekopieerd naar klembord!",
+  "Settings saved successfully": "Instellingen succesvol opgeslagen",
   "tabs": {
     "deploy": "Implementeren",
     "customise": "Aanpassen",

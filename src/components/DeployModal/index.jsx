@@ -300,11 +300,13 @@ const DeployModal = ({
       );
 
       if (response.status === 200) {
-        alert("Settings saved!");
+        toast.success(t("Settings saved successfully"));
         setChangesMade(true);
       } else {
-        alert(
-          `Failed to save settings: ${response.statusText || "Unknown error"}`
+        toast.error(
+          `${t("Failed to save settings:")} ${
+            response.statusText || t("unknownError")
+          }`
         );
       }
     } catch (error) {
@@ -312,7 +314,7 @@ const DeployModal = ({
       if (error.response && error.response.data) {
         alert(`An error occurred: ${error.response.data.message}`);
       } else {
-        alert("An error occurred while saving settings.");
+        toast.error("An error occurred while saving settings.");
       }
     } finally {
       setLoading(false);
