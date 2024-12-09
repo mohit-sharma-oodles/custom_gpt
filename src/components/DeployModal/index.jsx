@@ -310,7 +310,7 @@ const DeployModal = ({
         );
       }
     } catch (error) {
-      console.error("Error:", error);
+      // console.error("Error:", error);
       if (error.response && error.response.data) {
         alert(`An error occurred: ${error.response.data.message}`);
       } else {
@@ -458,7 +458,7 @@ const DeployModal = ({
                   alignItems: "center",
                 }}
               >
-                <h1>Hold Up! We are indexing the files!</h1>
+                <h1>{t("Please wait a moment we are indexing the files!")}</h1>
               </div>
             ))}
 
