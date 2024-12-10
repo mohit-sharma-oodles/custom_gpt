@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styles from "./index.module.scss";
-import { FaRegEye, FaRegEyeSlash, FaArrowLeft } from "react-icons/fa6";
+import { FaRegEye, FaRegEyeSlash, FaArrowLeft, FaInfo } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
 import { useDispatch, useSelector } from "react-redux";
 import { signupUser } from "../../redux/authSlice";
@@ -58,12 +58,8 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
   };
 
   const handleNext = () => {
-    if (!firstName || !lastName || !mobileNumber) {
+    if (!firstName || !lastName) {
       toast.error(t("Please fill in all required fields."));
-      return;
-    }
-    if (mobileNumber.length < 9 || mobileNumber.length > 13) {
-      toast.error(t("Mobile number must be between 9 and 13 digits."));
       return;
     }
     setStep(2);
@@ -116,7 +112,10 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
     formData.append("last_name", lastName);
     formData.append("email", email);
     formData.append("password", password);
-    formData.append("mobile_number", mobileNumber);
+
+    if (mobileNumber) {
+      formData.append("mobile_number", mobileNumber);
+    }
 
     if (profileImage) {
       formData.append("profile_picture", profileImage);
@@ -126,7 +125,6 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
       const signupAction = await dispatch(signupUser(formData)).unwrap();
 
       if (signupAction) {
-        // console.log("Signup successful", signupAction);
         toast.success(t("Signup successful!"));
       }
     } catch (signupError) {
@@ -217,7 +215,7 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
                     </div>
                   </div>
                   <div className={styles.input_container}>
-                    <label htmlFor="mobileNumber">{t("Mobile Number")}*</label>
+                    <label htmlFor="mobileNumber">{t("Mobile Number")}</label>
                     <div className={styles.input}>
                       <input
                         type="tel"
@@ -228,7 +226,6 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
                         minLength={9}
                         value={mobileNumber}
                         onChange={handleInputChange(setMobileNumber)}
-                        required
                       />
                     </div>
                   </div>
@@ -271,7 +268,18 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
                     </div>
                   </div>
                   <div className={styles.input_container}>
-                    <label htmlFor="password">{t("Password")}</label>
+                    <label htmlFor="password">
+                      {t("Password")}
+
+                      <div className={styles.tooltip}>
+                        <FaInfo className={styles.info_icon} size={14} />
+                        <span className={styles.tooltiptext}>
+                          {t(
+                            "Password must be at least 8 characters long, contain at least one uppercase letter, one number, and one special character."
+                          )}
+                        </span>
+                      </div>
+                    </label>
                     <div className={`${styles.input} ${styles.password_input}`}>
                       <input
                         type={viewPassword ? "text" : "password"}
@@ -340,7 +348,6 @@ const Signup = ({ isOpen, onClose, onLoginClick }) => {
           </div>
         </div>
       </div>
-      {/* <ToastContainer /> */}
     </div>
   );
 };

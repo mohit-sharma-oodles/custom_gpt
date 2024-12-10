@@ -1,7 +1,11 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { axios_instance } from "../../Axios/axiosInstance";
-import { getUserDetails, loginUser } from "../../redux/authSlice";
+import {
+  getUserDetails,
+  loginUser,
+  resendConfirmationEmail,
+} from "../../redux/authSlice";
 import { useNavigate } from "react-router-dom";
 
 // assets
@@ -18,12 +22,14 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // states
+  // Local States
   const [viewPassword, setViewPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const [showResendButton, setShowResendButton] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false); // New state for resend loading
 
+  // Redux States
   const { status, error, isAuthenticated } = useSelector(
     (state) => state.rootReducer.auth
   );
@@ -32,64 +38,125 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
   const handleClose = useCallback(() => {
     document.body.style.overflow = "auto";
     onClose();
+
+    // Reset relevant states when closing the modal
+    setEmail("");
+    setPassword("");
+    setShowResendButton(false);
+    setViewPassword(false);
   }, [onClose]);
 
   // Handle login click
   const handleLoginClick = useCallback(
-    (e) => {
+    async (e) => {
       e.preventDefault();
 
+      // Validate input fields
       if (!email || !password) {
-        setMessage("Please fill in both email and password.");
+        toast.error(t("Please fill in both email and password."));
         return;
       }
 
-      dispatch(loginUser({ email, password }))
-        .then((loginAction) => {
-          if (loginAction.meta.requestStatus === "fulfilled") {
-            toast.success("Login successful");
-            return dispatch(getUserDetails());
-          } else {
-            // Handle login failure
-            const errorMessage =
-              loginAction.payload?.message ||
-              "Login failed. Please try again later.";
-            setMessage(errorMessage);
-            return Promise.reject(new Error(errorMessage));
-          }
-        })
-        .then((userDetailsAction) => {
+      try {
+        // Dispatch login action
+        const loginAction = await dispatch(loginUser({ email, password }));
+
+        if (loginAction.meta.requestStatus === "fulfilled") {
+          toast.success(t("Login successful"));
+          // Fetch user details after successful login
+          const userDetailsAction = await dispatch(getUserDetails());
+
           if (userDetailsAction.meta.requestStatus === "fulfilled") {
-            // console.log(userDetailsAction.payload);
+            // Redirect to projects page
+            navigate("/app/projects");
+            handleClose();
           } else {
-            console.error(
-              "Failed to fetch user details:",
-              userDetailsAction.error.message
+            toast.error(
+              t("Failed to fetch user details. Please try again later.")
             );
           }
-        })
-        .catch((error) => {
-          // This will handle both login and user details fetch errors
-          setMessage(error.message || "An error occurred. Please try again.");
-          console.error("An error occurred:", error.message);
-        });
+        } else {
+          // Handle login failure
+          const errorMessage =
+            loginAction.payload?.message ||
+            t("Login failed. Please try again later.");
+          toast.error(errorMessage);
+
+          // Show resend button if account is inactive
+          if (
+            errorMessage ===
+            "This account is inactive. Please confirm your email."
+          ) {
+            setShowResendButton(true);
+          }
+        }
+      } catch (error) {
+        // Handle unexpected errors
+        const errorMsg =
+          error.message || t("An error occurred. Please try again.");
+        toast.error(errorMsg);
+        console.error("An error occurred:", errorMsg);
+      }
     },
-    [dispatch, email, password]
+    [dispatch, email, password, navigate, handleClose, t]
   );
+
+  // Handle resend confirmation email
+  const handleResendEmail = async () => {
+    if (!email) {
+      toast.error(
+        t("Please enter your email to resend the confirmation link.")
+      );
+      return;
+    }
+
+    setResendLoading(true);
+
+    try {
+      const response = await dispatch(resendConfirmationEmail({ email }));
+
+      if (response.meta.requestStatus === "fulfilled") {
+        toast.success(
+          response.payload.message ||
+            t("Confirmation email resent successfully.")
+        );
+        setShowResendButton(false); // Optionally hide the resend button after success
+      } else {
+        const errorMsg =
+          response.payload?.message ||
+          response.payload?.error ||
+          t("Failed to resend confirmation email.");
+        toast.error(errorMsg);
+        setShowResendButton(true); // Keep the button visible on failure
+      }
+    } catch (e) {
+      const errorMsg =
+        e.response?.data?.message ||
+        e.response?.data?.error ||
+        t("An error occurred while resending the email.");
+      toast.error(errorMsg);
+      setShowResendButton(true);
+    } finally {
+      setResendLoading(false); // End loading for resend
+    }
+  };
 
   // Handle forgot password click
   const handleForgotPasswordClick = async () => {
     if (!email) {
-      setMessage("Please enter your email to reset your password.");
+      toast.error(t("Please enter your email to reset your password."));
       return;
     }
     try {
       const response = await axios_instance.post("/api/password-reset/", {
         email,
       });
-      alert(response.data.message);
+      toast.success(response.data.message || t("Password reset email sent."));
     } catch (error) {
-      toast.error(error.response.data.email[0]);
+      const errorMsg =
+        error.response?.data?.email?.[0] ||
+        t("Failed to send password reset email.");
+      toast.error(errorMsg);
     }
   };
 
@@ -97,51 +164,29 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
   useEffect(() => {
     if (status === "succeeded" && isAuthenticated) {
       navigate("/app/projects");
-      onClose();
+      handleClose(); // Ensure states are reset when navigating
     }
-  }, [status, isAuthenticated, navigate, onClose]);
+  }, [status, isAuthenticated, navigate, handleClose]);
 
   const handleGoogleLogin = async () => {
     const googleAuthURL = "https://customgpt-b.chattodata.com/api/auth/google/";
     window.location.href = googleAuthURL;
-
-    // const popupListener = setInterval(() => {
-    //   if (popup.closed) {
-    //     clearInterval(popupListener);
-
-    //     // Reload the page to reflect any changes
-    //     // window.location.reload();
-    //   }
-    // }, 2000);
-
-    // const messageListener = (event) => {
-    //   // Check for the origin if needed
-    //   // if (event.origin !== "http://127.0.0.1:8001") return;
-
-    //   console.log(event.data);
-    //   const { token } = event.data;
-    //   if (token) {
-    //     localStorage.setItem("access", token);
-
-    //     // Optionally, dispatch an action to update the user state if needed
-    //     dispatch(getUserDetails());
-
-    //     // Redirect to the app home or dashboard after dispatch
-    //     navigate("/app/home");
-    //   }
-    // };
-
-    // // Add event listener for message event
-    // window.addEventListener("message", messageListener);
-
-    // // Remove the event listener when the popup is closed
-    // popup.addEventListener("unload", () => {
-    //   window.removeEventListener("message", messageListener);
-    // });
-    // window.location.reload();
   };
-  // render
+
+  // Handle changes in the email input to reset relevant states
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value.trim());
+    setShowResendButton(false);
+  };
+
+  // Handle changes in the password input
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value.trim());
+  };
+
+  // Render nothing if the modal is not open
   if (!isOpen) return null;
+
   return (
     <div className={styles.modal} onClick={handleClose}>
       <div
@@ -149,9 +194,9 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <div className={styles.left_side}>
-          {/* <img src={left_banner} alt="Pimadeta" /> */}
+          {/* Left side content */}
           <div className={styles.container}>
-            <img src={logo} alt="PrimAutomation" srcset="" height={35} />
+            <img src={logo} alt="PrimAutomation" height={35} />
             <div className={styles.text_container}>
               <h2>{t("Welcome back to Primautomations.")}</h2>
               <p>
@@ -160,7 +205,11 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
                 )}
               </p>
             </div>
-            <img src={tryItOut} srcset="" className={styles.tryitout_image} />
+            <img
+              src={tryItOut}
+              alt={t("Try It Out")}
+              className={styles.tryitout_image}
+            />
           </div>
         </div>
         <div className={styles.right_side}>
@@ -171,7 +220,7 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
             <h2 className={`poppins-semibold`}>{t("Log In")}</h2>
             <form action="" className={styles.form} onSubmit={handleLoginClick}>
               <div className={styles.input_container}>
-                <label htmlFor="email">Email*</label>
+                <label htmlFor="email">{t("Email")}*</label>
                 <div className={styles.input}>
                   <input
                     type="email"
@@ -180,9 +229,7 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
                     placeholder={t("Please enter your Email")}
                     value={email}
                     required
-                    onChange={(e) => {
-                      setEmail(e.target.value.trim());
-                    }}
+                    onChange={handleEmailChange}
                   />
                 </div>
               </div>
@@ -195,10 +242,13 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
                     id="password"
                     placeholder={t("Please enter your password")}
                     value={password}
-                    onChange={(e) => setPassword(e.target.value.trim())}
+                    onChange={handlePasswordChange}
                     required
                   />
-                  <div onClick={() => setViewPassword(!viewPassword)}>
+                  <div
+                    onClick={() => setViewPassword(!viewPassword)}
+                    style={{ cursor: "pointer" }} // Added cursor style for better UX
+                  >
                     {viewPassword ? (
                       <FaRegEyeSlash style={{ marginBottom: "-4px" }} />
                     ) : (
@@ -223,14 +273,24 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
                 </div>
               </div>
 
-              {/* Display error message */}
-              {message && <p className={styles.error_message}>{message}</p>}
-
               <div className={styles.button_container}>
+                {showResendButton && (
+                  <button
+                    style={{ marginBottom: "1rem" }}
+                    type="button"
+                    className={styles.login_btn}
+                    onClick={handleResendEmail}
+                    disabled={resendLoading} // Disable button while resending
+                  >
+                    {resendLoading
+                      ? `${t("Resending...")}`
+                      : `${t("Resend Confirmation Link")}`}
+                  </button>
+                )}
                 <button
                   type="submit"
                   className={styles.login_btn}
-                  disabled={status === "loading"}
+                  disabled={status === "loading"} // Only disable based on login status
                 >
                   {status === `loading`
                     ? `${t("Logging In")}...`
@@ -240,21 +300,20 @@ const Login = ({ isOpen, onClose, onSignupClick }) => {
                 <button
                   type="button"
                   className={`${styles.google_btn}`}
-                  onClick={async () => {
-                    await handleGoogleLogin();
-                    // if(localStorage.getItem(user)){
-                    //   window.location.reload()
-                    // }
-                  }}
+                  onClick={handleGoogleLogin}
                 >
                   <FcGoogle size={24} />
-                  <p>{t("Continue with google")}</p>
+                  <p>{t("Continue with Google")}</p>
                 </button>
               </div>
             </form>
             <p>
               {t("Don't Have An Account?")}{" "}
-              <span className={styles.signup_text} onClick={onSignupClick}>
+              <span
+                className={styles.signup_text}
+                onClick={onSignupClick}
+                style={{ cursor: "pointer" }} // Added cursor style for better UX
+              >
                 {t("Sign Up")}
               </span>
             </p>

@@ -253,7 +253,7 @@ const authSlice = createSlice({
         state.status = "failed";
       })
       .addCase(resendConfirmationEmail.pending, (state) => {
-        state.status = "loading";
+        // state.status = "loading";
       })
       .addCase(resendConfirmationEmail.fulfilled, (state) => {
         state.status = "succeeded";

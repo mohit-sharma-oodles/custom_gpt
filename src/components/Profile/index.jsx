@@ -117,7 +117,7 @@ const Profile = ({ setShowProfile }) => {
     }
   };
 
-  const handleUpdateDetails = () => {
+  const handleUpdateDetails = async () => {
     try {
       const formData = new FormData();
       formData.append("first_name", firstName);
@@ -128,10 +128,14 @@ const Profile = ({ setShowProfile }) => {
         formData.append("profile_picture", selectedImage);
       }
 
-      dispatch(updateUserDetails(formData));
+      let response = await dispatch(updateUserDetails(formData)).unwrap();
+      toast.success("Profile updated successfully");
       setHasChanges(false);
       setFocusedInput(null);
     } catch (error) {
+      if (error?.mobile_number) {
+        toast.error("A user with this email already exists.");
+      }
       console.error("Error updating user details:", error);
     }
   };
@@ -193,8 +197,14 @@ const Profile = ({ setShowProfile }) => {
         if (response.data.message === "Subscription cancelled successfully") {
           // Alert success message
           toast.success(t("Subscription cancelled successfully"));
-
-          // Reload the page to reflect changes
+          window.location.reload();
+        } else if (
+          response.data.message ===
+          "Subscription cancelled successfully during trial period"
+        ) {
+          toast.success(
+            t("Subscription cancelled successfully during trial period")
+          );
           window.location.reload();
         }
       } catch (error) {
@@ -256,7 +266,8 @@ const Profile = ({ setShowProfile }) => {
               </div>
               <div>
                 <p className={styles.name}>
-                  {user.first_name} {user.last_name}
+                  {/* {user.first_name} {user.last_name} */}
+                  {firstName} {lastName}
                 </p>
                 <p className={styles.joinDate}>
                   {t("Joined on")} {user.date_joined}
