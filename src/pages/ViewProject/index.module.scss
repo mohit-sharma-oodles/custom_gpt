@@ -109,6 +109,7 @@
               font-size: 14px;
               position: sticky;
               top: 0;
+              z-index: 2;
             }
 
             th:nth-last-child(1) {
@@ -429,3 +430,85 @@
 //   overflow-x: scroll;
 //   word-wrap: break-word;
 // }
+
+.tooltip {
+  position: relative;
+  margin-left: 0.5rem;
+  cursor: pointer;
+
+  .info_icon {
+    color: #232323;
+    transition: color 0.3s;
+
+    &:hover {
+      color: #000;
+    }
+  }
+
+  .tooltiptext {
+    visibility: hidden;
+    text-transform: capitalize;
+    width: max-content;
+    background-color: #555;
+    color: #fff;
+    text-align: left;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1;
+    bottom: 100%; /* Reduced from 125% to 100% */
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 0.875rem;
+
+    .failed {
+      color: red;
+    }
+
+    .okay {
+      color: green;
+    }
+
+    .queue {
+      color: goldenrod;
+    }
+
+    /* Arrow pointing upwards by default */
+    &::after {
+      content: "";
+      position: absolute;
+      top: 100%; /* Positioned right below the tooltip */
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: 0;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #555 transparent transparent transparent;
+    }
+  }
+
+  /* Modifier for downward tooltip */
+  &.downwards {
+    bottom: auto; /* Remove the default bottom positioning */
+    top: 100%; /* Reduced from 125% to 100% */
+
+    .tooltiptext {
+      top: 100%; /* Align tooltip right below the icon */
+      bottom: auto; /* Reset bottom */
+
+      /* Arrow pointing downwards */
+      &::after {
+        top: auto; /* Remove top positioning */
+        bottom: 100%; /* Position above the tooltip */
+        border-color: transparent transparent #555 transparent;
+      }
+    }
+  }
+
+  &:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+  }
+}

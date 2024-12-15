@@ -19,6 +19,7 @@ import {
   IoEyeOutline,
   IoCloudUploadOutline,
 } from "react-icons/io5";
+import { FaCircleInfo } from "react-icons/fa6";
 import { FiRefreshCw } from "react-icons/fi";
 import { TbSend2 } from "react-icons/tb";
 import { MdMicNone } from "react-icons/md";
@@ -29,6 +30,7 @@ import { AiOutlineDelete } from "react-icons/ai";
 import logo_small from "../../assets/compnay_icon_small.svg";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { FaCheckCircle, FaClock, FaTimesCircle } from "react-icons/fa";
 
 const MAX_FILE_SIZE = 2; // 100MB
 const MAX_TOTAL_SIZE = 1024 * 1024 * 1024; // 1GB in bytes
@@ -415,6 +417,23 @@ const ViewProject = () => {
     }
   };
 
+  const getStatusIcon = (status) => {
+    switch (status.toLowerCase()) {
+      case "failed":
+        return (
+          <FaTimesCircle className={`${styles.statusIcon} ${styles.failed}`} />
+        );
+      case "ok":
+        return (
+          <FaCheckCircle className={`${styles.statusIcon} ${styles.okay}`} />
+        );
+      case "queue":
+        return <FaClock className={`${styles.statusIcon} ${styles.queue}`} />;
+      default:
+        return null;
+    }
+  };
+
   // Document table
   const renderDocuments = () => {
     if (projectData && projectData.project[0]?.documents.length > 0) {
@@ -433,12 +452,14 @@ const ViewProject = () => {
             <tr>
               <th>{t("S.No")}</th>
               <th>{t("Filename")}</th>
+              <th>{t("Status")}</th>
               <th>{t("Uploaded On")}</th>
               <th>{t("Actions")}</th>
             </tr>
           </thead>
           <tbody>
             {filteredDocuments.map((doc, index) => {
+              // console.log(doc);
               return (
                 <tr key={doc.id + Math.random()}>
                   <td style={{ textAlign: "center" }}>{index + 1}</td>
@@ -453,6 +474,29 @@ const ViewProject = () => {
                     </div>
                     <span className={styles.type_container}>
                       {doc.filename.split(".").pop()}
+                    </span>
+                  </td>
+                  <td
+                    className={`${styles.tooltip} ${
+                      index === 0 ? styles.downwards : ""
+                    }`}
+                  >
+                    <FaCircleInfo className={`clickable ${styles.info_icon}`} />
+                    <span
+                      className={`${styles.tooltiptext} 
+                      ${index === 0 ? "" : ""}
+                      `}
+                    >
+                      <p>
+                        Crawl Status:
+                        {doc.crawl_status}
+                        {getStatusIcon(doc.crawl_status)}
+                      </p>
+                      <p>
+                        Index Status:
+                        {doc.index_status}
+                        {getStatusIcon(doc.index_status)}
+                      </p>
                     </span>
                   </td>
                   <td>

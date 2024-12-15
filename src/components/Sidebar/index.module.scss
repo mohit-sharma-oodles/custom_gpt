@@ -8,7 +8,7 @@
   align-items: center;
   flex: 1;
   gap: 1rem;
-  width: 20vw;
+  width: 16vw;
   height: 100%;
   // position: fixed;
   // top: 0;
@@ -16,8 +16,17 @@
   justify-content: stretch;
 
   .sidebar_top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 3rem;
+    margin-bottom: 3rem;
     img {
-      scale: 0.3;
+      // scale: 0.2;
+      width: 80%; /* Adjust this value as needed */
+      height: auto; /* Maintains the aspect ratio */
+      // display: block;
     }
   }
   .left_middle {
