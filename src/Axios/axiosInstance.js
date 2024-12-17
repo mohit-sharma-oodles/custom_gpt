@@ -1,7 +1,7 @@
 import axios from "axios";
 import updateToken from "./utils";
 
-// const domain = "https://bfe1-125-63-73-50.ngrok-free.app";
+// const domain = "https://e8bf-125-63-73-50.ngrok-free.app";
 const domain = "https://customgpt-b.chattodata.com";
 // const domain = "https://customgpt-b.oodleslab.com";
 export const baseURL = `${domain}`;

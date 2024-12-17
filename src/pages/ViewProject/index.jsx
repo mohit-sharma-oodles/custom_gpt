@@ -427,10 +427,22 @@ const ViewProject = () => {
         return (
           <FaCheckCircle className={`${styles.statusIcon} ${styles.okay}`} />
         );
-      case "queue":
+      case "queued":
         return <FaClock className={`${styles.statusIcon} ${styles.queue}`} />;
       default:
         return null;
+    }
+  };
+
+  const handleReindex = async (file_id) => {
+    console.log(file_id);
+    try {
+      const response = await axios_instance.post(
+        `/api/customgpt/${projectId}/re_indexed_page/${file_id}/`
+      );
+      toast.success(response.data.message);
+    } catch (e) {
+      toast.error(e.response.data.error);
     }
   };
 
@@ -459,7 +471,7 @@ const ViewProject = () => {
           </thead>
           <tbody>
             {filteredDocuments.map((doc, index) => {
-              // console.log(doc);
+              console.log(doc.page_id);
               return (
                 <tr key={doc.id + Math.random()}>
                   <td style={{ textAlign: "center" }}>{index + 1}</td>
@@ -508,10 +520,21 @@ const ViewProject = () => {
                   </td>
                   <td
                     style={{
+                      display: "flex",
                       textAlign: "center",
                       verticalAlign: "middle",
+                      height: "100%",
                     }}
                   >
+                    <FiRefreshCw
+                      size={16}
+                      style={{
+                        marginRight: "10px",
+                        verticalAlign: "middle",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => handleReindex(doc.page_id)}
+                    />
                     <IoEyeOutline
                       size={16}
                       style={{
