@@ -377,19 +377,27 @@ const ViewProject = () => {
   const handleDeleteDocument = async () => {
     if (!documentToDelete) return;
 
+    setLoading(true); // Set loading state to true
+
     try {
       await axios_instance.delete(
         `/api/customgpt/projects/${projectId}/page/delete/${documentToDelete}/`
       );
+
       // Reload the project data after deletion
       const response = await axios_instance.get(
         `/api/customgpt/projects/${projectId}/pages/`
       );
       setProjectData(response.data);
+
+      toast.success(t("Document deleted successfully."));
       setModalOpen(false); // Close modal after successful deletion
     } catch (err) {
-      setError(t("Failed to delete document. Please try again later."));
+      console.error(err);
+      toast.error(t("Failed to delete document. Please try again later."));
       setModalOpen(false); // Close modal even on failure
+    } finally {
+      setLoading(false); // Reset loading state
     }
   };
 
@@ -518,40 +526,42 @@ const ViewProject = () => {
                       year: "numeric",
                     })}
                   </td>
-                  <td
-                    style={{
-                      display: "flex",
-                      textAlign: "center",
-                      verticalAlign: "middle",
-                      height: "100%",
-                    }}
-                  >
-                    <FiRefreshCw
-                      size={16}
+                  <td>
+                    <div
                       style={{
-                        marginRight: "10px",
+                        display: "flex",
+                        textAlign: "center",
                         verticalAlign: "middle",
-                        cursor: "pointer",
+                        height: "100%",
                       }}
-                      onClick={() => handleReindex(doc.page_id)}
-                    />
-                    <IoEyeOutline
-                      size={16}
-                      style={{
-                        marginRight: "10px",
-                        verticalAlign: "middle",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => window.open(doc.viewable_url, "_blank")}
-                    />
-                    <HiOutlineTrash
-                      size={16}
-                      style={{ verticalAlign: "middle", cursor: "pointer" }}
-                      onClick={() => {
-                        setModalOpen(true); // Open modal
-                        setDocumentToDelete(doc.page_id);
-                      }}
-                    />
+                    >
+                      <FiRefreshCw
+                        size={16}
+                        style={{
+                          marginRight: "10px",
+                          verticalAlign: "middle",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => handleReindex(doc.page_id)}
+                      />
+                      <IoEyeOutline
+                        size={16}
+                        style={{
+                          marginRight: "10px",
+                          verticalAlign: "middle",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => window.open(doc.viewable_url, "_blank")}
+                      />
+                      <HiOutlineTrash
+                        size={16}
+                        style={{ verticalAlign: "middle", cursor: "pointer" }}
+                        onClick={() => {
+                          setModalOpen(true); // Open modal
+                          setDocumentToDelete(doc.page_id);
+                        }}
+                      />
+                    </div>
                   </td>
                 </tr>
               );
@@ -935,6 +945,7 @@ const ViewProject = () => {
         onClose={() => setModalOpen(false)}
         onConfirm={handleDeleteDocument}
         title={t("Document")}
+        loading={loading}
       />
     </div>
   );

@@ -3,7 +3,13 @@ import styles from "./index.module.scss";
 import { MdErrorOutline } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
-const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, title }) => {
+const DeleteConfirmationModal = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  title,
+  loading, // New prop
+}) => {
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -39,11 +45,19 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, title }) => {
             {t("Are you sure you want to delete this")} {title}?
           </p>
           <div className={styles.modalActions}>
-            <button className={styles.cancelBtn} onClick={onClose}>
+            <button
+              className={styles.cancelBtn}
+              onClick={onClose}
+              disabled={loading} // Disable cancel button during loading
+            >
               {t("Cancel")}
             </button>
-            <button className={styles.deleteBtn} onClick={onConfirm}>
-              {t("Delete")}
+            <button
+              className={styles.deleteBtn}
+              onClick={onConfirm}
+              disabled={loading} // Disable delete button during loading
+            >
+              {loading ? t("Deleting...") : t("Delete")}
             </button>
           </div>
         </div>
