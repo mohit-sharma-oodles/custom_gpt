@@ -43,7 +43,6 @@ axios_instance.interceptors.response.use(
 
       return axios_instance(originalRequest);
     }
-    cc;
 
     return Promise.reject(error);
   }
