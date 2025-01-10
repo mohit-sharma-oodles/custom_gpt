@@ -19,6 +19,7 @@ import {
   IoEyeOutline,
   IoCloudUploadOutline,
 } from "react-icons/io5";
+import { FaArrowLeftLong, FaArrowRightLong } from "react-icons/fa6";
 import { FaCircleInfo } from "react-icons/fa6";
 import { FiRefreshCw } from "react-icons/fi";
 import { TbSend2 } from "react-icons/tb";
@@ -32,11 +33,13 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { FaCheckCircle, FaClock, FaTimesCircle } from "react-icons/fa";
 
-const MAX_FILE_SIZE = 2; // 100MB
+const MAX_FILE_SIZE = 2; // 2MB
 const MAX_TOTAL_SIZE = 1024 * 1024 * 1024; // 1GB in bytes
 const MAX_FILES = 50;
 
-// Upload Modal
+/* ------------------------------------------------------------------
+   UploadDocumentModal COMPONENT
+   ------------------------------------------------------------------ */
 const UploadDocumentModal = ({
   isOpen,
   onClose,
@@ -44,8 +47,9 @@ const UploadDocumentModal = ({
   projectId,
 }) => {
   const { t } = useTranslation();
+  // Rename these to avoid conflict with main page "isLoading"
   const [fileSelected, setFileSelected] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const handleChange = (files) => {
     const newFiles = [];
@@ -93,7 +97,7 @@ const UploadDocumentModal = ({
       alert(t("Please select at least one file to upload."));
       return;
     }
-    setLoading(true);
+    setUploading(true);
 
     try {
       // Upload files to the edit project API endpoint
@@ -130,7 +134,7 @@ const UploadDocumentModal = ({
       console.error("Error uploading files:", error);
       toast.error(t("Failed to upload documents. Please try again."));
     } finally {
-      setLoading(false);
+      setUploading(false);
       setFileSelected([]);
     }
   };
@@ -218,38 +222,103 @@ const UploadDocumentModal = ({
         )}
 
         <div className={styles.loaderContainer}>
-          {loading && <div className={styles.loader}></div>}
+          {uploading && <div className={styles.loader}></div>}
         </div>
 
         <button
           className={styles.uploadButton}
           onClick={handleUploadDocument}
-          disabled={loading}
+          disabled={uploading}
         >
-          {loading ? t("Uploading...") : t("Upload")}
+          {uploading ? t("Uploading...") : t("Upload")}
         </button>
       </div>
     </div>
   );
 };
 
+/* ------------------------------------------------------------------
+   HELPER: Pagination pages with '...'
+   ------------------------------------------------------------------ */
+function getPagesToDisplay(current, total) {
+  const visiblePageCount = 5; // how many numeric pages to show
+  const pages = [];
+
+  // Always push the first page
+  pages.push(1);
+
+  // If total pages is small, just show them all
+  if (total <= visiblePageCount + 2) {
+    for (let i = 2; i < total; i++) {
+      pages.push(i);
+    }
+  } else {
+    // figure out left and right "windows"
+    let left = Math.max(2, current - 1);
+    let right = Math.min(total - 1, current + 1);
+
+    // If user is near the start
+    if (current <= 3) {
+      right = 4;
+    }
+    // If user is near the end
+    if (current >= total - 2) {
+      left = total - 3;
+    }
+
+    // If there's a gap after page 1
+    if (left > 2) {
+      pages.push("...");
+    }
+
+    for (let i = left; i <= right; i++) {
+      pages.push(i);
+    }
+
+    // If there's a gap before the last page
+    if (right < total - 1) {
+      pages.push("...");
+    }
+  }
+
+  // Always push the last page (if total > 1)
+  if (total > 1) {
+    pages.push(total);
+  }
+
+  return pages;
+}
+
+/* ------------------------------------------------------------------
+   MAIN: ViewProject
+   ------------------------------------------------------------------ */
 const ViewProject = () => {
   const { t } = useTranslation();
   const { projectId } = useParams();
-  const [projectData, setProjectData] = useState(null);
-  const [loading, setLoading] = useState(true);
+
+  // Single "isLoading" for the entire page
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const [projectData, setProjectData] = useState(null);
+
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Track changes if we alter settings in DeployModal
   const [changesMade, setChangesMade] = useState(false);
 
+  // Modals
   const [isModalOpen, setModalOpen] = useState(false);
   const [documentToDelete, setDocumentToDelete] = useState(null);
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [deployModal, setDeployModal] = useState(false);
   const [defaultOpen, setDefaultOpen] = useState("deploy");
 
-  // chatbot
+  // Chatbot
   const [sessionId, setSessionId] = useState("");
   const [prompt, setPrompt] = useState("");
   const [messages, setMessages] = useState([]);
@@ -260,10 +329,10 @@ const ViewProject = () => {
   const [responseSource, setResponseSource] = useState("");
   const [backgroundImage, setBackgroundImage] = useState("");
   const [noAnswerMessage, setNoAnswerMessage] = useState("");
-  const [showCitations, setShowCitations] = useState("");
+  const [showCitations, setShowCitations] = useState(""); // not used, but in your snippet
   const [reCaptcha, setReCaptcha] = useState(false);
   const [chatbot_model, setChatbot_model] = useState("");
-  const [selectedLanguage, setSelectedLanguage] = useState();
+  const [selectedLanguage, setSelectedLanguage] = useState("");
   const [enableCitations, setEnableCitations] = useState();
   const [chatbotBubbleColor, setChatbotBubbleColor] = useState("");
   const [toolbarColor, setToolbarColor] = useState("");
@@ -271,160 +340,158 @@ const ViewProject = () => {
 
   const messageEndRef = useRef(null);
 
-  useEffect(() => {
-    const fetchProjectData = async () => {
-      try {
-        const [projectDataResponse, projectSettingsResponse] =
-          await Promise.all([
-            axios_instance.get(`/api/customgpt/projects/${projectId}/pages/`),
-            axios_instance.get(
-              `/api/customgpt/projects/update/settings/${projectId}`
-            ),
-          ]);
-        console.log(
-          "Project Settings",
-          projectSettingsResponse.data.result.data.persona_instructions
-        );
-        const projectData = projectDataResponse.data;
-        // console.log(projectData);
+  /* ------------------------------------------------------------------
+     Fetch Project Data + Documents
+     ------------------------------------------------------------------ */
+  const fetchProjectData = async (page = 1) => {
+    setIsLoading(true);
+    setError(null);
 
-        setSessionId(projectData.project[0].session_id);
-        setProjectData(projectData);
-        setPersona_instructions(
-          projectSettingsResponse.data.result.data.persona_instructions
-        );
-        setToolbarColor(
-          projectSettingsResponse.data.result.data.chatbot_toolbar_color
-        );
-        setChatbotBubbleColor(
-          projectSettingsResponse.data.result.data.chatbot_color
-        );
-        setEnableCitations(
-          projectSettingsResponse.data.result.data.enable_citations
-        );
-        setReCaptcha(
-          projectSettingsResponse.data.result.data
-            .enable_recaptcha_for_public_chatbots
-        );
-        setSelectedLanguage(
-          projectSettingsResponse.data.result.data.chatbot_msg_lang
-        );
-        setChatbot_model(
-          projectSettingsResponse.data.result.data.chatbot_model
-        );
-        setAvatar(projectSettingsResponse.data.result.data.chatbot_avatar);
-        setNoAnswerMessage(
-          projectSettingsResponse.data.result.data.no_answer_message
-        );
-        setBackgroundImage(
-          projectSettingsResponse.data.result.data.chatbot_background
-        );
-        setPlaceholderPrompt(
-          projectSettingsResponse.data.result.data.default_prompt
-        );
-        setResponseSource(
-          projectSettingsResponse.data.result.data.response_source
-        );
-        setLoading(false);
-      } catch (error) {
-        setError(t("Failed to load project data. Please try again later."));
-        setLoading(false);
+    try {
+      // 1) Documents and basic project info
+      const projectDataResponse = await axios_instance.get(
+        `/api/customgpt/projects/${projectId}/pages/?page=${page}`
+      );
+
+      // 2) Project settings
+      const projectSettingsResponse = await axios_instance.get(
+        `/api/customgpt/projects/update/settings/${projectId}`
+      );
+
+      const projectDataFetched = projectDataResponse.data;
+      setProjectData(projectDataFetched);
+
+      // Set totalPages if available
+      if (
+        projectDataFetched?.project?.[0]?.total_page &&
+        !isNaN(projectDataFetched.project[0].total_page)
+      ) {
+        setTotalPages(projectDataFetched.project[0].total_page);
+      } else {
+        setTotalPages(1);
       }
-    };
 
-    fetchProjectData();
-  }, []);
+      // Session ID
+      setSessionId(projectDataFetched?.project?.[0]?.session_id || "");
 
-  useEffect(() => {
-    if (projectData && projectData.project[0]?.session_id) {
-      const fetchMessages = async () => {
-        try {
-          const response = await axios_instance.get(
-            `/api/customgpt/projects/${projectId}/conversations/${projectData.project[0].session_id}/messages/`
-          );
-          const messagesData = response.data.messages;
-
-          // Map the messagesData to the format expected by the chat UI
-          const formattedMessages = messagesData.flatMap((message) => {
-            const formatted = [];
-            if (message.user_query) {
-              formatted.push({
-                type: "user",
-                content: message.user_query,
-              });
-            }
-            if (message.openai_response) {
-              formatted.push({
-                type: "server",
-                content: message.openai_response,
-                url: message.url || null,
-                title: message.title || null,
-              });
-            }
-            return formatted.reverse();
-          });
-
-          setMessages(formattedMessages.reverse());
-        } catch (error) {
-          console.error("Failed to fetch messages", error);
-        }
-      };
-
-      fetchMessages();
+      // Fill settings
+      const settingsData = projectSettingsResponse.data.result.data;
+      setPersona_instructions(settingsData.persona_instructions);
+      setToolbarColor(settingsData.chatbot_toolbar_color);
+      setChatbotBubbleColor(settingsData.chatbot_color);
+      setEnableCitations(settingsData.enable_citations);
+      setReCaptcha(settingsData.enable_recaptcha_for_public_chatbots);
+      setSelectedLanguage(settingsData.chatbot_msg_lang);
+      setChatbot_model(settingsData.chatbot_model);
+      setAvatar(settingsData.chatbot_avatar);
+      setNoAnswerMessage(settingsData.no_answer_message);
+      setBackgroundImage(settingsData.chatbot_background);
+      setPlaceholderPrompt(settingsData.default_prompt);
+      setResponseSource(settingsData.response_source);
+    } catch (err) {
+      console.error("Failed to load project data", err);
+      setError(t("Failed to load project data. Please try again later."));
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  // Only fetch project data on mount + whenever currentPage changes
+  useEffect(() => {
+    fetchProjectData(currentPage);
+    // eslint-disable-next-line
+  }, [currentPage]);
+
+  /* ------------------------------------------------------------------
+     Fetch Chat Messages (ONE TIME if empty)
+     ------------------------------------------------------------------ */
+  const fetchMessages = async (projectData) => {
+    try {
+      const response = await axios_instance.get(
+        `/api/customgpt/projects/${projectId}/conversations/${projectData.project[0].session_id}/messages/`
+      );
+      const messagesData = response.data.messages;
+
+      // Flatten & format
+      const formattedMessages = messagesData.flatMap((message) => {
+        const arr = [];
+        if (message.user_query) {
+          arr.push({
+            type: "user",
+            content: message.user_query,
+          });
+        }
+        if (message.openai_response) {
+          arr.push({
+            type: "server",
+            content: message.openai_response,
+            url: message.url || null,
+            title: message.title || null,
+            citations: message.citation_list || [],
+          });
+        }
+        return arr.reverse();
+      });
+      // Reverse final so they appear in correct order
+      setMessages(formattedMessages.reverse());
+    } catch (error) {
+      console.error("Failed to fetch messages", error);
+    }
+  };
+
+  // If we have project data with a sessionId, and messages is still empty, fetch them once
+  useEffect(() => {
+    if (
+      projectData &&
+      projectData.project[0]?.session_id &&
+      messages.length === 0
+    ) {
+      fetchMessages(projectData);
+    }
+    // eslint-disable-next-line
   }, [projectData, projectId]);
 
+  /* ------------------------------------------------------------------
+     DELETE a Document
+     ------------------------------------------------------------------ */
   const handleDeleteDocument = async () => {
     if (!documentToDelete) return;
-
-    setLoading(true); // Set loading state to true
+    setIsLoading(true);
 
     try {
       await axios_instance.delete(
         `/api/customgpt/projects/${projectId}/page/delete/${documentToDelete}/`
       );
-
-      // Reload the project data after deletion
-      const response = await axios_instance.get(
-        `/api/customgpt/projects/${projectId}/pages/`
-      );
-      setProjectData(response.data);
-
       toast.success(t("Document deleted successfully."));
-      setModalOpen(false); // Close modal after successful deletion
+      setModalOpen(false);
+      // After deleting, refetch data for the current page
+      fetchProjectData(currentPage);
     } catch (err) {
       console.error(err);
       toast.error(t("Failed to delete document. Please try again later."));
-      setModalOpen(false); // Close modal even on failure
+      setModalOpen(false);
     } finally {
-      setLoading(false); // Reset loading state
+      setIsLoading(false);
     }
   };
 
-  const handleUploadDocument = async (file) => {
-    setLoading(true);
-
-    const formData = new FormData();
-    formData.append("file", file);
-
+  /* ------------------------------------------------------------------
+     Reindex a Document
+     ------------------------------------------------------------------ */
+  const handleReindex = async (file_id) => {
     try {
       const response = await axios_instance.post(
-        `/api/customgpt/projects/update/${projectId}/`,
-        formData
+        `/api/customgpt/${projectId}/re_indexed_page/${file_id}/`
       );
-      setLoading(false);
-      setUploadModalOpen(false);
-      // Reload the project data after upload
-      const projectDataResponse = await axios_instance.get(
-        `/api/customgpt/projects/${projectId}/pages/`
-      );
-      setProjectData(projectDataResponse.data);
+      toast.success(response.data.message);
     } catch (e) {
-      setLoading(false);
-      setError(t("Failed to upload document. Please try again later."));
+      toast.error(e.response.data.error);
     }
   };
 
+  /* ------------------------------------------------------------------
+     Status Icons
+     ------------------------------------------------------------------ */
   const getStatusIcon = (status) => {
     switch (status.toLowerCase()) {
       case "failed":
@@ -442,139 +509,150 @@ const ViewProject = () => {
     }
   };
 
-  const handleReindex = async (file_id) => {
-    console.log(file_id);
-    try {
-      const response = await axios_instance.post(
-        `/api/customgpt/${projectId}/re_indexed_page/${file_id}/`
-      );
-      toast.success(response.data.message);
-    } catch (e) {
-      toast.error(e.response.data.error);
+  /* ------------------------------------------------------------------
+     Render Documents Table
+     ------------------------------------------------------------------ */
+  const getDisplayName = (doc) => {
+    if (doc.filename && typeof doc.filename === "string") {
+      const nameParts = doc.filename.split(".");
+      const name = nameParts.slice(0, -1).join(".") || doc.filename;
+      return name.length > 30 ? `${name.slice(0, 20)}...` : name;
     }
+    // If filename is null, use the viewable_url
+    return doc.viewable_url || "View Document";
   };
 
-  // Document table
+  const getFileExtension = (doc) => {
+    if (doc.filename && typeof doc.filename === "string") {
+      const parts = doc.filename.split(".");
+      return parts.pop() || "";
+    }
+    return "URL";
+  };
+
   const renderDocuments = () => {
-    if (projectData && projectData.project[0]?.documents.length > 0) {
-      // Filter documents based on the search query
-      const filteredDocuments = projectData.project[0].documents.filter((doc) =>
-        doc.filename.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+    if (!projectData) return <p>{t("No documents found.")}</p>;
+    if (!projectData.project[0]?.documents) return <p>{t("No documents.")}</p>;
 
-      if (filteredDocuments.length === 0) {
-        return <p>{t("No documents match your search.")}</p>;
+    // Filter documents by search query
+    const filteredDocuments = projectData.project[0].documents.filter((doc) => {
+      const searchLower = searchQuery.toLowerCase();
+      if (doc.filename && typeof doc.filename === "string") {
+        return doc.filename.toLowerCase().includes(searchLower);
       }
+      if (doc.viewable_url && typeof doc.viewable_url === "string") {
+        return doc.viewable_url.toLowerCase().includes(searchLower);
+      }
+      return false;
+    });
 
-      return (
-        <table className={styles.documentTable}>
-          <thead>
-            <tr>
-              <th>{t("S.No")}</th>
-              <th>{t("Filename")}</th>
-              <th>{t("Status")}</th>
-              <th>{t("Uploaded On")}</th>
-              <th>{t("Actions")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredDocuments.map((doc, index) => {
-              console.log(doc.page_id);
-              return (
-                <tr key={doc.id + Math.random()}>
-                  <td style={{ textAlign: "center" }}>{index + 1}</td>
-                  <td className={styles.fileName}>
-                    <div className={styles.left}>
-                      <RxFileText size={18} style={{ marginRight: "5px" }} />
-                      <span className={styles.filename}>
-                        {doc.filename.split(".").shift().length > 30
-                          ? `${doc.filename.split(".").shift().slice(0, 20)}...`
-                          : doc.filename.split(".").shift()}
-                      </span>
-                    </div>
-                    <span className={styles.type_container}>
-                      {doc.filename.split(".").pop()}
-                    </span>
-                  </td>
-                  <td
-                    className={`${styles.tooltip} ${
-                      index === 0 ? styles.downwards : ""
-                    }`}
-                  >
-                    <FaCircleInfo className={`clickable ${styles.info_icon}`} />
-                    <span
-                      className={`${styles.tooltiptext} 
-                      ${index === 0 ? "" : ""}
-                      `}
-                    >
-                      <p>
-                        Crawl Status:
-                        {doc.crawl_status}
-                        {getStatusIcon(doc.crawl_status)}
-                      </p>
-                      <p>
-                        Index Status:
-                        {doc.index_status}
-                        {getStatusIcon(doc.index_status)}
-                      </p>
-                    </span>
-                  </td>
-                  <td>
-                    {new Date(doc.uploaded_at).toLocaleDateString("en-GB", {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                    })}
-                  </td>
-                  <td>
-                    <div
-                      style={{
-                        display: "flex",
-                        textAlign: "center",
-                        verticalAlign: "middle",
-                        height: "100%",
-                      }}
-                    >
-                      <FiRefreshCw
-                        size={16}
-                        style={{
-                          marginRight: "10px",
-                          verticalAlign: "middle",
-                          cursor: "pointer",
-                        }}
-                        onClick={() => handleReindex(doc.page_id)}
-                      />
-                      <IoEyeOutline
-                        size={16}
-                        style={{
-                          marginRight: "10px",
-                          verticalAlign: "middle",
-                          cursor: "pointer",
-                        }}
-                        onClick={() => window.open(doc.viewable_url, "_blank")}
-                      />
-                      <HiOutlineTrash
-                        size={16}
-                        style={{ verticalAlign: "middle", cursor: "pointer" }}
-                        onClick={() => {
-                          setModalOpen(true); // Open modal
-                          setDocumentToDelete(doc.page_id);
-                        }}
-                      />
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      );
+    if (filteredDocuments.length === 0) {
+      return <p>{t("No documents match your search.")}</p>;
     }
-    return <p>{t("No documents found.")}</p>;
-  };
-  // Document table
 
-  // Chatbot
+    return (
+      <table className={styles.documentTable}>
+        <thead>
+          <tr>
+            <th>{t("S.No")}</th>
+            <th>{t("Filename")}</th>
+            <th>{t("Status")}</th>
+            <th>{t("Uploaded On")}</th>
+            <th>{t("Actions")}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredDocuments.map((doc, index) => {
+            const displayName = getDisplayName(doc);
+            const extension = getFileExtension(doc);
+
+            return (
+              <tr key={doc.page_id}>
+                <td style={{ textAlign: "center" }}>{index + 1}</td>
+                <td className={styles.fileName}>
+                  <div className={styles.left}>
+                    <RxFileText size={18} style={{ marginRight: "5px" }} />
+                    <span className={styles.filename}>{displayName}</span>
+                  </div>
+                  <span className={styles.type_container}>{extension}</span>
+                </td>
+                <td className={styles.tooltip}>
+                  <FaCircleInfo className={`clickable ${styles.info_icon}`} />
+                  <span className={styles.tooltiptext}>
+                    <p>
+                      Crawl Status: {doc.crawl_status}{" "}
+                      {getStatusIcon(doc.crawl_status)}
+                    </p>
+                    <p>
+                      Index Status: {doc.index_status}{" "}
+                      {getStatusIcon(doc.index_status)}
+                    </p>
+                  </span>
+                </td>
+                <td>
+                  {new Date(doc.uploaded_at).toLocaleDateString("en-GB", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </td>
+                <td>
+                  <div
+                    style={{
+                      display: "flex",
+                      textAlign: "center",
+                      verticalAlign: "middle",
+                      height: "100%",
+                    }}
+                  >
+                    <FiRefreshCw
+                      size={16}
+                      style={{
+                        marginRight: "10px",
+                        verticalAlign: "middle",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => handleReindex(doc.page_id)}
+                    />
+                    <IoEyeOutline
+                      size={16}
+                      style={{
+                        marginRight: "10px",
+                        verticalAlign: "middle",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => window.open(doc.viewable_url, "_blank")}
+                    />
+                    <HiOutlineTrash
+                      size={16}
+                      style={{ verticalAlign: "middle", cursor: "pointer" }}
+                      onClick={() => {
+                        setModalOpen(true);
+                        setDocumentToDelete(doc.page_id);
+                      }}
+                    />
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    );
+  };
+
+  /* ------------------------------------------------------------------
+     PAGE CHANGE
+     ------------------------------------------------------------------ */
+  const handlePageChange = (pageNum) => {
+    if (pageNum >= 1 && pageNum <= totalPages) {
+      setCurrentPage(pageNum);
+    }
+  };
+
+  /* ------------------------------------------------------------------
+     CHATBOT FUNCTIONS
+     ------------------------------------------------------------------ */
   const handleShareChat = () => {
     setShareChatModal(true);
   };
@@ -584,7 +662,6 @@ const ViewProject = () => {
 
     const newMessage = { type: "user", content: prompt };
     setMessages((prevMessages) => [...prevMessages, newMessage]);
-
     setMessageLoading(true);
     setPrompt("");
 
@@ -593,15 +670,12 @@ const ViewProject = () => {
         `/api/customgpt/projects/${projectId}/chat/${sessionId}/`,
         { prompt: prompt }
       );
-
-      const { openai_response, url, title } = response.data.message;
+      const { openai_response } = response.data.message;
 
       const serverResponse = {
         type: "server",
         content: openai_response,
         citations: response.data.message.citation_list,
-        // url: url || null,
-        // title: title || null,
       };
       setMessages((prevMessages) => [...prevMessages, serverResponse]);
     } catch (e) {
@@ -627,22 +701,23 @@ const ViewProject = () => {
       const response = await axios_instance.post(
         `/api/customgpt/projects/delete_chat/${projectId}/${sessionId}/`
       );
-      // console.log(response.data);
       setSessionId(response.data.session_id);
       setMessages([]);
       toast.success("Messages have been deleted");
     } catch (e) {
-      // console.log(e);
       toast.error("Error while refreshing the chats");
     }
     setMessages([]);
   };
 
+  /* ------------------------------------------------------------------
+     RENDER
+     ------------------------------------------------------------------ */
   return (
     <div className={styles.container}>
       <Sidebar />
       <div className={styles.right}>
-        {loading ? (
+        {isLoading ? (
           <div className={styles.loader} />
         ) : error ? (
           <p className={styles.error}>{error}</p>
@@ -656,45 +731,106 @@ const ViewProject = () => {
             <div className={styles.bottom}>
               {/* Project Files */}
               <div className={styles.project_files_container}>
-                <div className={styles.top}>
-                  <div className={styles.left}>
-                    <h3>{t("All Documents")}</h3>
-                    <div className={styles.input_container}>
-                      <HiMiniMagnifyingGlass />
-                      <input
-                        type="text"
-                        placeholder={t("Search")}
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                      />
+                <div className={styles.top_two}>
+                  <div className={styles.top}>
+                    <div className={styles.left}>
+                      <h3>{t("All Documents")}</h3>
+                      <div className={styles.input_container}>
+                        <HiMiniMagnifyingGlass />
+                        <input
+                          type="text"
+                          placeholder={t("Search")}
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <div className={styles.right}>
+                      <button
+                        className={`${styles.button} ${styles.deploy}`}
+                        onClick={() => {
+                          setDeployModal(true);
+                          setDefaultOpen("deploy");
+                        }}
+                      >
+                        <IoRocketOutline size={18} /> {t("Deploy")}
+                      </button>
+                      <button
+                        className={`${styles.button} ${styles.upload}`}
+                        onClick={() => setUploadModalOpen(true)}
+                      >
+                        <GoUpload size={18} /> {t("Upload")}
+                      </button>
                     </div>
                   </div>
-                  <div className={styles.right}>
+
+                  {/* Documents Table + Pagination */}
+                  <div className={styles.bottom}>{renderDocuments()}</div>
+                </div>
+
+                {/* Pagination Section */}
+                <div className={styles.paginationContainer}>
+                  {/* We can show a smaller spinner if needed, 
+                      but here we’ll assume the main isLoading covered it */}
+                  <div className={styles.pagination}>
+                    {/* Prev button */}
                     <button
-                      className={`${styles.button} ${styles.deploy}`}
-                      onClick={() => {
-                        setDeployModal(true);
-                        setDefaultOpen("deploy");
-                      }}
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className={styles.prevButton}
                     >
-                      <IoRocketOutline size={18} /> {t("Deploy")}
+                      <FaArrowLeftLong /> {t("Prev")}
                     </button>
+
+                    {/* Page numbers (with ellipsis) */}
+                    {getPagesToDisplay(currentPage, totalPages).map(
+                      (page, idx) => {
+                        if (page === "...") {
+                          return (
+                            <button
+                              key={idx}
+                              disabled
+                              className={styles.ellipsis}
+                            >
+                              ...
+                            </button>
+                          );
+                        } else {
+                          return (
+                            <button
+                              key={idx}
+                              onClick={() => handlePageChange(page)}
+                              className={
+                                page === currentPage
+                                  ? styles.activePage
+                                  : styles.pageNumber
+                              }
+                            >
+                              {page}
+                            </button>
+                          );
+                        }
+                      }
+                    )}
+
+                    {/* Next button */}
                     <button
-                      className={`${styles.button} ${styles.upload}`}
-                      onClick={() => setUploadModalOpen(true)}
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className={styles.nextButton}
                     >
-                      <GoUpload size={18} /> {t("Upload")}
+                      {t("Next")} <FaArrowRightLong />
                     </button>
                   </div>
                 </div>
-                <div className={styles.bottom}>{renderDocuments()}</div>
               </div>
+
               {/* ChatBot */}
               <div
                 style={{
-                  backgroundImage: `url(${
-                    backgroundImage === "" ? "" : backgroundImage
-                  })`,
+                  backgroundImage: backgroundImage
+                    ? `url(${backgroundImage})`
+                    : "none",
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                 }}
@@ -702,9 +838,6 @@ const ViewProject = () => {
               >
                 <div
                   style={{
-                    // backgroundImage: `url(${
-                    //   backgroundImage === "" ? "" : backgroundImage
-                    // })`,
                     backgroundColor: `${toolbarColor}`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
@@ -712,7 +845,6 @@ const ViewProject = () => {
                   className={styles.headerContainer}
                 >
                   <p className={styles.heading}>{t("AI Chat")}</p>
-
                   <div>
                     <FiRefreshCw
                       size={20}
@@ -732,79 +864,68 @@ const ViewProject = () => {
                   {/* Message container */}
                   <div className={styles.messagesContainer}>
                     <div className={styles.messageList}>
-                      {messages.map((message, index) => {
-                        return (
-                          <React.Fragment key={index}>
-                            {message.type === "server" && (
-                              <img
-                                src={avatar ? avatar : logo_small}
-                                style={{
-                                  width: "30px",
-                                  height: "30px",
-                                  borderRadius: "50%",
-                                  marginBottom: "10px",
-                                }}
-                                alt=""
-                              />
+                      {messages.map((message, index) => (
+                        <React.Fragment key={index}>
+                          {message.type === "server" && (
+                            <img
+                              src={avatar ? avatar : logo_small}
+                              style={{
+                                width: "30px",
+                                height: "30px",
+                                borderRadius: "50%",
+                                marginBottom: "10px",
+                              }}
+                              alt=""
+                            />
+                          )}
+                          <div
+                            className={
+                              message.type === "user"
+                                ? styles.userMessage
+                                : styles.serverMessage
+                            }
+                            style={
+                              message.type === "user"
+                                ? { backgroundColor: chatbotBubbleColor }
+                                : {}
+                            }
+                          >
+                            {message.type === "server" ? (
+                              <div className={styles.markdown_content}>
+                                <ReactMarkdown>{message.content}</ReactMarkdown>
+                              </div>
+                            ) : (
+                              <p>{message.content}</p>
                             )}
-                            <div
-                              className={
-                                message.type === "user"
-                                  ? styles.userMessage
-                                  : styles.serverMessage
-                              }
-                              style={
-                                message.type === "user"
-                                  ? { backgroundColor: chatbotBubbleColor }
-                                  : {}
-                              }
-                            >
-                              {/* Render Markdown for server messages, plain text for user messages */}
-                              {message.type === "server" ? (
-                                <>
-                                  <div className={styles.markdown_content}>
-                                    <ReactMarkdown>
-                                      {message.content}
-                                    </ReactMarkdown>
-                                  </div>
-                                </>
-                              ) : (
-                                <p>{message.content}</p>
+
+                            {/* Citations */}
+                            {enableCitations !== 0 &&
+                              message.type === "server" &&
+                              message?.citations?.length > 0 && (
+                                <p>
+                                  &#9432; {t("Related Documents")}: <br />
+                                </p>
                               )}
-
-                              {/* {console.log("message", message)} */}
-                              {enableCitations !== 0 &&
-                                message.type === "server" &&
-                                message?.citations?.length > 0 && (
-                                  <p>
-                                    &#9432; {t("Related Documents")}: <br />
-                                  </p>
-                                )}
-
-                              {enableCitations !== 0 &&
-                                message.type === "server" &&
-                                message?.citations?.length > 0 &&
-                                message?.citations.map((citation, index) => {
-                                  return (
-                                    <div
-                                      key={index}
-                                      style={{ marginTop: "10px" }}
+                            {enableCitations !== 0 &&
+                              message.type === "server" &&
+                              message?.citations?.length > 0 &&
+                              message?.citations.map((citation, idx2) => {
+                                return (
+                                  <div key={idx2} style={{ marginTop: "10px" }}>
+                                    <a
+                                      style={{ color: "black" }}
+                                      href={citation.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
                                     >
-                                      <a
-                                        style={{ color: "black" }}
-                                        href={citation.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                      >
-                                        {citation.title}
-                                      </a>
-                                    </div>
-                                  );
-                                })}
-                            </div>
-                          </React.Fragment>
-                        );
-                      })}
+                                      {citation.title}
+                                    </a>
+                                  </div>
+                                );
+                              })}
+                          </div>
+                        </React.Fragment>
+                      ))}
                       {messageloading && <div className={styles.textloader} />}{" "}
                       <div ref={messageEndRef} />
                     </div>
@@ -819,7 +940,6 @@ const ViewProject = () => {
                   >
                     <div className={styles.inputContainer}>
                       <div className={styles.left_side}>
-                        {/* <MdMicNone size={20} /> */}
                         <input
                           type="text"
                           value={prompt}
@@ -852,36 +972,26 @@ const ViewProject = () => {
                   }}
                 />
               </div>
-              {/* ChatBot */}
             </div>
           </>
         )}
       </div>
-      {/*  Modals */}
+
+      {/* SHARE CHAT MODAL */}
       <ShareChatModal
         isOpen={shareChatModal}
         onClose={() => setShareChatModal(false)}
         projectId={projectId}
       />
+
+      {/* DEPLOY MODAL */}
       <DeployModal
         isOpen={deployModal}
         onClose={() => {
           setDeployModal(false);
           if (changesMade) {
             // Reload the project data if changes were made
-            const fetchProjectData = async () => {
-              try {
-                const projectDataResponse = await axios_instance.get(
-                  `/api/customgpt/projects/${projectId}/pages/`
-                );
-                setProjectData(projectDataResponse.data);
-              } catch (error) {
-                setError(
-                  t("Failed to reload project data. Please try again later.")
-                );
-              }
-            };
-            fetchProjectData();
+            fetchProjectData(currentPage);
           }
         }}
         embedCode={projectData?.project[0]?.embeded_code}
@@ -916,6 +1026,7 @@ const ViewProject = () => {
         persona_instructions={persona_instructions}
       />
 
+      {/* UPLOAD DOCUMENT MODAL */}
       <UploadDocumentModal
         isOpen={uploadModalOpen}
         onClose={() => {
@@ -924,28 +1035,18 @@ const ViewProject = () => {
         onUploadSuccess={() => {
           setUploadModalOpen(false);
           // Reload the project data after successful upload
-          const fetchProjectData = async () => {
-            try {
-              const projectDataResponse = await axios_instance.get(
-                `/api/customgpt/projects/${projectId}/pages/`
-              );
-              setProjectData(projectDataResponse.data);
-            } catch (error) {
-              setError(
-                t("Failed to reload project data. Please try again later.")
-              );
-            }
-          };
-          fetchProjectData();
+          fetchProjectData(currentPage);
         }}
         projectId={projectId}
       />
+
+      {/* DELETE CONFIRMATION MODAL */}
       <DeleteConfirmationModal
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
         onConfirm={handleDeleteDocument}
         title={t("Document")}
-        loading={loading}
+        loading={isLoading}
       />
     </div>
   );

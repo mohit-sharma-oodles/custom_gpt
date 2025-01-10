@@ -1,7 +1,7 @@
 import axios from "axios";
 import updateToken from "./utils";
 
-// const domain = "https://7250-125-63-73-50.ngrok-free.app";
+// const domain = "https://766b-14-102-190-50.ngrok-free.app";
 const domain = "https://customgpt-b.chattodata.com";
 // const domain = "https://customgpt-b.oodleslab.com";
 export const baseURL = `${domain}`;
@@ -43,6 +43,7 @@ axios_instance.interceptors.response.use(
 
       return axios_instance(originalRequest);
     }
+    cc;
 
     return Promise.reject(error);
   }

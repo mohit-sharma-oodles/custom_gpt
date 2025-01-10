@@ -318,13 +318,30 @@ const Projects = () => {
                               color="#ae407a"
                               style={{ marginRight: "10px" }}
                             />
-                            {project.project_name}
+                            {project.project_name || project.viewable_url}
                           </td>
                           <td className={styles.files_table_data_container}>
                             {project.documents.length > 0 ? (
-                              project.documents.map((doc, idx) => (
-                                <div key={idx} className={styles.document_span}>
-                                  <>
+                              project.documents.map((doc) => {
+                                // Determine if filename exists
+                                const hasFilename = !!doc.filename;
+
+                                // Extract name and extension if filename exists
+                                const name = hasFilename
+                                  ? doc.filename
+                                      .split(".")
+                                      .slice(0, -1)
+                                      .join(".") || doc.filename
+                                  : doc.viewable_url;
+                                const extension = hasFilename
+                                  ? doc.filename.split(".").pop()
+                                  : "URL";
+
+                                return (
+                                  <div
+                                    key={doc.viewable_url || Math.random()}
+                                    className={styles.document_span}
+                                  >
                                     <p
                                       style={{
                                         display: "flex",
@@ -341,14 +358,16 @@ const Projects = () => {
                                         color="#ae407a"
                                         style={{ flexShrink: 0 }}
                                       />
-                                      {doc.filename.split(".").shift()}
+                                      {hasFilename ? name : name}
                                     </p>
-                                  </>
-                                  <span className={styles.type_container}>
-                                    {doc.filename.split(".").pop()}
-                                  </span>
-                                </div>
-                              ))
+                                    {extension && (
+                                      <span className={styles.type_container}>
+                                        {extension}
+                                      </span>
+                                    )}
+                                  </div>
+                                );
+                              })
                             ) : (
                               <p
                                 style={{
