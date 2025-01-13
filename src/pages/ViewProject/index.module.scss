@@ -591,6 +591,13 @@
       align-items: center;
       background-color: transparent;
       border: 1px solid rgb(164, 164, 164);
+
+      &:disabled {
+        cursor: not-allowed;
+        color: rgb(164, 164, 164); /* Light gray text */
+        background-color: rgb(230, 230, 230); /* Light gray background */
+        border: 1px solid rgb(200, 200, 200); /* Slightly darker gray border */
+      }
     }
     .ellipsis {
       padding: 5px;
