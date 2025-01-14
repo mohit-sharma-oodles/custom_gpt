@@ -576,15 +576,25 @@ const ViewProject = () => {
                   </div>
                   <span className={styles.type_container}>{extension}</span>
                 </td>
-                <td className={styles.tooltip}>
+                <td
+                  className={`${styles.tooltip} ${
+                    index === 0 ? styles.downwards : ""
+                  }`}
+                >
                   <FaCircleInfo className={`clickable ${styles.info_icon}`} />
-                  <span className={styles.tooltiptext}>
+                  <span
+                    className={`${styles.tooltiptext} 
+                      ${index === 0 ? "" : ""}
+                      `}
+                  >
                     <p>
-                      Crawl Status: {doc.crawl_status}{" "}
+                      Crawl Status:
+                      {doc.crawl_status}
                       {getStatusIcon(doc.crawl_status)}
                     </p>
                     <p>
-                      Index Status: {doc.index_status}{" "}
+                      Index Status:
+                      {doc.index_status}
                       {getStatusIcon(doc.index_status)}
                     </p>
                   </span>

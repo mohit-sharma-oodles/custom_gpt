@@ -510,21 +510,22 @@
     padding: 8px;
     position: absolute;
     z-index: 1;
-    bottom: 100%; /* Reduced from 125% to 100% */
+
+    /* Default: point upwards */
+    bottom: 100%;
     left: 50%;
     transform: translateX(-50%);
     opacity: 0;
     transition: opacity 0.3s;
     font-size: 0.875rem;
 
+    /* Example status colors */
     .failed {
       color: red;
     }
-
     .okay {
       color: green;
     }
-
     .queue {
       color: goldenrod;
     }
@@ -533,7 +534,7 @@
     &::after {
       content: "";
       position: absolute;
-      top: 100%; /* Positioned right below the tooltip */
+      top: 100%;
       left: 50%;
       transform: translateX(-50%);
       margin-top: 0;
@@ -543,24 +544,23 @@
     }
   }
 
-  /* Modifier for downward tooltip */
+  /* Use .downwards to flip the tooltip bubble */
   &.downwards {
-    bottom: auto; /* Remove the default bottom positioning */
-    top: 100%; /* Reduced from 125% to 100% */
-
     .tooltiptext {
-      top: 100%; /* Align tooltip right below the icon */
-      bottom: auto; /* Reset bottom */
+      /* Flip from bottom to top positioning */
+      top: 100%;
+      bottom: auto;
 
-      /* Arrow pointing downwards */
+      /* Flip the arrow to point down */
       &::after {
-        top: auto; /* Remove top positioning */
-        bottom: 100%; /* Position above the tooltip */
+        top: auto;
+        bottom: 100%;
         border-color: transparent transparent #555 transparent;
       }
     }
   }
 
+  /* On hover, show the tooltip text */
   &:hover .tooltiptext {
     visibility: visible;
     opacity: 1;
